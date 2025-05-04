@@ -5,17 +5,22 @@ import { apiService } from "../../../services/easydossie.service"
 import AdviceText from "./AdviceText"
 import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()
   const { setError, setErrorMessage} = useError()
+  const navigate = useNavigate();
+
 
 
   const onSubmit = async (values: any) => {
     try {
-      const result = await apiService.login(values)
-      localStorage.setItem("token", result.data.token)
-      window.location.href = "/home"
+     // const result = await apiService.login(values)
+     // localStorage.setItem("token", result.data.token)
+      //window.location.href = "/home"
+      navigate("/home");
+
     } catch (error) {
       if (isAxiosError(error) && error.status === 401)
         setErrorMessage("Credenciais inválidas.")      

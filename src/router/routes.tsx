@@ -11,13 +11,13 @@ export const routes = createBrowserRouter([
     },
     {
         path: "/home",
-        async loader() {
+        /*async loader() {
             if (!localStorage.getItem("token")) {
               window.location.href = "/auth/sign-in";
               return;
             }
             return true;
-        },
+        },*/
         element: <Home />,
     }
 ]);
