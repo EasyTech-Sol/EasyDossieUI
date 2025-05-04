@@ -8,9 +8,7 @@ const client = axios.create({
 });
 
 export const apiService = {
-  login: async (data: LoginData) => client.post("/api/usuario/login", data),
+  login: async (data: LoginData) =>
+    client.post("/api/usuario/login", data),
   signup: async (data: SignUpData) => client.post("/api/usuario/cadastro", data),
-  getTurmaById: async (id: number) => client.get(`/turmas/${id}`),
-  updateTurma: async (id: number, data: any) => client.put(`/turmas/${id}`, data),
-
 };
