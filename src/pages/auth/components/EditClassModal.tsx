@@ -1,6 +1,7 @@
 import { Box, TextField, Modal, Button, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
+import { apiService } from "../../../services/easydossie.service"
 
 interface classInfo {
   id_turma: number;
@@ -29,24 +30,11 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
   useEffect(() => {
     const fetchClassInfo = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`https://faltaessarota/turmas/${id_turma}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Erro ao buscar dados da turma");
-        }
-
-        const data = await response.json();
-
-        // Salva dados originais
+        const response = await apiService.getTurmaById(id_turma);
+        const data = response.data;
+  
         originalData.current = data;
-
-        // Preenche formulário
+  
         setValue("name", data.name);
         setValue("shift", data.shift);
         setValue("institution", data.institution);
@@ -55,11 +43,12 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
         alert(err.message || "Erro ao carregar dados.");
       }
     };
-
+  
     if (open && id_turma) {
       fetchClassInfo();
     }
   }, [open, id_turma, setValue]);
+  
 
   const validateAlphaNumeric = (value: string) =>
     /^[a-zA-Z0-9\s]+$/.test(value) || "Apenas letras e números são permitidos";
@@ -96,24 +85,10 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(`https://faltaessarota/turmas/${id_turma}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...current,
-          id_turma,
-        }),
+      await apiService.updateTurma(id_turma, {
+        ...current,
+        id_turma,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao atualizar turma");
-      }
 
       alert("Dados atualizados com sucesso!");
       handleClose();
@@ -122,7 +97,6 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
     } finally {
       setLoading(false);
     }
-  };
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -215,5 +189,5 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
     </Modal>
   );
 };
-
+}
 export default EditClassModal;
