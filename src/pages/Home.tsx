@@ -1,7 +1,7 @@
-const Home = () => {
-  return (
-    <div>Home</div>
-  )
-}
+import InputFile from "../components/importStudents/ImportStudents";
 
-export default Home
+const Home = () => {
+  return <InputFile />;
+};
+
+export default Home;
