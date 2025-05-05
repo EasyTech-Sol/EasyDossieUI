@@ -12,4 +12,5 @@ export const apiService = {
   signup: async (data: SignUpData) => client.post("/api/usuario/cadastro", data),
   getTurmaById: async (id: number) => client.get(`/turmas/${id}`),
   updateTurma: async (id: number, data: any) => client.put(`/turmas/${id}`, data),
+
 };

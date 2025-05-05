@@ -11,13 +11,11 @@ const SignIn = () => {
   const { setError, setErrorMessage} = useError()
 
 
-
   const onSubmit = async (values: any) => {
     try {
       const result = await apiService.login(values)
       localStorage.setItem("token", result.data.token)
       window.location.href = "/home"
-
     } catch (error) {
       if (isAxiosError(error) && error.status === 401)
         setErrorMessage("Credenciais inválidas.")      
