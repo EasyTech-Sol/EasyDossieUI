@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import AdviceText from "./AdviceText"
 import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
+import PasswordField from "../../../components/PasswordField"
 
 type SignUpForm = SignUpData & {
   senhaCheck: string
@@ -17,6 +18,7 @@ const SignUp = () => {
 
   const onSubmit = async (values: any) => {
     try {
+      console.log(values)
       const result = await apiService.signup(values)
       localStorage.setItem("token", result.data.token)
       window.location.href = "/home"
@@ -52,17 +54,21 @@ const SignUp = () => {
       </Box>
 
       <Box>
-        <TextField size="small" type="password" fullWidth id="filled-basic" label="Senha" variant="filled"
-          {...register("senha", { required: "Por favor insira sua senha" })} />
+        <PasswordField register={register}
+          field="senha" label="Senha"
+          rules={{ required: true }}
+          size={"small"} />
         {errors.senha && <AdviceText>Por favor, insira sua senha.</AdviceText>}
       </Box>
 
       <Box>
-        <TextField size="small" type="password" fullWidth id="filled-basic" label="Sua senha, novamente" variant="filled"
-          {...register("senhaCheck", {
-            required: "Por favor, insira sua senha novamente.", validate: (value) =>
+        <PasswordField register={register}
+          field="senhaCheck" label="Sua senha, novamente"
+          rules={{
+            required: "Por favor, insira sua senha novamente.", validate: (value: string) =>
               value === senha || 'As senhas não coincidem.'
-          })} />
+          }}
+          size={"small"} />
         {errors.senhaCheck && <AdviceText>{errors.senhaCheck?.message}</AdviceText>}
       </Box>
 
