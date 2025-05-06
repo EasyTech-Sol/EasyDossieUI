@@ -12,8 +12,10 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.0.2",
-    "axios": "^1.8.4",
+    "@tanstack/react-query": "^5.75.4",
+    "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "msw": "^2.7.5",
     "react": "^19.0.0",
