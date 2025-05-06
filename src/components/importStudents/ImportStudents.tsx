@@ -4,7 +4,7 @@ import "./importstudents.css"
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { sendStudentsToServer } from '../../api/APISendToStudentds';
-import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
