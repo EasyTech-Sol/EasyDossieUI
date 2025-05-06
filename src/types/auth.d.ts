@@ -9,3 +9,10 @@ type SignUpData = {
   email: string;
   senha: string;
 };
+
+type TurmaData = {
+  nomeTurma: string;
+  turno: string;
+  instituicao: string;
+  periodo: string;
+};

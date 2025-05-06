@@ -1,12 +1,46 @@
-import {AppBar,Box,  Divider,Drawer,IconButton,InputBase,List,ListItemButton,ListItemIcon,ListItemText,Paper,Toolbar,Fab,useTheme,useMediaQuery,} from "@mui/material"
-import {Add,Description,ExitToApp, Info,Person,School,Search,} from "@mui/icons-material"
-import { useState } from "react"
-import Logo from "../assets/logo.svg"
-import { useNavigate } from "react-router-dom"
+import {
+  AppBar,
+  Box,
+  Divider,
+  Drawer,
+  IconButton,
+  InputBase,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Toolbar,
+  Fab,
+  useTheme,
+  useMediaQuery,
+  Snackbar,
+  Alert
+} from "@mui/material";
+import {
+  Add,
+  Description,
+  ExitToApp,
+  Info,
+  Person,
+  School,
+  Search,
+} from "@mui/icons-material";
+import { useState } from "react";
+import CreateClass from "./auth/components/CreateClass.tsx";
+import Logo from "../assets/logo.svg";
+import { useNavigate } from "react-router-dom";
+import { apiService } from "../services/easydossie.service.ts";
 
-const drawerWidth = 240
+const drawerWidth = 240;
 
-const DrawerContent = ({ selectedTab,  onLogout,}: { selectedTab: "turmas" | "dossies", onLogout: () => void}) => (
+const DrawerContent = ({
+  selectedTab,
+  onLogout,
+}: {
+  selectedTab: "turmas" | "dossies";
+  onLogout: () => void;
+}) => (
   <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
     <Box>
       <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -44,25 +78,62 @@ const DrawerContent = ({ selectedTab,  onLogout,}: { selectedTab: "turmas" | "do
       </List>
     </Box>
   </Box>
-)
+);
 
 const Home = () => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [selectedTab] = useState<"turmas" | "dossies">("turmas") // para ficar fixado em "turmas"
-  
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [selectedTab] = useState<"turmas" | "dossies">("turmas");
 
-  const navigate = useNavigate()
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
+
+  const navigate = useNavigate();
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
-    navigate("/auth/sign-in") 
-  }
+    localStorage.removeItem("token");
+    navigate("/auth/sign-in");
+  };
 
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const handleCreateTurma = async (data: TurmaData) => {
+    try {
+      await apiService.createTurma(data);
+      setSnackbar({
+        open: true,
+        message: "Turma criada com sucesso!",
+        severity: "success",
+      });
+    } catch (error) {
+      console.error(error);
+      setSnackbar({
+        open: true,
+        message: "Erro ao criar turma.",
+        severity: "error",
+      });
+    }
+    setDialogOpen(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -79,7 +150,7 @@ const Home = () => {
             },
           }}
         >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout}/>
+          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
         </Drawer>
       ) : (
         <Drawer
@@ -158,13 +229,36 @@ const Home = () => {
             bottom: 32,
             right: 32,
           }}
+          onClick={handleOpenDialog}
         >
           <Add />
         </Fab>
+
+        {/* Diálogo de criação */}
+        <CreateClass
+          open={dialogOpen}
+          onClose={handleCloseDialog}
+          onSave={handleCreateTurma}
+        />
+
+        {/* Snackbar de feedback */}
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity={snackbar.severity}
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Home
-
+export default Home;
