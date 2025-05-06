@@ -7,6 +7,10 @@ export const handlers = [
 
     http.post("http://localhost:3000/api/usuario/cadastro", () => {
         return HttpResponse.json({token: "generic-token"}, {status: 200})
+    }),
+
+    http.post("http://localhost:3000/turmas", () => {
+        return HttpResponse.json({mensagem: "deu certo"}, {status: 200})
     })
 
 ]
