@@ -1,12 +1,13 @@
-import {AppBar,Box,  Divider,Drawer,IconButton,InputBase,List,ListItemButton,ListItemIcon,ListItemText,Paper,Toolbar,Fab,useTheme,useMediaQuery,} from "@mui/material"
-import {Add,Description,ExitToApp, Info,Person,School,Search,} from "@mui/icons-material"
+import { AppBar, Box, Divider, Drawer, IconButton, InputBase, List, ListItemButton, ListItemIcon, ListItemText, Paper, Toolbar, Fab, useTheme, useMediaQuery, } from "@mui/material"
+import { Add, Description, ExitToApp, Info, Person, School, Search, } from "@mui/icons-material"
 import { useState } from "react"
 import Logo from "../assets/logo.svg"
 import { useNavigate } from "react-router-dom"
+import ClassCard from "./home/components/ClassCard"
 
 const drawerWidth = 240
 
-const DrawerContent = ({ selectedTab,  onLogout,}: { selectedTab: "turmas" | "dossies", onLogout: () => void}) => (
+const DrawerContent = ({ selectedTab, onLogout, }: { selectedTab: "turmas" | "dossies", onLogout: () => void }) => (
   <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
     <Box>
       <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -51,7 +52,7 @@ const Home = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selectedTab] = useState<"turmas" | "dossies">("turmas") // para ficar fixado em "turmas"
-  
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
@@ -60,7 +61,7 @@ const Home = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token")
-    navigate("/auth/sign-in") 
+    navigate("/auth/sign-in")
   }
 
 
@@ -79,7 +80,7 @@ const Home = () => {
             },
           }}
         >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout}/>
+          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
         </Drawer>
       ) : (
         <Drawer
@@ -149,12 +150,20 @@ const Home = () => {
             </Box>
           </Toolbar>
         </AppBar>
+              
+        <Box marginTop={"1rem"} display={"flex"} justifyContent={"space-between"}
+         flexWrap={"wrap"} alignItems={"center"} gap={"1rem"}>
+          <ClassCard />
+          <ClassCard />
+          <ClassCard />
+          <ClassCard />
+        </Box>
 
         {/* Floating Action Button */}
         <Fab
           color="success"
           sx={{
-            position: "absolute",
+            position: "fixed",
             bottom: 32,
             right: 32,
           }}
