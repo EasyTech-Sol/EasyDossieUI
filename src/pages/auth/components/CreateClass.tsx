@@ -37,7 +37,6 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
     onSave(data); // ou envie todos os dados se necessário
     reset();
     onClose();
-    console.log(data)
   };
 
   return (
@@ -80,7 +79,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
                 label="Nome da Turma"
                 fullWidth
                 variant="filled"
-                placeholder="Ex: TEC245 Linguagens Grandes Pah Poha"
+                placeholder="Ex: TEC499 Arquitetura de Computadores"
                 sx={{ mb: 2 }}
                 InputLabelProps={{ shrink: true }}
               />
