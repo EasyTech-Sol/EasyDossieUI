@@ -1,26 +1,18 @@
 import { useCallback, useState } from 'react';
 import * as XLSX from 'xlsx';
+import Papa from 'papaparse';
 import "./importstudents.css"
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { sendStudentsToServer } from '../../api/APISendToStudentds';
 import { useMutation } from '@tanstack/react-query';
+import { apiService } from '../../services/easydossie.service';
+import { AxiosResponse } from 'axios';
 
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Modal from '@mui/material/Modal';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
+import { Button, Stack, Alert, AlertTitle, Modal, Typography, Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
+
+
 
 interface ImportStudentsProps {
   classId: number; // Id da turma que será passado via props
@@ -29,7 +21,11 @@ interface ImportStudentsProps {
 export type Student = {
   name: string;
   registration: string | number;
-  };
+};
+
+type RawStudent = {
+  [key: string]: string | number;
+};
 
 export default function ImportStudents({classId: classId}: ImportStudentsProps) {
   // Armazena os dados extraídos do arquivo Excel
@@ -45,8 +41,8 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
   // Função para fechar o modal
   const handleClose = () => setOpen(false);
 
-  const mutation = useMutation<void, Error, void>({
-    mutationFn: () => sendStudentsToServer(classId, excelData),
+  const mutation = useMutation<AxiosResponse<void>, Error, void>({
+    mutationFn: () => apiService.importStudents(classId, excelData),
     onSuccess: () => {
       setSuccess('Dados enviados com sucesso!');
       setError(null);
@@ -70,89 +66,102 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
     }
   }, [error, success]);
 
+  // Função auxiliar para detectar separador CSV
+  const detectDelimiter = (csvText: string): string => {
+    const firstLine = csvText.split('\n')[0];
+    const commaCount = firstLine.split(',').length;
+    const semicolonCount = firstLine.split(';').length;
+    return commaCount >= semicolonCount ? ',' : ';';
+  };
+
+  // Função para normalizar e validar os dados importados
+  const processStudentData = (rawData: RawStudent[]) => {
+    const jsonData: Student[] = rawData.map((item) => {
+      const keys = Object.keys(item);
+      let name = '';
+      let registration: string | number = '';
+
+      keys.forEach((key) => {
+        const normalizedKey = key
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, '')
+          .replace(/[^\w]/g, '');
+
+        if (normalizedKey.includes('nome')) name = String(item[key]);
+        if (normalizedKey.includes('matricula')) registration = item[key];
+      });
+
+      return { name, registration };
+    });
+
+    const isValid = jsonData.every(
+      (item) =>
+        typeof item.name === 'string' &&
+        item.name.trim() !== '' &&
+        (typeof item.registration === 'string' || typeof item.registration === 'number') &&
+        `${item.registration}`.trim() !== ''
+    );
+
+    if (!isValid) {
+      setError('Formato inválido. Certifique-se de que cada linha contenha "nome" e "matricula".');
+      setExcelData([]);
+      return;
+    }
+
+    setExcelData(jsonData);
+    setError(null);
+    setSuccess('Arquivo carregado com sucesso!');
+    handleOpen();
+  };
+
   // Função responsável por processar o arquivo Excel carregado pelo usuário 
   const handleExcelParse = (file: File) => {
-    const reader = new FileReader();
-    
-    // Quando o arquivo for carregado, processa os dados
-    reader.onload = (e) => {
-      const data = e.target?.result;
-      try {
-        // Lê o arquivo como planilha
-        const workbook = XLSX.read(data, { type: 'array' });
-        const worksheetName = workbook.SheetNames[0]; // Pega o nome da primeira aba
-        const worksheet = workbook.Sheets[worksheetName]; // Acessa a primeira aba
+    const fileName = file.name.toLowerCase();
 
-        // Converte os dados da aba em um array de objetos
-        type RawStudent = {
-          [key: string]: string | number;
-        };
-        const rawData: RawStudent[] = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+    if (fileName.endsWith('.csv')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const csvText = e.target?.result as string;
+        const delimiter = detectDelimiter(csvText);
 
-        // Mapeia os dados para o formato Student, normalizando os nomes das colunas
-        const jsonData: Student[] = rawData.map((item) => {
-          const keys = Object.keys(item);
-          let name: string = '';
-          let registration: string | number = '';
-        
-          // Normaliza o nome da coluna: remove acentos, espaços e caracteres especiais
-          keys.forEach((key) => {
-            const normalizedKey = key
-              .trim()
-              .toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/\s+/g, '')
-              .replace(/[^\w]/g, '');
-            
-              // Procura por colunas que contenham 'nome' ou 'matricula'
-              if (normalizedKey.includes('nome')) {
-                name = String(item[key]);
-              }
-              if (normalizedKey.includes('matricula')) {
-                registration = item[key];
-              }
-            });
-          
-            return { name, registration };
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          delimiter,
+          complete: (results) => {
+            const rawData = results.data as RawStudent[];
+            processStudentData(rawData);
+          },
+          error: () => {
+            setError('Erro ao processar o arquivo CSV.');
+          },
         });
-          
-        // Verifica se o arquivo contém dados válidos
-        if (!jsonData || jsonData.length === 0) {
-          setError('O arquivo está vazio ou não contém dados.');
-          setExcelData([]);
-          return;
+      };
+      reader.readAsText(file, 'utf-8');
+    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      const reader = new FileReader();
+    
+      // Quando o arquivo for carregado, processa os dados
+      reader.onload = (e) => {
+        const data = e.target?.result;
+        try {
+          const workbook = XLSX.read(data, { type: 'array' });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rawData = XLSX.utils.sheet_to_json<RawStudent>(worksheet, { defval: '' });
+          processStudentData(rawData);
+        } catch (err) {
+          console.error(err);
+          setError('Erro ao processar o arquivo Excel.');
         }
-        
-        // Valida se todos os objetos possuem nome e matrícula válidos
-        const isValid = jsonData.every(
-          (item: Student) =>
-            typeof item.name === 'string' &&
-            item.name.trim() !== '' &&
-            (typeof item.registration === 'string' || typeof item.registration === 'number') &&
-            `${item.registration}`.trim() !== ''
-        );
-  
-        if (!isValid) {
-          setError('Formato inválido. Certifique-se de que cada linha contenha "nome" e "matricula".');
-          setExcelData([]);
-          return;
-        }
-        
-        // Se tudo estiver certo, salva os dados no estado e mostra o modal
-        setExcelData(jsonData as Student[]);
-        setError(null);
-        setSuccess('Arquivo carregado com sucesso!');
-        handleOpen(); // Abre o modal com a pré-visualização
-      } catch (err) {
-        console.error(err);
-        setError('Erro ao processar o arquivo Excel.');
-        setExcelData([]);
-      }
-    };
-  
-    reader.readAsArrayBuffer(file); // Lê o conteúdo do arquivo
-  };  
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      setError('Formato de arquivo não suportado.');
+    }
+  };
 
   // Função chamada quando o usuário seleciona um arquivo manualmente pelo botão
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -168,6 +177,7 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
     noClick: true,
     noKeyboard: true,
     accept: { // Define os tipos de arquivos permitidos (somente Excel)
+      'text/csv': ['.csv'],
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
       'application/vnd.ms-excel': ['.xls'],
     },
@@ -187,7 +197,7 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
       </div>
 
       <Button variant="contained" onClick={openFileDialog}>
-        Importar alunos (.xls/.xlsx)
+        Importar alunos (csv)
       </Button>
 
       <Stack sx={{ width: '100%' }} spacing={2} className="alert-stack">
@@ -207,8 +217,8 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
 
       <Modal
         open={open}
-        onClose={() => {}} // ← desativa o clique fora
-        disableEscapeKeyDown // ← desativa ESC
+        onClose={() => {}} 
+        disableEscapeKeyDown 
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >

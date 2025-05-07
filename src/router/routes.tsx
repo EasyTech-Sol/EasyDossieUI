@@ -21,8 +21,4 @@ export const routes = createBrowserRouter([
     },
     element: <Home />,
   },
-  {
-    path: "/teste",
-    element: <Teste />,
-  },
 ]);
