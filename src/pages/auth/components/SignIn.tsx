@@ -20,7 +20,6 @@ const SignIn = () => {
       localStorage.setItem("token", result.data.token)
       window.location.href = "/home"
     } catch (error) {
-      console.log(error)
       if (isAxiosError(error) && error.status === 401)
         setErrorMessage("Credenciais inválidas.")
       else
@@ -40,7 +39,7 @@ const SignIn = () => {
       </Box>
       <Box>
         <PasswordField register={register} field="senha" label="Senha" rules={{ required: true }} />
-        {errors.senha && <AdviceText>Por favor, insira sua senha.</AdviceText>}
+        {errors.password && <AdviceText>Por favor, insira sua senha.</AdviceText>}
       </Box>
       <Box typography={"caption"}>
         <Buttons.success title="Entrar" />

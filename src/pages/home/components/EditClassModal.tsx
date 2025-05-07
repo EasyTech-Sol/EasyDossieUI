@@ -5,16 +5,16 @@ import { apiService } from "../../../services/easydossie.service"
 
 interface classInfo {
   id_turma: number;
-  name: string;
-  shift: string;
-  institution: string;
-  period: string;
+  titulo: string;
+  turno: string;
+  instituicao: string;
+  periodoLetivo: string;
 }
 
 interface EditClassModalProps {
   open: boolean;
   handleClose: () => void;
-  id_turma: number; // ID da turma que vai ser editada
+  id_turma: string; // ID da turma que vai ser editada
 }
 
 const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) => {
@@ -32,32 +32,31 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
       try {
         const response = await apiService.getTurmaById(id_turma);
         const data = response.data;
-  
         originalData.current = data;
-  
-        setValue("name", data.name);
-        setValue("shift", data.shift);
-        setValue("institution", data.institution);
-        setValue("period", data.period);
+
+        setValue("titulo", data.titulo);
+        setValue("turno", data.turno);
+        setValue("instituicao", data.instituicao);
+        setValue("periodoLetivo", data.periodoLetivo);
       } catch (err: any) {
         alert(err.message || "Erro ao carregar dados.");
       }
     };
-  
+
     if (open && id_turma) {
       fetchClassInfo();
     }
   }, [open, id_turma, setValue]);
-  
+
 
   const validateAlphaNumeric = (value: string) =>
     /^[a-zA-Z0-9\s]+$/.test(value) || "Apenas letras e números são permitidos";
 
-  const validatePeriod = (value: string) =>
+  const validatePeriodoLetivo = (value: string) =>
     /^[0-9]{4}[-.]?[1-2]$/.test(value) || "Formato inválido (ex: 2025-1)";
 
   const onSubmit = async (data: any) => {
-    for (const key of ["name", "shift", "institution", "period"]) {
+    for (const key of ["titulo", "turno", "instituicao", "periodoLetivo"]) {
       if (!data[key]?.trim()) {
         alert("Todos os campos são obrigatórios.");
         return;
@@ -65,19 +64,19 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
     }
 
     const current = {
-      name: data.name,
-      shift: data.shift,
-      institution: data.institution,
-      period: data.period,
+      titulo: data.titulo,
+      turno: data.turno,
+      instituicao: data.instituicao,
+      periodoLetivo: data.periodoLetivo,
     };
 
     const original = originalData.current;
     if (
       original &&
-      current.name === original.name &&
-      current.shift === original.shift &&
-      current.institution === original.institution &&
-      current.period === original.period
+      current.titulo === original.titulo &&
+      current.turno === original.turno &&
+      current.instituicao === original.instituicao &&
+      current.periodoLetivo === original.periodoLetivo
     ) {
       alert("Nenhuma alteração detectada.");
       return;
@@ -97,6 +96,8 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
     } finally {
       setLoading(false);
     }
+
+  }
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -125,13 +126,13 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Nome da Turma"
               variant="filled"
               fullWidth
-              {...register("name", {
+              {...register("titulo", {
                 required: "Nome da turma é obrigatório",
                 validate: validateAlphaNumeric,
               })}
             />
-            {errors.name && (
-              <Typography color="error">{String(errors.name.message)}</Typography>
+            {errors.titulo && (
+              <Typography color="error">{String(errors.titulo.message)}</Typography>
             )}
           </Box>
           <Box marginBottom={2}>
@@ -139,13 +140,13 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Turno"
               variant="filled"
               fullWidth
-              {...register("shift", {
+              {...register("turno", {
                 required: "Turno é obrigatório",
                 validate: validateAlphaNumeric,
               })}
             />
-            {errors.shift && (
-              <Typography color="error">{String(errors.shift.message)}</Typography>
+            {errors.turno && (
+              <Typography color="error">{String(errors.turno.message)}</Typography>
             )}
           </Box>
           <Box marginBottom={2}>
@@ -153,13 +154,13 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Instituição de Ensino"
               variant="filled"
               fullWidth
-              {...register("institution", {
+              {...register("instituicao", {
                 required: "Instituição de ensino é obrigatória",
                 validate: validateAlphaNumeric,
               })}
             />
-            {errors.institution && (
-              <Typography color="error">{String(errors.institution.message)}</Typography>
+            {errors.instituicao && (
+              <Typography color="error">{String(errors.instituicao.message)}</Typography>
             )}
           </Box>
           <Box marginBottom={2}>
@@ -167,13 +168,13 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Período Letivo"
               variant="filled"
               fullWidth
-              {...register("period", {
+              {...register("periodoLetivo", {
                 required: "Período letivo é obrigatório",
-                validate: validatePeriod,
+                validate: validatePeriodoLetivo,
               })}
             />
-            {errors.period && (
-              <Typography color="error">{String(errors.period.message)}</Typography>
+            {errors.periodoLetivo && (
+              <Typography color="error">{String(errors.periodoLetivo.message)}</Typography>
             )}
           </Box>
           <Box display="flex" justifyContent="space-between">
@@ -189,5 +190,4 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
     </Modal>
   );
 };
-}
 export default EditClassModal;

@@ -26,10 +26,10 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
     reset
   } = useForm<TurmaData>({
     defaultValues: {
-      nomeTurma: "",
+      titulo: "",
       turno: "",
       instituicao: "",
-      periodo: ""
+      periodoLetivo: ""
     }
   });
 
@@ -69,7 +69,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent sx={{ px: 3 }}>
           <Controller
-            name="nomeTurma"
+            name="titulo"
             control={control}
             render={({ field }) => (
               <TextField
@@ -121,7 +121,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
           />
 
           <Controller
-            name="periodo"
+            name="periodoLetivo"
             control={control}
             render={({ field }) => (
               <TextField

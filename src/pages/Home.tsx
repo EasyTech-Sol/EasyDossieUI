@@ -28,12 +28,13 @@ import {
   Search,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import CreateClass from "./auth/components/CreateClass.tsx";
+import CreateClass from "./home/components/CreateClass.tsx";
 import Logo from "../assets/logo.svg";
 import ClassCard from "./home/components/ClassCard.tsx"
 import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/easydossie.service.ts";
 import { getRandomMutedColor } from "../helpers/softColors.ts";
+import EditClassModal from "./home/components/EditClassModal.tsx";
 
 const drawerWidth = 240;
 
@@ -90,6 +91,8 @@ const Home = () => {
   const [selectedTab] = useState<"turmas" | "dossies">("turmas");
   const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [editModalOpened, setEditModalOpened] = useState(false)
+  const [idEditModal, setIdEditModal] = useState("")
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -117,7 +120,9 @@ const Home = () => {
 
   const handleCreateTurma = async (data: TurmaData) => {
     try {
-      await apiService.createTurma(data);
+      const result = await apiService.createTurma(data);
+      const newClass = result.data;
+      setClasses(prev => [...prev, newClass])
       setSnackbar({
         open: true,
         message: "Turma criada com sucesso!",
@@ -137,6 +142,27 @@ const Home = () => {
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
+
+  const handleEditClass = (id: string) => {
+    setEditModalOpened(true);
+    setIdEditModal(id)
+  }
+
+  const handleDeleteClass = async (id: string) => {
+    try {
+      const result = await apiService.deleteTurma(id)
+      setClasses(prev => prev.filter(cls => cls.id !== id))
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Erro ao apagar turma.",
+        severity: "error",
+      });
+
+    }
+
+  }
+
 
   useEffect(() => {
     try {
@@ -256,8 +282,8 @@ const Home = () => {
               <ClassCard
                 key={cls.id}
                 title={cls.titulo}
-                onEdit={() => console.log("edit")}
-                onDelete={() => console.log("delete")}
+                onEdit={() => handleEditClass(cls.id)}
+                onDelete={() => handleDeleteClass(cls.id)}
                 bgColor={getRandomMutedColor()}
               />
             ))}
@@ -286,6 +312,11 @@ const Home = () => {
           onSave={handleCreateTurma}
         />
 
+        <EditClassModal
+          open={editModalOpened}
+          handleClose={() => setEditModalOpened(false)}
+          id_turma={idEditModal}
+        />
         {/* Snackbar de feedback */}
         <Snackbar
           open={snackbar.open}

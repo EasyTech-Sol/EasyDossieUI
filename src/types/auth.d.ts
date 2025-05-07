@@ -1,18 +1,18 @@
 type LoginData = {
   email: string;
-  senha: string;
+  password: string;
 };
 
 type SignUpData = {
-  nome: string;
+  name: string;
   cpf: string;
   email: string;
-  senha: string;
+  password: string;
 };
 
 type TurmaData = {
-  nomeTurma: string;
+  titulo: string;
   turno: string;
   instituicao: string;
-  periodo: string;
+  periodoLetivo: string;
 };
