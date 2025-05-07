@@ -6,9 +6,6 @@ import "./main.css"
 import { ErrorProvider } from './contexts/ErrorContext.tsx'
 
 
-const { worker } = await import('./mocks/browser');
-worker.start();
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorProvider>

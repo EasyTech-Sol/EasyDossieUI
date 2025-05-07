@@ -1,5 +1,4 @@
 import axios from "axios";
-import { data } from "react-router-dom";
 
 const client = axios.create({
   baseURL: "http://localhost:3000",
@@ -9,10 +8,11 @@ const client = axios.create({
 });
 
 export const apiService = {
-  login: async (data: LoginData) => client.post("/api/usuario/login", data),
-  signup: async (data: SignUpData) => client.post("/api/usuario/cadastro", data),
+  login: async (data: LoginData) => client.post("/login", data),
+  signup: async (data: SignUpData) => client.post("/register", data),
   getTurmaById: async (id: number) => client.get(`/turmas/${id}`),
   updateTurma: async (id: number, data: any) => client.put(`/turmas/${id}`, data),
-  createTurma: async (data: TurmaData) => client.post("/turmas", data) 
+  createTurma: async (data: TurmaData) => client.post("/turmas", data),
+  listTurmas: async () => client.get("/return_classes")
 };
 

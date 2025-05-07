@@ -20,6 +20,7 @@ const SignIn = () => {
       localStorage.setItem("token", result.data.token)
       window.location.href = "/home"
     } catch (error) {
+      console.log(error)
       if (isAxiosError(error) && error.status === 401)
         setErrorMessage("Credenciais inválidas.")
       else

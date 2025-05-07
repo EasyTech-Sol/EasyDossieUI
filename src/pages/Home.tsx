@@ -15,7 +15,8 @@ import {
   useTheme,
   useMediaQuery,
   Snackbar,
-  Alert
+  Alert,
+  Container
 } from "@mui/material";
 import {
   Add,
@@ -26,12 +27,13 @@ import {
   School,
   Search,
 } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateClass from "./auth/components/CreateClass.tsx";
 import Logo from "../assets/logo.svg";
 import ClassCard from "./home/components/ClassCard.tsx"
 import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/easydossie.service.ts";
+import { getRandomMutedColor } from "../helpers/softColors.ts";
 
 const drawerWidth = 240;
 
@@ -86,7 +88,7 @@ const Home = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedTab] = useState<"turmas" | "dossies">("turmas");
-
+  const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -135,6 +137,24 @@ const Home = () => {
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
+
+  useEffect(() => {
+    try {
+      const fetchClassesList = async () => {
+        const result = await apiService.listTurmas()
+        setClasses(result.data.classes)
+      }
+
+      fetchClassesList()
+
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Erro ao listar turmas.",
+        severity: "error",
+      });
+    }
+  }, [])
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -221,22 +241,30 @@ const Home = () => {
             </Box>
           </Toolbar>
         </AppBar>
-              
-        <Box marginTop={"1rem"} display={"flex"} justifyContent={"space-between"}
-         flexWrap={"wrap"} alignItems={"center"} gap={"1rem"}>
-          <ClassCard />
-          <ClassCard />
-          <ClassCard />
-          <ClassCard />
-        </Box>
 
-        <Box marginTop={"1rem"} display={"flex"} justifyContent={"space-between"}
-          flexWrap={"wrap"} alignItems={"center"} gap={"2rem"}>
-          <ClassCard />
-          <ClassCard />
-          <ClassCard />
-          <ClassCard />
-        </Box>
+        <Container>
+          <Box
+            marginTop={"1rem"}
+            display={"flex"}
+            justifyContent={"flex-start"}
+            flexWrap={"wrap"}
+            alignItems={"flex-start"}
+            gap={"1rem"}
+            flexDirection={"row"}
+          >
+            {classes.map(cls => (
+              <ClassCard
+                key={cls.id}
+                title={cls.titulo}
+                onEdit={() => console.log("edit")}
+                onDelete={() => console.log("delete")}
+                bgColor={getRandomMutedColor()}
+              />
+            ))}
+          </Box>
+        </Container>
+
+
 
         {/* Floating Action Button */}
         <Fab
