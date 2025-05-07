@@ -15,7 +15,8 @@ import {
   useTheme,
   useMediaQuery,
   Snackbar,
-  Alert
+  Alert,
+  Container
 } from "@mui/material";
 import {
   Add,
@@ -26,11 +27,15 @@ import {
   School,
   Search,
 } from "@mui/icons-material";
-import { useState } from "react";
-import CreateClass from "./auth/components/CreateClass.tsx";
+
+import { useEffect, useState } from "react";
+import CreateClass from "./home/components/CreateClass.tsx";
 import Logo from "../assets/logo.svg";
+import ClassCard from "./home/components/ClassCard.tsx"
 import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/easydossie.service.ts";
+import { getRandomMutedColor } from "../helpers/softColors.ts";
+import EditClassModal from "./home/components/EditClassModal.tsx";
 
 const drawerWidth = 240;
 
@@ -85,8 +90,10 @@ const Home = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedTab] = useState<"turmas" | "dossies">("turmas");
-
+  const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [editModalOpened, setEditModalOpened] = useState(false)
+  const [idEditModal, setIdEditModal] = useState("")
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -114,7 +121,9 @@ const Home = () => {
 
   const handleCreateTurma = async (data: TurmaData) => {
     try {
-      await apiService.createTurma(data);
+      const result = await apiService.createTurma(data);
+      const newClass = result.data;
+      setClasses(prev => [...prev, newClass])
       setSnackbar({
         open: true,
         message: "Turma criada com sucesso!",
@@ -134,6 +143,48 @@ const Home = () => {
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
+
+  const handleEditClass = (id: string) => {
+    setEditModalOpened(true);
+    setIdEditModal(id)
+  }
+
+  const handleDeleteClass = async (id: string) => {
+    try {
+      const result = await apiService.deleteTurma(id)
+      setClasses(prev => prev.filter(cls => cls.id !== id))
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Erro ao apagar turma.",
+        severity: "error",
+      });
+
+    }
+
+  }
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  useEffect(() => {
+    try {
+      const fetchClassesList = async () => {
+        const result = await apiService.listTurmas()
+        setClasses(result.data.classes)
+      }
+
+      fetchClassesList()
+
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Erro ao listar turmas.",
+        severity: "error",
+      });
+    }
+  }, [])
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -221,11 +272,35 @@ const Home = () => {
           </Toolbar>
         </AppBar>
 
+        <Container>
+          <Box
+            marginTop={"1rem"}
+            display={"flex"}
+            justifyContent={"flex-start"}
+            flexWrap={"wrap"}
+            alignItems={"flex-start"}
+            gap={"1rem"}
+            flexDirection={"row"}
+          >
+            {classes.map(cls => (
+              <ClassCard
+                key={cls.id}
+                title={cls.titulo}
+                onEdit={() => handleEditClass(cls.id)}
+                onDelete={() => handleDeleteClass(cls.id)}
+                bgColor={getRandomMutedColor()}
+              />
+            ))}
+          </Box>
+        </Container>
+
+
+
         {/* Floating Action Button */}
         <Fab
           color="success"
           sx={{
-            position: "absolute",
+            position: "fixed",
             bottom: 32,
             right: 32,
           }}
@@ -241,6 +316,11 @@ const Home = () => {
           onSave={handleCreateTurma}
         />
 
+        <EditClassModal
+          open={editModalOpened}
+          handleClose={() => setEditModalOpened(false)}
+          id_turma={idEditModal}
+        />
         {/* Snackbar de feedback */}
         <Snackbar
           open={snackbar.open}
