@@ -152,7 +152,7 @@ const Home = () => {
         </AppBar>
               
         <Box marginTop={"1rem"} display={"flex"} justifyContent={"space-between"}
-         flexWrap={"wrap"} alignItems={"center"} gap={"1rem"}>
+         flexWrap={"wrap"} alignItems={"center"} gap={"2rem"}>
           <ClassCard />
           <ClassCard />
           <ClassCard />
