@@ -9,6 +9,7 @@ export const sendStudentsToServer = async (
 
   const response = await axios.post('http://localhost:3000/importStudents', payload);
 
+  console.log("Dados que devem enviados ao backend:", JSON.stringify(payload, null, 2));
 
   return response.data; 
 };

@@ -180,39 +180,6 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
     setExcelData((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
 
-  // Envia os dados dos alunos para o backend
-  const handleSendToServer = async () => {
-    try {
-      // Monta o payload com turmaId e os dados dos alunos
-      const payload = {
-        classId: classId,
-        students: excelData
-      };
-
-      console.log("Dados que devem enviados ao backend:", JSON.stringify(payload, null, 2));
-
-      // Envia os dados para o backend via POST
-      const response = await fetch('http://localhost:5173/importarAlunos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao enviar para o servidor');
-      }
-
-      const resData = await response.json();
-      setSuccess('Dados enviados com sucesso!');
-      setError(null);
-    } catch (err) {
-      console.error(err);
-      setError('Falha ao enviar os dados. Verifique a conexão ou tente novamente.');
-    }
-  };
-
   return (
     <div className="import-container">
       <div {...getRootProps()}>
