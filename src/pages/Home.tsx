@@ -140,10 +140,6 @@ const Home = () => {
     setDialogOpen(false);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
   const handleEditClass = (id: string) => {
     setEditModalOpened(true);
     setIdEditModal(id)
@@ -284,6 +280,7 @@ const Home = () => {
           >
             {classes.map(cls => (
               <ClassCard
+                id={cls.id}
                 key={cls.id}
                 title={cls.titulo}
                 onEdit={() => handleEditClass(cls.id)}
@@ -320,6 +317,7 @@ const Home = () => {
           open={editModalOpened}
           handleClose={() => setEditModalOpened(false)}
           id_turma={idEditModal}
+          setClasses={setClasses}
         />
         {/* Snackbar de feedback */}
         <Snackbar

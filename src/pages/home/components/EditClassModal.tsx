@@ -15,9 +15,10 @@ interface EditClassModalProps {
   open: boolean;
   handleClose: () => void;
   id_turma: string; // ID da turma que vai ser editada
+  setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
 }
-
-const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) => {
+  
+const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassModalProps) => {
   const {
     register,
     handleSubmit,
@@ -84,12 +85,17 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
 
     setLoading(true);
     try {
-      await apiService.updateTurma(id_turma, {
+      const result = await apiService.updateTurma(id_turma, {
         ...current,
         id_turma,
       });
 
+      const updated = result.data;
+
       alert("Dados atualizados com sucesso!");
+      setClasses(prev => {
+        return prev.map(cls => cls.id === id_turma ? updated : cls)
+      });
       handleClose();
     } catch (error: any) {
       alert(`Erro: ${error.message}`);
@@ -126,6 +132,7 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Nome da Turma"
               variant="filled"
               fullWidth
+              InputLabelProps={{ shrink: true }}
               {...register("titulo", {
                 required: "Nome da turma é obrigatório",
                 validate: validateAlphaNumeric,
@@ -140,6 +147,7 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Turno"
               variant="filled"
               fullWidth
+              InputLabelProps={{ shrink: true }}
               {...register("turno", {
                 required: "Turno é obrigatório",
                 validate: validateAlphaNumeric,
@@ -154,6 +162,7 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Instituição de Ensino"
               variant="filled"
               fullWidth
+              InputLabelProps={{ shrink: true }}
               {...register("instituicao", {
                 required: "Instituição de ensino é obrigatória",
                 validate: validateAlphaNumeric,
@@ -168,6 +177,7 @@ const EditClassModal = ({ open, handleClose, id_turma }: EditClassModalProps) =>
               label="Período Letivo"
               variant="filled"
               fullWidth
+              InputLabelProps={{ shrink: true }}
               {...register("periodoLetivo", {
                 required: "Período letivo é obrigatório",
                 validate: validatePeriodoLetivo,

@@ -18,11 +18,12 @@ import { truncateString } from '../../../helpers/string';
 interface ClassCardProps {
   title: string
   bgColor: string
+  id: string
   onEdit: Function
   onDelete: Function
 }
 
-export default function CustomCard({title, bgColor, onEdit, onDelete}: ClassCardProps) {
+export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -49,8 +50,8 @@ export default function CustomCard({title, bgColor, onEdit, onDelete}: ClassCard
   };
 
   return (
-    <Card 
-    sx={{ borderRadius: "20px", width: "15rem", height: "12rem" }}>
+    <Card
+      sx={{ borderRadius: "20px", width: "15rem", height: "12rem" }}>
       <CardActionArea
         sx={{
           height: '100%',
@@ -72,8 +73,11 @@ export default function CustomCard({title, bgColor, onEdit, onDelete}: ClassCard
           action={
             <>
               <Tooltip title="Opções">
-                <IconButton onClick={handleClick}>
-                  <MoreVertIcon sx={{color: "white"}}/>
+                <IconButton onClick={(e) => {
+                  e.stopPropagation()
+                  handleClick(e)
+                }}>
+                  <MoreVertIcon sx={{ color: "white" }} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -90,7 +94,7 @@ export default function CustomCard({title, bgColor, onEdit, onDelete}: ClassCard
           }
         />
         <Divider />
-        <CardContent sx={{ height: '100%', backgroundColor:"#E2E2E2" }}>
+        <CardContent sx={{ height: '100%', backgroundColor: "#E2E2E2" }}>
         </CardContent>
       </CardActionArea>
     </Card>
