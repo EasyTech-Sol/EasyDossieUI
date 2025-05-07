@@ -12,8 +12,6 @@ import { Button, Stack, Alert, AlertTitle, Modal, Typography, Box, List, ListIte
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 
-
-
 interface ImportStudentsProps {
   classId: number; // Id da turma que será passado via props
 }
@@ -41,6 +39,7 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
   // Função para fechar o modal
   const handleClose = () => setOpen(false);
 
+// Mutação para enviar os dados para o backend
   const mutation = useMutation<AxiosResponse<void>, Error, void>({
     mutationFn: () => apiService.importStudents(classId, excelData),
     onSuccess: () => {
@@ -97,6 +96,7 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
       return { name, registration };
     });
 
+    // Verifica se todos os registros são válidos
     const isValid = jsonData.every(
       (item) =>
         typeof item.name === 'string' &&
@@ -117,10 +117,11 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
     handleOpen();
   };
 
-  // Função responsável por processar o arquivo Excel carregado pelo usuário 
+  // Lógica para processar os arquivos CSV ou Excel
   const handleExcelParse = (file: File) => {
     const fileName = file.name.toLowerCase();
 
+    // Se for CSV
     if (fileName.endsWith('.csv')) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -141,6 +142,7 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
         });
       };
       reader.readAsText(file, 'utf-8');
+    // Se for Excel
     } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
       const reader = new FileReader();
     
@@ -171,7 +173,7 @@ export default function ImportStudents({classId: classId}: ImportStudentsProps) 
     }
   }, []);
 
-  // Configura o hook useDropzone apenas para usar o seletor de arquivos (sem área visível de drop)
+  // Configura o dropzone para aceitar arquivos .csv, .xls e .xlsx
   const { getRootProps, getInputProps, open: openFileDialog } = useDropzone({
     onDrop, // Função que será chamada quando o usuário escolher um arquivo
     noClick: true,
