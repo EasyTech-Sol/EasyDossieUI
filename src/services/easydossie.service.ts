@@ -1,4 +1,5 @@
 import axios from "axios";
+import { data } from "react-router-dom";
 
 const client = axios.create({
   baseURL: "http://localhost:3000",

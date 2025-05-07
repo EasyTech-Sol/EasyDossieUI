@@ -16,3 +16,10 @@ type TurmaData = {
   instituicao: string;
   periodoLetivo: string;
 };
+
+type TurmaData = {
+  nomeTurma: string;
+  turno: string;
+  instituicao: string;
+  periodo: string;
+};

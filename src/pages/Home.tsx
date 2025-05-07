@@ -27,6 +27,7 @@ import {
   School,
   Search,
 } from "@mui/icons-material";
+
 import { useEffect, useState } from "react";
 import CreateClass from "./home/components/CreateClass.tsx";
 import Logo from "../assets/logo.svg";
@@ -163,6 +164,9 @@ const Home = () => {
 
   }
 
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   useEffect(() => {
     try {
