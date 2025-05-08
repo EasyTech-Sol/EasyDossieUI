@@ -26,10 +26,10 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
     reset
   } = useForm<TurmaData>({
     defaultValues: {
-      titulo: "",
-      turno: "",
-      instituicao: "",
-      periodoLetivo: ""
+      title: "",
+      shift: "",
+      institution: "",
+      period: ""
     }
   });
 
@@ -69,7 +69,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent sx={{ px: 3 }}>
           <Controller
-            name="titulo"
+            name="title"
             control={control}
             render={({ field }) => (
               <TextField
@@ -87,7 +87,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
           />
 
           <Controller
-            name="turno"
+            name="shift"
             control={control}
             render={({ field }) => (
               <TextField
@@ -104,7 +104,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
           />
 
           <Controller
-            name="instituicao"
+            name="institution"
             control={control}
             render={({ field }) => (
               <TextField
@@ -121,7 +121,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
           />
 
           <Controller
-            name="periodoLetivo"
+            name="period"
             control={control}
             render={({ field }) => (
               <TextField
@@ -130,7 +130,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
                 label="Período Letivo"
                 fullWidth
                 variant="filled"
-                placeholder="Ex.: 2° Período"
+                placeholder="Ex.: 2024.1 (Formato: AAAA.P)"
                 sx={{ mb: 2 }}
                 InputLabelProps={{ shrink: true }}
               />

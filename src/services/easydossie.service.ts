@@ -8,13 +8,22 @@ const client = axios.create({
 });
 
 export const apiService = {
-  login: async (data: LoginData) => client.post("/login", data),
-  signup: async (data: SignUpData) => client.post("/register", data),
-  getTurmaById: async (id: string) => client.get(`/turmas/${id}`),
-  updateTurma: async (id: string, data: any) => client.put(`/turmas/${id}`, data),
-  deleteTurma: async (id: string) => client.delete(`/turmas/${id}`),
-  createTurma: async (data: TurmaData) => client.post("/turmas", data),
-  importStudents: async(classId: number, students: Student[]) => client.post('/importStudents', {classId, students}),
-  listTurmas: async () => client.get("/return_classes")
+  login: async (data: LoginData) => client.post("/teacher/login", data),
+  signup: async (data: SignUpData) => client.post("/teacher/register", data),
+  editTeacher: async (data: Teacher) => client.patch("/teacher", data),
+  getClasses: async () => client.get("/classes"),
+  editClass: async () => client.get("/classes/edit"),
+  createClass: async (data: TurmaData) => client.post("/classes/create", data),
+  getClassById: async (id: string) => client.get(`/classes/${id}`),
+  deleteClass: async (id: string) => client.delete(`/classes/${id}`),
+  importStudents: async (classId: number, students: Student[]) =>
+    client.post("/students/import", { classId, students }),
+  addStudent: async (classId: number, student: Student) =>
+    client.post("/students/manual", { classId, student }),
+  deleteStudent: async (classId: number, studentId: number) =>
+    client.delete("/students", { params: { classId, studentId } }),
+  editStudent: async (classId: number, student: Student) =>
+    client.patch("/students/manual", { classId, student }),
+  getClassStudents: async (classId: number) =>
+    client.get("/students", { params: { classId } }),
 };
-

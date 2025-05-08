@@ -15,13 +15,12 @@ const SignIn = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     try {
-      console.log(values)
       const result = await apiService.login(values)
       localStorage.setItem("token", result.data.token)
       window.location.href = "/home"
     } catch (error) {
-      if (isAxiosError(error) && error.status === 401)
-        setErrorMessage("Credenciais inválidas.")
+      if (isAxiosError(error) && error.status === 400)
+        setErrorMessage(error.response?.data.error)
       else
         setErrorMessage("Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.")
       setError(true)
@@ -38,7 +37,7 @@ const SignIn = () => {
         {errors.email && <AdviceText>Por favor, insira seu e-mail.</AdviceText>}
       </Box>
       <Box>
-        <PasswordField register={register} field="senha" label="Senha" rules={{ required: true }} />
+        <PasswordField register={register} field="password" label="Senha" rules={{ required: true }} />
         {errors.password && <AdviceText>Por favor, insira sua senha.</AdviceText>}
       </Box>
       <Box typography={"caption"}>
@@ -46,7 +45,7 @@ const SignIn = () => {
         <Link href="/recuperar-senha">Esqueceu sua senha?</Link>
       </Box>
       <Buttons.text title="Cadastrar-se"
-       onClick={() => { window.location.href = "/auth/sign-up" }}/>
+        onClick={() => { window.location.href = "/auth/sign-up" }} />
     </form>
   )
 }

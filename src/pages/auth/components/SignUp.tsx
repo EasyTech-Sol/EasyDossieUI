@@ -20,11 +20,14 @@ const SignUp = () => {
     try {
       console.log(values)
       const result = await apiService.signup(values)
+      console.log(result)
       localStorage.setItem("token", result.data.token)
-      window.location.href = "/home"
+      window.location.href = "/auth/sign-in"
+      console.log("foi?")
     } catch (error) {
-      if (isAxiosError(error) && error.status === 401)
-        setErrorMessage("E-mail já cadastrado.")
+      console.log(error)
+      if (isAxiosError(error) && error.status === 400)
+        setErrorMessage(error.response?.data.error)
       else
         setErrorMessage("Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.")
       setError(true)
