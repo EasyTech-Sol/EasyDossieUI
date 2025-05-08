@@ -14,6 +14,7 @@ export const apiService = {
   updateTurma: async (id: string, data: any) => client.put(`/turmas/${id}`, data),
   deleteTurma: async (id: string) => client.delete(`/turmas/${id}`),
   createTurma: async (data: TurmaData) => client.post("/turmas", data),
+  importStudents: async(classId: number, students: Student[]) => client.post('/importStudents', {classId, students}),
   listTurmas: async () => client.get("/return_classes")
 };
 
