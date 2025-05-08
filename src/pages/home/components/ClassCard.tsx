@@ -1,0 +1,102 @@
+import React, { useState } from 'react';
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  IconButton,
+  Typography,
+  Divider,
+  Menu,
+  MenuItem,
+  Tooltip,
+  CardHeader
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { getRandomMutedColor } from '../../../helpers/softColors';
+import { truncateString } from '../../../helpers/string';
+
+interface ClassCardProps {
+  title: string
+  bgColor: string
+  id: string
+  onEdit: Function
+  onDelete: Function
+}
+
+export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEdit = () => {
+    handleClose();
+    onEdit();
+    console.log("Editar clicado");
+    // lógica para editar
+  };
+
+  const handleDelete = () => {
+    handleClose();
+    onDelete();
+    console.log("Excluir clicado");
+    // lógica para excluir
+  };
+
+  return (
+    <Card
+      sx={{ borderRadius: "20px", width: "15rem", height: "12rem" }}>
+      <CardActionArea
+        sx={{
+          height: '100%',
+          '&[data-active]': {
+            backgroundColor: 'action.selected',
+            '&:hover': {
+              backgroundColor: 'action.selectedHover',
+            },
+          },
+        }}
+      >
+        <CardHeader
+          sx={{ bgcolor: bgColor, color: 'white' }}
+          title={
+            <Typography variant="h6" component="div">
+              {truncateString(title, 10)}
+            </Typography>
+          }
+          action={
+            <>
+              <Tooltip title="Opções">
+                <IconButton onClick={(e) => {
+                  e.stopPropagation()
+                  handleClick(e)
+                }}>
+                  <MoreVertIcon sx={{ color: "white" }} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem onClick={handleEdit}>Editar turma</MenuItem>
+                <MenuItem onClick={handleDelete}>Excluir turma</MenuItem>
+              </Menu>
+            </>
+          }
+        />
+        <Divider />
+        <CardContent sx={{ height: '100%', backgroundColor: "#E2E2E2" }}>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+}

@@ -6,19 +6,25 @@ import "./main.css"
 import { ErrorProvider } from './contexts/ErrorContext.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-
-const { worker } = await import('./mocks/browser');
-worker.start();
+async function enableMocksIfNeeded() {
+  if (import.meta.env.VITE_USE_MSW === 'mocked') {
+    const { worker } = await import("./mocks/browser.ts");
+    await worker.start();
+  }
+}
 
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById('root')!).render(
+enableMocksIfNeeded().then(() =>
+  createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
-
     <StrictMode>
       <ErrorProvider>
         <RouterProvider router={routes} />
       </ErrorProvider>
     </StrictMode>,
   </QueryClientProvider>
+  )
+
 )
+

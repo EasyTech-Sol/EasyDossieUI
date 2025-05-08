@@ -8,13 +8,13 @@ import { isAxiosError } from "axios"
 import PasswordField from "../../../components/PasswordField"
 
 type SignUpForm = SignUpData & {
-  senhaCheck: string
+  passwordCheck: string
 }
 
 const SignUp = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<SignUpForm>()
   const { setError, setErrorMessage } = useError()
-  const senha = watch("senha")
+  const password = watch("password")
 
   const onSubmit = async (values: any) => {
     try {
@@ -38,8 +38,8 @@ const SignUp = () => {
     >
       <Box>
         <TextField size="small" type="text" fullWidth id="filled-basic" label="Nome" variant="filled"
-          {...register("nome", { required: true })} />
-        {errors.nome && <AdviceText>Por favor, insira seu nome.</AdviceText>}
+          {...register("name", { required: true })} />
+        {errors.name && <AdviceText>Por favor, insira seu nome.</AdviceText>}
       </Box>
       <Box>
         <TextField size="small" type="text" fullWidth id="filled-basic" label="CPF" variant="filled"
@@ -55,21 +55,21 @@ const SignUp = () => {
 
       <Box>
         <PasswordField register={register}
-          field="senha" label="Senha"
+          field="password" label="Senha"
           rules={{ required: true }}
           size={"small"} />
-        {errors.senha && <AdviceText>Por favor, insira sua senha.</AdviceText>}
+        {errors.password && <AdviceText>Por favor, insira sua senha.</AdviceText>}
       </Box>
 
       <Box>
         <PasswordField register={register}
-          field="senhaCheck" label="Sua senha, novamente"
+          field="passwordCheck" label="Sua senha, novamente"
           rules={{
             required: "Por favor, insira sua senha novamente.", validate: (value: string) =>
-              value === senha || 'As senhas não coincidem.'
+              value === password || 'As senhas não coincidem.'
           }}
           size={"small"} />
-        {errors.senhaCheck && <AdviceText>{errors.senhaCheck?.message}</AdviceText>}
+        {errors.passwordCheck && <AdviceText>{errors.passwordCheck?.message}</AdviceText>}
       </Box>
 
       <Box typography={"caption"}>

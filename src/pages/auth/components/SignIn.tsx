@@ -12,6 +12,7 @@ const SignIn = () => {
   const { setError, setErrorMessage } = useError()
 
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     try {
       console.log(values)
@@ -38,7 +39,7 @@ const SignIn = () => {
       </Box>
       <Box>
         <PasswordField register={register} field="senha" label="Senha" rules={{ required: true }} />
-        {errors.senha && <AdviceText>Por favor, insira sua senha.</AdviceText>}
+        {errors.password && <AdviceText>Por favor, insira sua senha.</AdviceText>}
       </Box>
       <Box typography={"caption"}>
         <Buttons.success title="Entrar" />
