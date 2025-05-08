@@ -61,7 +61,7 @@ const DrawerContent = ({ selectedTab,  onLogout,}: { selectedTab: "turmas" | "do
 
 
 
-const Home = () => {
+const Class = () => {
   // ------------------ Estados principais ------------------
 
   const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
@@ -384,4 +384,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Class
