@@ -36,6 +36,7 @@ import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/easydossie.service.ts";
 import { getRandomMutedColor } from "../helpers/softColors.ts";
 import EditClassModal from "./home/components/EditClassModal.tsx";
+import { isAxiosError } from "axios";
 
 const drawerWidth = 240;
 
@@ -90,15 +91,23 @@ const Home = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedTab] = useState<"turmas" | "dossies">("turmas");
-  const [classes, setClasses] = useState<Class[]>([])
+  const [classes, setClasses] = useState<Turma[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editModalOpened, setEditModalOpened] = useState(false)
-  const [idEditModal, setIdEditModal] = useState("")
+  const [idEditModal, setIdEditModal] = useState(0)
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
+
+  const [classToEdit, setClassToEdit] = useState<Turma>({
+    titulo: "0",
+    id: 0,
+    turno: "",
+    periodoLetivo: "",
+    instituicao: ""
+  })
 
   const navigate = useNavigate();
 
@@ -121,7 +130,7 @@ const Home = () => {
 
   const handleCreateTurma = async (data: TurmaData) => {
     try {
-      const result = await apiService.createTurma(data);
+      const result = await apiService.createClass(data);
       const newClass = result.data;
       setClasses(prev => [...prev, newClass])
       setSnackbar({
@@ -130,24 +139,44 @@ const Home = () => {
         severity: "success",
       });
     } catch (error) {
-      console.error(error);
-      setSnackbar({
-        open: true,
-        message: "Erro ao criar turma.",
-        severity: "error",
-      });
+      if (isAxiosError(error))
+        if(error.status === 403)
+          window.location.href = "auth/sign-in"
+        else
+        setSnackbar({
+          open: true,
+          message: error.response?.data.error,
+          severity: "error",
+        });
+      else
+        setSnackbar({
+          open: true,
+          message: "Erro ao criar turma.",
+          severity: "error",
+        });
     }
     setDialogOpen(false);
   };
 
-  const handleEditClass = (id: string) => {
+  const handleEditClass = (id: number) => {
     setEditModalOpened(true);
-    setIdEditModal(id)
+    setClassToEdit(classes.find(c => c.id === id)!)
   }
 
-  const handleDeleteClass = async (id: string) => {
+  const handleCloseEdit = () => {
+    setEditModalOpened(false)
+    setClassToEdit({
+      titulo: "0",
+      id: 0,
+      turno: "",
+      periodoLetivo: "",
+      instituicao: ""
+    })
+  }
+
+  const handleDeleteClass = async (id: number) => {
     try {
-      const result = await apiService.deleteTurma(id)
+      const result = await apiService.deleteClass(id)
       setClasses(prev => prev.filter(cls => cls.id !== id))
     } catch (error) {
       setSnackbar({
@@ -167,7 +196,7 @@ const Home = () => {
   useEffect(() => {
     try {
       const fetchClassesList = async () => {
-        const result = await apiService.listTurmas()
+        const result = await apiService.getClasses()
         setClasses(result.data.classes)
       }
 
@@ -315,8 +344,8 @@ const Home = () => {
 
         <EditClassModal
           open={editModalOpened}
-          handleClose={() => setEditModalOpened(false)}
-          id_turma={idEditModal}
+          handleClose={handleCloseEdit}
+          classToEdit={classToEdit}
           setClasses={setClasses}
         />
         {/* Snackbar de feedback */}

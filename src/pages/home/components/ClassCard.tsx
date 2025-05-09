@@ -12,13 +12,12 @@ import {
   CardHeader
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { getRandomMutedColor } from '../../../helpers/softColors';
 import { truncateString } from '../../../helpers/string';
 
 interface ClassCardProps {
   title: string
   bgColor: string
-  id: string
+  id: number
   onEdit: Function
   onDelete: Function
 }
@@ -38,14 +37,12 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
   const handleEdit = () => {
     handleClose();
     onEdit();
-    console.log("Editar clicado");
     // lógica para editar
   };
 
   const handleDelete = () => {
     handleClose();
     onDelete();
-    console.log("Excluir clicado");
     // lógica para excluir
   };
 
@@ -62,6 +59,9 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
             },
           },
         }}
+        onClick={() =>
+          window.location.href = `/class/${id}`
+        }
       >
         <CardHeader
           sx={{ bgcolor: bgColor, color: 'white' }}

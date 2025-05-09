@@ -1,20 +1,19 @@
-import {AppBar,Box,Tab,Tabs,  Divider,Drawer,IconButton,InputBase,List,ListItemButton,ListItemIcon,ListItemText,Paper,Toolbar,Fab,useTheme,useMediaQuery, MenuItem, Menu,} from "@mui/material"
-import {Add,Description,ExitToApp, Info,Person,School,Search,} from "@mui/icons-material"
-import { useState ,useCallback} from "react"
+import { AppBar, Box, Tab, Tabs, Divider, Drawer, IconButton, InputBase, List, ListItemButton, ListItemIcon, ListItemText, Paper, Toolbar, Fab, useTheme, useMediaQuery, MenuItem, Menu, } from "@mui/material"
+import { Add, Description, ExitToApp, Info, Person, School, Search, } from "@mui/icons-material"
+import { useState, useCallback } from "react"
 import Logo from "../assets/logo.svg"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import AddStudentModal from './auth/components/AddStudentModal';
 import SettingsIcon from "@mui/icons-material/Settings"
 import { Edit, Delete } from "@mui/icons-material";
 import { useEffect } from "react"
-const drawerWidth = 240
-import { apiService } from "../services/easydossie.service"
 
+import { apiService } from "../services/easydossie.service"
 import EditStudentModal from './auth/components/EditStudentModal';
 
+const drawerWidth = 240
 
-
-const DrawerContent = ({ selectedTab,  onLogout,}: { selectedTab: "turmas" | "dossies", onLogout: () => void}) => (
+const DrawerContent = ({ selectedTab, onLogout, }: { selectedTab: "turmas" | "dossies", onLogout: () => void }) => (
   <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
     <Box>
       <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
@@ -64,6 +63,7 @@ const DrawerContent = ({ selectedTab,  onLogout,}: { selectedTab: "turmas" | "do
 const Class = () => {
   // ------------------ Estados principais ------------------
 
+  const classId = Number(useParams().classId)
   const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
 
   const [selectedTab] = useState<"turmas" | "dossies">("turmas") // Aba principal fixa em "turmas"
@@ -115,18 +115,18 @@ const Class = () => {
     id: number;
     nome: string;
     matricula: string;
-    idClass: number;
+    classId: number;
   }) => {
     setAlunoEditando(aluno);
   };
 
   // ------------------ Lógica de dados ------------------
 
-  
 
-  const handleDeleteAluno = async (id: number, idClass: number) => {
+
+  const handleDeleteAluno = async (id: number, classId: number) => {
     try {
-      await apiService.deleteAluno(id, idClass);
+      await apiService.deleteStudent(classId, id);
       console.log("Aluno deletado com sucesso");
       setAlunos(prev => prev.filter(a => a.id !== id));
     } catch (err) {
@@ -136,20 +136,16 @@ const Class = () => {
 
 
   const getAlunos = useCallback(async (id: number) => {
-    const payload ={
-      idClass:id
-    }
     try {
-      const response = await apiService.getAlunosByIdTurma(payload)
-      console.log(response);
-      setAlunos(response.data.students); 
+      const response = await apiService.getClassStudents(id)
+      setAlunos(response.data.students);
     } catch (error) {
       console.error("Erro ao buscar alunos:", error)
     }
   }, [])
 
   useEffect(() => {
-    getAlunos(1)
+    getAlunos(classId)
   }, [getAlunos])
 
 
@@ -159,11 +155,12 @@ const Class = () => {
       id: number;
       name: string;
       registration: string;
-      idClass: number;
+
+      classId: number;
     }) => {
       try {
         await apiService.editStudent(payload);
-        await getAlunos(payload.idClass);
+        await getAlunos(payload.classId);
         alert("Aluno editado com sucesso!");
       } catch (err: any) {
         console.error("Erro ao editar aluno:", err);
@@ -173,7 +170,7 @@ const Class = () => {
     [getAlunos]
   );
 
-  console.log(Array.isArray(alunos)); 
+  console.log(Array.isArray(alunos));
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -190,7 +187,7 @@ const Class = () => {
             },
           }}
         >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout}/>
+          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
         </Drawer>
       ) : (
         <Drawer
@@ -238,147 +235,147 @@ const Class = () => {
 
             <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
 
-              {/* Centralizar Tabs e manter ícone à direita */}
-              <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
-                <Tabs
-                  value={selectedSubTab}
-                  onChange={handleSubTabChange}
-                  textColor="primary"
-                  indicatorColor="primary"
-                  aria-label="tabs de conteúdo"
-                  TabIndicatorProps={{ sx: { height: 3 } }} // opcional: deixa o indicador mais grosso
-                >
-                  <Tab
-                    value="dossies"
-                    label="Dossiês"
-                    sx={{ fontSize: "1rem", fontWeight: 500, mx: 20 }}
-                    
-                  />
-                  <Tab
-                    value="alunos"
-                    label="Alunos"
-                    sx={{ fontSize: "1rem", fontWeight: 500, mx:20 }}
-                  />
-                </Tabs>
-              </Box>
+            {/* Centralizar Tabs e manter ícone à direita */}
+            <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
+              <Tabs
+                value={selectedSubTab}
+                onChange={handleSubTabChange}
+                textColor="primary"
+                indicatorColor="primary"
+                aria-label="tabs de conteúdo"
+                TabIndicatorProps={{ sx: { height: 3 } }} // opcional: deixa o indicador mais grosso
+              >
+                <Tab
+                  value="dossies"
+                  label="Dossiês"
+                  sx={{ fontSize: "1rem", fontWeight: 500, mx: 20 }}
+
+                />
+                <Tab
+                  value="alunos"
+                  label="Alunos"
+                  sx={{ fontSize: "1rem", fontWeight: 500, mx: 20 }}
+                />
+              </Tabs>
+            </Box>
 
 
 
-          <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
+            <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
 
-          <Box sx={{ display: "flex", justifyContent: "right", mt: 1 }}>
-            <Paper
-              component="form"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                width: "100%",
-                maxWidth: 400,
-                px: 2,
-                py: 0.5,
-                borderRadius: "999px", // deixa super arredondado
-                boxShadow: 1, // sombra leve
-              }}
-            >
-              <Search color="action" />
-              <InputBase
-                placeholder="Buscar alunos..."
-                inputProps={{ "aria-label": "buscar alunos" }}
-                sx={{ ml: 1, flex: 1 }}
-              />
-            </Paper>
-          </Box>
-
-            
-
-          </Toolbar>
-          
-        </AppBar>
-
-
-
-
-      
-        <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-            {alunos.map((aluno) => (
+            <Box sx={{ display: "flex", justifyContent: "right", mt: 1 }}>
               <Paper
-                key={aluno.id}
-                elevation={3}
+                component="form"
                 sx={{
-                  p: 2,
                   display: "flex",
-                  justifyContent: "space-between",
                   alignItems: "center",
-                  borderRadius: 2,
+                  width: "100%",
+                  maxWidth: 400,
+                  px: 2,
+                  py: 0.5,
+                  borderRadius: "999px", // deixa super arredondado
+                  boxShadow: 1, // sombra leve
                 }}
               >
-                <Box>
-                  <Box sx={{ fontSize: 18 }}>{aluno.nome}</Box>
-                </Box>
-
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton sx={{ color: "black" }} onClick={() => handleOpenEditModal({id: aluno.id,nome: aluno.nome,matricula: aluno.matricula,idClass: 1, // ou de onde você tiver o ID da turma
-        })}>
-                    <Edit fontSize="small" />
-                  </IconButton>
-                  <IconButton sx={{ color: "black" }} onClick={() => handleDeleteAluno(aluno.id, 1)}>
-                    <Delete fontSize="small" />
-                  </IconButton>
-                </Box>
+                <Search color="action" />
+                <InputBase
+                  placeholder="Buscar alunos..."
+                  inputProps={{ "aria-label": "buscar alunos" }}
+                  sx={{ ml: 1, flex: 1 }}
+                />
               </Paper>
-            ))}
-          </Box>
-       
+            </Box>
+
+
+
+          </Toolbar>
+
+        </AppBar>
+
+        <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+          {alunos.map((aluno) => (
+            <Paper
+              key={aluno.id}
+              elevation={3}
+              sx={{
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                borderRadius: 2,
+              }}
+            >
+              <Box>
+                <Box sx={{ fontSize: 18 }}>{aluno.nome}</Box>
+              </Box>
+
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <IconButton sx={{ color: "black" }} onClick={() => handleOpenEditModal({
+                  id: aluno.id, nome: aluno.nome, matricula: aluno.matricula, classId, // ou de onde você tiver o ID da turma
+                })}>
+                  <Edit fontSize="small" />
+                </IconButton>
+                <IconButton sx={{ color: "black" }} onClick={() => handleDeleteAluno(aluno.id, 1)}>
+                  <Delete fontSize="small" />
+                </IconButton>
+              </Box>
+            </Paper>
+          ))}
+        </Box>
+
 
         <Fab
-        color="success"
-        sx={{ position: "absolute", bottom: 32, right: 32 }}
-        onClick={handleOpenSettings}
-      >
-        <SettingsIcon />
-      </Fab>
+          color="success"
+          sx={{ position: "absolute", bottom: 32, right: 32 }}
+          onClick={handleOpenSettings}
+        >
+          <SettingsIcon />
+        </Fab>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={openSettingsMenu}
-        onClose={handleCloseSettings}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            handleCloseSettings() // Fecha o menu antes de abrir o modal
-            handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
+        <Menu
+          anchorEl={anchorEl}
+          open={openSettingsMenu}
+          onClose={handleCloseSettings}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
           }}
         >
-          + Adicionar aluno
-        </MenuItem>
-      </Menu>
+          <MenuItem
+            onClick={() => {
+              handleCloseSettings() // Fecha o menu antes de abrir o modal
+              handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
+            }}
+          >
+            + Adicionar aluno
+          </MenuItem>
+        </Menu>
 
-      <AddStudentModal
-        open={openAddStudentModal}
-        handleClose={handleCloseAddStudentModal}
-        onSuccess={() => {
-          // Fecha o modal e re-busca a lista de alunos
-          handleCloseAddStudentModal()
-          getAlunos(1)
-        }}
-      />
+        <AddStudentModal
+          open={openAddStudentModal}
+          handleClose={handleCloseAddStudentModal}
+          classId={classId}
+          onSuccess={() => {
+            // Fecha o modal e re-busca a lista de alunos
+            handleCloseAddStudentModal()
+            getAlunos(classId)
+          }}
+        />
 
 
 
-    <EditStudentModal
-      open={!!alunoEditando}
-      handleClose={() => setAlunoEditando(null)}
-      student={alunoEditando}
-      onEdit={handleSaveEdit}
-    />
+        <EditStudentModal
+          open={!!alunoEditando}
+          handleClose={() => setAlunoEditando(null)}
+          student={alunoEditando}
+          onEdit={handleSaveEdit}
+          classId={classId}
+        />
+
       </Box>
     </Box>
   )

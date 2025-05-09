@@ -1,24 +1,24 @@
 import { Box, TextField, Modal, Button, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { apiService } from "../../../services/easydossie.service"
 
 interface classInfo {
-  id_turma: number;
-  titulo: string;
-  turno: string;
-  instituicao: string;
-  periodoLetivo: string;
+  id: number;
+  title: string;
+  shift: string;
+  institution: string;
+  period: string;
 }
 
 interface EditClassModalProps {
   open: boolean;
   handleClose: () => void;
-  id_turma: string; // ID da turma que vai ser editada
-  setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
+  setClasses: React.Dispatch<React.SetStateAction<Turma[]>>;
+  classToEdit: Turma;
 }
-  
-const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassModalProps) => {
+
+const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClassModalProps) => {
   const {
     register,
     handleSubmit,
@@ -27,57 +27,43 @@ const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassMo
   } = useForm();
   const [loading, setLoading] = useState(false);
   const originalData = useRef<classInfo | null>(null);
-
-  useEffect(() => {
-    const fetchClassInfo = async () => {
-      try {
-        const response = await apiService.getTurmaById(id_turma);
-        const data = response.data;
-        originalData.current = data;
-
-        setValue("titulo", data.titulo);
-        setValue("turno", data.turno);
-        setValue("instituicao", data.instituicao);
-        setValue("periodoLetivo", data.periodoLetivo);
-      } catch (err: any) {
-        alert(err.message || "Erro ao carregar dados.");
-      }
-    };
-
-    if (open && id_turma) {
-      fetchClassInfo();
-    }
-  }, [open, id_turma, setValue]);
-
-
   const validateAlphaNumeric = (value: string) =>
     /^[a-zA-Z0-9\s]+$/.test(value) || "Apenas letras e números são permitidos";
 
   const validatePeriodoLetivo = (value: string) =>
     /^[0-9]{4}[-.]?[1-2]$/.test(value) || "Formato inválido (ex: 2025-1)";
 
+  useEffect(() => {
+    if (classToEdit) {
+      setValue("title", classToEdit.titulo);
+      setValue("shift", classToEdit.turno);
+      setValue("institution", classToEdit.instituicao);
+      setValue("period", classToEdit.periodoLetivo);
+
+      originalData.current = {
+        title: classToEdit.titulo,
+        shift: classToEdit.turno,
+        institution: classToEdit.instituicao,
+        period: classToEdit.periodoLetivo,
+        id: classToEdit.id
+      };
+    }
+  }, [classToEdit, setValue]);
+
+
   const onSubmit = async (data: any) => {
-    for (const key of ["titulo", "turno", "instituicao", "periodoLetivo"]) {
+    for (const key of ["title", "shift", "institution", "period"]) {
       if (!data[key]?.trim()) {
         alert("Todos os campos são obrigatórios.");
         return;
       }
     }
 
-    const current = {
-      titulo: data.titulo,
-      turno: data.turno,
-      instituicao: data.instituicao,
-      periodoLetivo: data.periodoLetivo,
-    };
-
-    const original = originalData.current;
     if (
-      original &&
-      current.titulo === original.titulo &&
-      current.turno === original.turno &&
-      current.instituicao === original.instituicao &&
-      current.periodoLetivo === original.periodoLetivo
+      data.title === classToEdit.titulo &&
+      data.shift === classToEdit.turno &&
+      data.institution === classToEdit.instituicao &&
+      data.period === classToEdit.periodoLetivo
     ) {
       alert("Nenhuma alteração detectada.");
       return;
@@ -85,16 +71,12 @@ const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassMo
 
     setLoading(true);
     try {
-      const result = await apiService.updateTurma(id_turma, {
-        ...current,
-        id_turma,
-      });
+      const result = await apiService.editClass({...data, id: classToEdit.id});
 
-      const updated = result.data;
-
+      const updated = result.data.data;
       alert("Dados atualizados com sucesso!");
       setClasses(prev => {
-        return prev.map(cls => cls.id === id_turma ? updated : cls)
+        return prev.map(cls => cls.id === classToEdit.id ? ({...cls, ...updated}) : cls)
       });
       handleClose();
     } catch (error: any) {
@@ -133,13 +115,13 @@ const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassMo
               variant="filled"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              {...register("titulo", {
+              {...register("title", {
                 required: "Nome da turma é obrigatório",
                 validate: validateAlphaNumeric,
               })}
             />
-            {errors.titulo && (
-              <Typography color="error">{String(errors.titulo.message)}</Typography>
+            {errors.title && (
+              <Typography color="error">{String(errors.title.message)}</Typography>
             )}
           </Box>
           <Box marginBottom={2}>
@@ -148,13 +130,13 @@ const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassMo
               variant="filled"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              {...register("turno", {
+              {...register("shift", {
                 required: "Turno é obrigatório",
                 validate: validateAlphaNumeric,
               })}
             />
-            {errors.turno && (
-              <Typography color="error">{String(errors.turno.message)}</Typography>
+            {errors.shift && (
+              <Typography color="error">{String(errors.shift.message)}</Typography>
             )}
           </Box>
           <Box marginBottom={2}>
@@ -163,13 +145,13 @@ const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassMo
               variant="filled"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              {...register("instituicao", {
+              {...register("institution", {
                 required: "Instituição de ensino é obrigatória",
                 validate: validateAlphaNumeric,
               })}
             />
-            {errors.instituicao && (
-              <Typography color="error">{String(errors.instituicao.message)}</Typography>
+            {errors.institution && (
+              <Typography color="error">{String(errors.institution.message)}</Typography>
             )}
           </Box>
           <Box marginBottom={2}>
@@ -178,13 +160,13 @@ const EditClassModal = ({ open, handleClose, id_turma, setClasses }: EditClassMo
               variant="filled"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              {...register("periodoLetivo", {
+              {...register("period", {
                 required: "Período letivo é obrigatório",
                 validate: validatePeriodoLetivo,
               })}
             />
-            {errors.periodoLetivo && (
-              <Typography color="error">{String(errors.periodoLetivo.message)}</Typography>
+            {errors.period && (
+              <Typography color="error">{String(errors.period.message)}</Typography>
             )}
           </Box>
           <Box display="flex" justifyContent="space-between">

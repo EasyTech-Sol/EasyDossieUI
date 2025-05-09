@@ -11,15 +11,16 @@ type SignUpData = {
 };
 
 type TurmaData = {
-  titulo: string;
-  turno: string;
-  instituicao: string;
-  periodoLetivo: string;
+  title: string;
+  shift: string;
+  institution: string;
+  period: string;
 };
 
-type TurmaData = {
-  nomeTurma: string;
-  turno: string;
-  instituicao: string;
-  periodo: string;
+
+type Teacher = {
+  id: string;
+  email: string;
+  email: string;
+  password: string;
 };

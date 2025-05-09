@@ -7,20 +7,38 @@ const client = axios.create({
   },
 });
 
+// Interceptor para redirecionar em caso de erro 403
+client.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 403) {
+      window.location.href = "/auth/sign-in";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const apiService = {
-  login: async (data: LoginData) => client.post("/login", data),
-  signup: async (data: SignUpData) => client.post("/register", data),
-  getTurmaById: async (id: string) => client.get(`/turmas/${id}`),
-  updateTurma: async (id: string, data: any) => client.put(`/turmas/${id}`, data),
-  deleteTurma: async (id: string) => client.delete(`/turmas/${id}`),
-  createTurma: async (data: TurmaData) => client.post("/turmas", data),
-  importStudents: async(classId: number, students: Student[]) => client.post('/importStudents', {classId, students}),
-  listTurmas: async () => client.get("/return_classes"),
-
-  //novo
-  getAlunosByIdTurma: async (data:any) => client.get(`/return_students_class`,{params:data}),
-  createAluno: async (data: any) => client.post("/add_student_manually", data), //dentro da turma
-  deleteAluno:async (id: number, idClass: number) => client.delete("/remove_student", {params: { id: id, idClass: idClass }}),//dentro da turma
-  editStudent: async (data: {id: number;name: string;registration: string;idClass: number;}) => client.patch("/edit_student", data)//dentro da turma
+  login: async (data: LoginData) => client.post("/teacher/login", data),
+  signup: async (data: SignUpData) => client.post("/teacher/register", data),
+  editTeacher: async (data: Teacher) => client.patch("/teacher", data),
+  getClasses: async () => client.get("/classes"),
+  editClass: async (data: Class) => client.post(`/classes/edit`, data),
+  createClass: async (data: TurmaData) => client.post("/classes/create", data),
+  getClassById: async (id: number) => client.get(`/classes/${id}`),
+  deleteClass: async (id: number) => client.delete(`/classes/${id}`),
+  importStudents: async (classId: number, students: Student[]) =>
+    client.post("/students/import", { classId, students }),
+  addStudent: async (classId: number, student: Student) =>
+    client.post("/students/manual", { classId, ...student }),
+  deleteStudent: async (classId: number, studentId: number) =>
+    client.delete("/students", { params: { classId, studentId } }),
+  getClassStudents: async (classId: number) =>
+    client.get("/students", { params: { classId } }),
+  editStudent: async (data: {
+    id: number;
+    name: string;
+    registration: string;
+    classId: number;
+  }) => client.patch("/students", data), //dentro da turma
 };
-

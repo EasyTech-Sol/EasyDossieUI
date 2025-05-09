@@ -7,11 +7,12 @@ import { apiService } from "../../../services/easydossie.service"; // import do 
 interface AddStudentModalProps {
   open: boolean;
   handleClose: () => void;
+  classId: number;
   /** Callback a ser disparado quando o aluno for salvo com sucesso */
   onSuccess?: () => void;
 }
 
-const AddStudentModal = ({ open, handleClose, onSuccess }: AddStudentModalProps) => {
+const AddStudentModal = ({ open, classId, handleClose, onSuccess }: AddStudentModalProps) => {
   const {
     register,
     handleSubmit,
@@ -31,7 +32,6 @@ const AddStudentModal = ({ open, handleClose, onSuccess }: AddStudentModalProps)
     const payload = {
       name: data.name,           // converte `name` → `nome`
       registration: data.registration,
-      idClass:1
        // converte `registration` → `matricula`
       // aqui você acrescenta outros campos caso haja
     };
@@ -40,7 +40,7 @@ const AddStudentModal = ({ open, handleClose, onSuccess }: AddStudentModalProps)
     setLoading(true);
     try {
       // Uso do serviço de API em vez de fetch direto
-      await apiService.createAluno(payload);
+      await apiService.addStudent(classId, payload);
 
       alert("Aluno adicionado com sucesso!");
       reset();

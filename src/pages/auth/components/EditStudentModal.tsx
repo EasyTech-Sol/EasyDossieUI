@@ -14,11 +14,13 @@ interface EditStudentModalProps {
   open: boolean;
   handleClose: () => void;
   student: { id: number; nome: string; matricula: string } | null;
+
+  classId: number;
   onEdit: (payload: {
-  id: number;
-  name: string;
-  registration: string;
-  idClass: number;
+    id: number;
+    name: string;
+    registration: string;
+    classId: number;
   }) => Promise<void>;
 }
 
@@ -27,6 +29,7 @@ const EditStudentModal = ({
   handleClose,
   student,
   onEdit,
+  classId
 }: EditStudentModalProps) => {
   const {
     register,
@@ -51,13 +54,14 @@ const EditStudentModal = ({
     }
 
     setLoading(true);
-    try{
-    await onEdit({
-      id: student!.id,
-      name: data.name,
-      registration: data.registration,
-      idClass:  1,});
-    handleClose();
+    try {
+      await onEdit({
+        id: student!.id,
+        name: data.name,
+        registration: data.registration,
+        classId
+      });
+      handleClose();
 
     } catch (err: any) {
       alert(`Erro ao atualizar aluno: ${err.message}`);

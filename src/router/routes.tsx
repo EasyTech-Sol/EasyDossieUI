@@ -1,8 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-
 import * as authApp from "../pages/auth";
 import Home from "../pages/Home";
-import Teste from "../pages/paginaTeste/Teste";
+import Class from "../pages/Class";
 
 export const routes = createBrowserRouter([
   authApp.routes("/auth"),
@@ -20,5 +19,16 @@ export const routes = createBrowserRouter([
       return true;
     },
     element: <Home />,
+  },
+  {
+    path: "/class/:classId",
+    async loader({ params }) {
+      if (!localStorage.getItem("token")) {
+        window.location.href = "/auth/sign-in";
+        return;
+      }
+      return { classId: params.classId };
+    },
+    element: <Class />,
   },
 ]);
