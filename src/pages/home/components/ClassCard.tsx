@@ -22,7 +22,7 @@ interface ClassCardProps {
   onDelete: Function
 }
 
-export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
+export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
