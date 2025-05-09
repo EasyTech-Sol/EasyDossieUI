@@ -7,11 +7,16 @@ import AddStudentModal from './auth/components/AddStudentModal';
 import SettingsIcon from "@mui/icons-material/Settings"
 import { Edit, Delete } from "@mui/icons-material";
 import { useEffect } from "react"
-
 import { apiService } from "../services/easydossie.service"
 import EditStudentModal from './auth/components/EditStudentModal';
+import ImportStudents from "../components/importStudents/ImportStudents"
+import { useDropzone } from 'react-dropzone';
+import * as XLSX from 'xlsx';
+import Papa from 'papaparse';
 
 const drawerWidth = 240
+
+
 
 const DrawerContent = ({ selectedTab, onLogout, }: { selectedTab: "turmas" | "dossies", onLogout: () => void }) => (
   <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -77,6 +82,14 @@ const Class = () => {
   const [mobileOpen, setMobileOpen] = useState(false) // Controle do menu lateral em mobile
 
   const [alunoEditando, setAlunoEditando] = useState<any | null>(null);
+  // Armazena os dados extraídos do arquivo Excel
+  const [excelData, setExcelData] = useState<Student[]>([]);
+  // Controla a visibilidade do modal de pré-visualização
+  const [open, setOpen] = useState(false);
+  // Função para abrir o modal
+  const handleOpenImportModal = () => setOpen(true);
+  // Função para fechar o modal
+
   // ------------------ Hooks ------------------
 
   const theme = useTheme() // Tema do Material UI
@@ -84,13 +97,128 @@ const Class = () => {
   const navigate = useNavigate() // Hook de navegação
 
   // ------------------ Funções de controle ------------------
+  const detectDelimiter = (csvText: string): string => {
+    const firstLine = csvText.split('\n')[0];
+    const commaCount = firstLine.split(',').length;
+    const semicolonCount = firstLine.split(';').length;
+    return commaCount >= semicolonCount ? ',' : ';';
+  };
+
+  // Função para normalizar e validar os dados importados
+  const processStudentData = (rawData: RawStudent[]) => {
+    const jsonData: Student[] = rawData.map((item) => {
+      const keys = Object.keys(item);
+      let name = '';
+      let registration: string | number = '';
+
+      keys.forEach((key) => {
+        const normalizedKey = key
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, '')
+          .replace(/[^\w]/g, '');
+
+        if (normalizedKey.includes('nome')) name = String(item[key]);
+        if (normalizedKey.includes('matricula')) registration = item[key];
+      });
+
+      return { name, registration: String(registration) };
+    });
+
+    // Verifica se todos os registros são válidos
+    const isValid = jsonData.every(
+      (item) =>
+        typeof item.name === 'string' &&
+        item.name.trim() !== '' &&
+        (typeof item.registration === 'string' || typeof item.registration === 'number') &&
+        `${item.registration}`.trim() !== ''
+    );
+
+    if (!isValid) {
+      alert('Formato inválido. Certifique-se de que cada linha contenha "nome" e "matricula".');
+      setExcelData([]);
+      return;
+    }
+
+    setExcelData(jsonData);
+    alert('Arquivo carregado com sucesso!');
+    handleOpenImportModal();
+  };
+
+
+  // Lógica para processar os arquivos CSV ou Excel
+  const handleExcelParse = (file: File) => {
+    const fileName = file.name.toLowerCase();
+
+    // Se for CSV
+    if (fileName.endsWith('.csv')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const csvText = e.target?.result as string;
+        const delimiter = detectDelimiter(csvText);
+
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          delimiter,
+          complete: (results) => {
+            const rawData = results.data as RawStudent[];
+            processStudentData(rawData);
+          },
+          error: () => {
+            alert('Erro ao processar o arquivo CSV.');
+          },
+        });
+      };
+      reader.readAsText(file, 'utf-8');
+      // Se for Excel
+    } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      const reader = new FileReader();
+
+      // Quando o arquivo for carregado, processa os dados
+      reader.onload = (e) => {
+        const data = e.target?.result;
+        try {
+          const workbook = XLSX.read(data, { type: 'array' });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rawData = XLSX.utils.sheet_to_json<RawStudent>(worksheet, { defval: '' });
+          processStudentData(rawData);
+        } catch (err) {
+          console.error(err);
+          alert('Erro ao processar o arquivo Excel.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert('Formato de arquivo não suportado.');
+    }
+  };
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) handleExcelParse(file);
+  }, []);
+
+  const { getRootProps, getInputProps, open: openFileDialog } = useDropzone({
+    onDrop,
+    noClick: true,
+    noKeyboard: true,
+    accept: {
+      'text/csv': ['.csv'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+      'application/vnd.ms-excel': ['.xls'],
+    },
+    multiple: false,
+  });
+
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen) // Alterna o menu lateral (drawer)
   }
 
   const handleOpenAddStudentModal = () => setOpenAddStudentModal(true) // Abre o modal de aluno
-
 
   const handleCloseAddStudentModal = () => setOpenAddStudentModal(false) // Fecha o modal de aluno
 
@@ -353,6 +481,14 @@ const Class = () => {
           >
             + Adicionar aluno
           </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleCloseSettings() // Fecha o menu antes de abrir o modal
+              openFileDialog()
+            }}
+          >
+            Importar Alunos (CSV)
+          </MenuItem>
         </Menu>
 
         <AddStudentModal
@@ -366,7 +502,16 @@ const Class = () => {
           }}
         />
 
-
+        <ImportStudents
+          classId={classId}
+          registerDropzoneRoot={getRootProps}
+          registerDropzoneInput={getInputProps}
+          handleExcelParse={handleExcelParse}
+          open={open}
+          setOpen={setOpen}
+          excelData={excelData}
+          setExcelData={setExcelData}
+        />
 
         <EditStudentModal
           open={!!alunoEditando}
