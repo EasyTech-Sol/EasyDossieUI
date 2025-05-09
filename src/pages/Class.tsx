@@ -315,7 +315,7 @@ const Class = () => {
                 })}>
                   <Edit fontSize="small" />
                 </IconButton>
-                <IconButton sx={{ color: "black" }} onClick={() => handleDeleteAluno(aluno.id, 1)}>
+                <IconButton sx={{ color: "black" }} onClick={() => handleDeleteAluno(aluno.id, classId)}>
                   <Delete fontSize="small" />
                 </IconButton>
               </Box>

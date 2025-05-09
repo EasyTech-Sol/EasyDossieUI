@@ -34,13 +34,15 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
     setAnchorEl(null);
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    e.stopPropagation()
     handleClose();
     onEdit();
     // lógica para editar
   };
 
-  const handleDelete = () => {
+  const handleDelete = (e) => {
+    e.stopPropagation()
     handleClose();
     onDelete();
     // lógica para excluir
@@ -83,12 +85,13 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
               <Menu
                 anchorEl={anchorEl}
                 open={open}
+                onClick={(e) => e.stopPropagation()}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               >
-                <MenuItem onClick={handleEdit}>Editar turma</MenuItem>
-                <MenuItem onClick={handleDelete}>Excluir turma</MenuItem>
+                <MenuItem onClick={(e) => handleEdit(e)}>Editar turma</MenuItem>
+                <MenuItem onClick={(e) => handleDelete(e)}>Excluir turma</MenuItem>
               </Menu>
             </>
           }
