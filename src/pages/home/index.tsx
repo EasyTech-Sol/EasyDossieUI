@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import Template from "./template/Template";
 import ClassesDashboard from "./components/ClassesDashboard";
+import Class from "./components/Class";
 
 export function routes(startPath: string) {
     return {
@@ -19,6 +20,7 @@ export function routes(startPath: string) {
                 element: <Navigate to="home" replace />
             },
             { path: "home", element: <ClassesDashboard /> },
+            { path: "/class/:classId", element: <Class /> }
         ],
     };
 }

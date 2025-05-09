@@ -2,18 +2,24 @@ import { Description, ExitToApp, Info, School } from "@mui/icons-material";
 import { Box, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
 import Logo from "../../../assets/logo.svg"
+import { useNavigate } from "react-router-dom";
 
 export default ({
     selectedTab,
     onLogout,
-}: {
+}: 
+{
     selectedTab: "turmas" | "dossies";
     onLogout: () => void;
-}) => (
+}) => {
+    
+    const navigate = useNavigate()
+    
+    return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <Box>
             <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-                <img src={Logo} alt="Logo" style={{ height: 40 }} />
+                <img src={Logo} alt="Logo" style={{ height: 40 }} onClick={() => navigate("/home")}/>
             </Box>
             <List>
                 <ListItemButton selected={selectedTab === "turmas"}>
@@ -47,4 +53,4 @@ export default ({
             </List>
         </Box>
     </Box>
-);
+)};
