@@ -9,8 +9,8 @@ const client = axios.create({
 
 // Interceptor para redirecionar em caso de erro 403
 client.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     if (error.response?.status === 403) {
       window.location.href = "/auth/sign-in";
     }
@@ -30,17 +30,15 @@ export const apiService = {
   importStudents: async (classId: number, students: Student[]) =>
     client.post("/students/import", { classId, students }),
   addStudent: async (classId: number, student: Student) =>
-    client.post("/students/manual", { classId, student }),
+    client.post("/students/manual", { classId, ...student }),
   deleteStudent: async (classId: number, studentId: number) =>
     client.delete("/students", { params: { classId, studentId } }),
-  editStudent: async (classId: number, student: Student) =>
-    client.patch("/students/manual", { classId, student }),
   getClassStudents: async (classId: number) =>
-    client.get("/students", { params: { classId } }),,
-
-  //novo
-  getAlunosByIdTurma: async (data:any) => client.get(`/return_students_class`,{params:data}),
-  createAluno: async (data: any) => client.post("/add_student_manually", data), //dentro da turma
-  deleteAluno:async (id: number, idClass: number) => client.delete("/remove_student", {params: { id: id, idClass: idClass }}),//dentro da turma
-  editStudent: async (data: {id: number;name: string;registration: string;idClass: number;}) => client.patch("/edit_student", data)//dentro da turma
+    client.get("/students", { params: { classId } }),
+  editStudent: async (data: {
+    id: number;
+    name: string;
+    registration: string;
+    classId: number;
+  }) => client.patch("/students", data), //dentro da turma
 };

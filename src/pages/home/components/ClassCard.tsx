@@ -59,6 +59,9 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
             },
           },
         }}
+        onClick={() =>
+          window.location.href = `/class/${id}`
+        }
       >
         <CardHeader
           sx={{ bgcolor: bgColor, color: 'white' }}
