@@ -21,23 +21,24 @@ interface ImportStudentsProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   excelData: Student[]
   setExcelData: React.Dispatch<React.SetStateAction<Student[]>>
-
+  setStudents: React.Dispatch<React.SetStateAction<any[]>>
 }
 
 export default function ImportStudents({ classId: classId,
   registerDropzoneInput, registerDropzoneRoot, handleExcelParse,
-  open, setOpen, excelData, setExcelData }: ImportStudentsProps) {
+  open, setOpen, excelData, setExcelData, setStudents }: ImportStudentsProps) {
   // Armazena mensagens de erro
   const [error, setError] = useState<string | null>(null);
   // Armazena mensagens de sucesso
   const [success, setSuccess] = useState<string | null>(null);
 
   // Mutação para enviar os dados para o backend
-  const mutation = useMutation<AxiosResponse<void>, Error, void>({
+  const mutation = useMutation<AxiosResponse<any>, Error, void>({
     mutationFn: () => apiService.importStudents(classId, excelData),
     onSuccess: ({data}) => {
       console.log(data)
       setSuccess('Dados enviados com sucesso!');
+      setStudents(prev => [...prev, ...data.inseridos])
       setError(null);
       setExcelData([]);
     },

@@ -511,6 +511,7 @@ const Class = () => {
           setOpen={setOpen}
           excelData={excelData}
           setExcelData={setExcelData}
+          setStudents={setAlunos}
         />
 
         <EditStudentModal
