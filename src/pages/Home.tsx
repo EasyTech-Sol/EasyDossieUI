@@ -140,14 +140,11 @@ const Home = () => {
       });
     } catch (error) {
       if (isAxiosError(error))
-        if (error.status === 403)
-          window.location.href = "auth/sign-in"
-        else
-          setSnackbar({
-            open: true,
-            message: error.response?.data.error,
-            severity: "error",
-          });
+        setSnackbar({
+          open: true,
+          message: error.response?.data.error,
+          severity: "error",
+        });
       else
         setSnackbar({
           open: true,

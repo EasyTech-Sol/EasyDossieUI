@@ -7,6 +7,17 @@ const client = axios.create({
   },
 });
 
+// Interceptor para redirecionar em caso de erro 403
+client.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 403) {
+      window.location.href = "/auth/sign-in";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const apiService = {
   login: async (data: LoginData) => client.post("/teacher/login", data),
   signup: async (data: SignUpData) => client.post("/teacher/register", data),
