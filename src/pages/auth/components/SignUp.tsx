@@ -18,14 +18,10 @@ const SignUp = () => {
 
   const onSubmit = async (values: any) => {
     try {
-      console.log(values)
       const result = await apiService.signup(values)
-      console.log(result)
       localStorage.setItem("token", result.data.token)
       window.location.href = "/auth/sign-in"
-      console.log("foi?")
     } catch (error) {
-      console.log(error)
       if (isAxiosError(error) && error.status === 400)
         setErrorMessage(error.response?.data.error)
       else
