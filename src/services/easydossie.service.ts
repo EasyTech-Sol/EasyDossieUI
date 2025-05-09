@@ -15,6 +15,12 @@ export const apiService = {
   deleteTurma: async (id: string) => client.delete(`/turmas/${id}`),
   createTurma: async (data: TurmaData) => client.post("/turmas", data),
   importStudents: async(classId: number, students: Student[]) => client.post('/importStudents', {classId, students}),
-  listTurmas: async () => client.get("/return_classes")
+  listTurmas: async () => client.get("/return_classes"),
+
+  //novo
+  getAlunosByIdTurma: async (data:any) => client.get(`/return_students_class`,{params:data}),
+  createAluno: async (data: any) => client.post("/add_student_manually", data), //dentro da turma
+  deleteAluno:async (id: number, idClass: number) => client.delete("/remove_student", {params: { id: id, idClass: idClass }}),//dentro da turma
+  editStudent: async (data: {id: number;name: string;registration: string;idClass: number;}) => client.patch("/edit_student", data)//dentro da turma
 };
 
