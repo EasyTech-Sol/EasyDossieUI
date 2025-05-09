@@ -91,15 +91,23 @@ const Home = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedTab] = useState<"turmas" | "dossies">("turmas");
-  const [classes, setClasses] = useState<Class[]>([])
+  const [classes, setClasses] = useState<Turma[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editModalOpened, setEditModalOpened] = useState(false)
-  const [idEditModal, setIdEditModal] = useState("")
+  const [idEditModal, setIdEditModal] = useState(0)
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
+
+  const [classToEdit, setClassToEdit] = useState<Turma>({
+    titulo: "0",
+    id: 0,
+    turno: "",
+    periodoLetivo: "",
+    instituicao: ""
+  })
 
   const navigate = useNavigate();
 
@@ -132,14 +140,14 @@ const Home = () => {
       });
     } catch (error) {
       if (isAxiosError(error))
-        if(error.status === 403)
+        if (error.status === 403)
           window.location.href = "auth/sign-in"
         else
-        setSnackbar({
-          open: true,
-          message: error.response?.data.error,
-          severity: "error",
-        });
+          setSnackbar({
+            open: true,
+            message: error.response?.data.error,
+            severity: "error",
+          });
       else
         setSnackbar({
           open: true,
@@ -150,12 +158,23 @@ const Home = () => {
     setDialogOpen(false);
   };
 
-  const handleEditClass = (id: string) => {
+  const handleEditClass = (id: number) => {
     setEditModalOpened(true);
-    setIdEditModal(id)
+    setClassToEdit(classes.find(c => c.id === id)!)
   }
 
-  const handleDeleteClass = async (id: string) => {
+  const handleCloseEdit = () => {
+    setEditModalOpened(false)
+    setClassToEdit({
+      titulo: "0",
+      id: 0,
+      turno: "",
+      periodoLetivo: "",
+      instituicao: ""
+    })
+  }
+
+  const handleDeleteClass = async (id: number) => {
     try {
       const result = await apiService.deleteClass(id)
       setClasses(prev => prev.filter(cls => cls.id !== id))
@@ -325,8 +344,8 @@ const Home = () => {
 
         <EditClassModal
           open={editModalOpened}
-          handleClose={() => setEditModalOpened(false)}
-          id_turma={idEditModal}
+          handleClose={handleCloseEdit}
+          classToEdit={classToEdit}
           setClasses={setClasses}
         />
         {/* Snackbar de feedback */}

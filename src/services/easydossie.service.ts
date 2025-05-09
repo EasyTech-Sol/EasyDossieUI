@@ -12,10 +12,10 @@ export const apiService = {
   signup: async (data: SignUpData) => client.post("/teacher/register", data),
   editTeacher: async (data: Teacher) => client.patch("/teacher", data),
   getClasses: async () => client.get("/classes"),
-  editClass: async () => client.get("/classes/edit"),
+  editClass: async (data: Class) => client.post(`/classes/edit`, data),
   createClass: async (data: TurmaData) => client.post("/classes/create", data),
-  getClassById: async (id: string) => client.get(`/classes/${id}`),
-  deleteClass: async (id: string) => client.delete(`/classes/${id}`),
+  getClassById: async (id: number) => client.get(`/classes/${id}`),
+  deleteClass: async (id: number) => client.delete(`/classes/${id}`),
   importStudents: async (classId: number, students: Student[]) =>
     client.post("/students/import", { classId, students }),
   addStudent: async (classId: number, student: Student) =>
