@@ -14,6 +14,7 @@ interface EditStudentModalProps {
   open: boolean;
   handleClose: () => void;
   student: { id: number; nome: string; matricula: string } | null;
+
   classId: number;
   onEdit: (payload: {
     id: number;

@@ -7,6 +7,7 @@ import AddStudentModal from './auth/components/AddStudentModal';
 import SettingsIcon from "@mui/icons-material/Settings"
 import { Edit, Delete } from "@mui/icons-material";
 import { useEffect } from "react"
+
 import { apiService } from "../services/easydossie.service"
 import EditStudentModal from './auth/components/EditStudentModal';
 
@@ -154,6 +155,7 @@ const Class = () => {
       id: number;
       name: string;
       registration: string;
+
       classId: number;
     }) => {
       try {
@@ -290,10 +292,6 @@ const Class = () => {
 
         </AppBar>
 
-
-
-
-
         <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
           {alunos.map((aluno) => (
             <Paper
@@ -377,6 +375,7 @@ const Class = () => {
           onEdit={handleSaveEdit}
           classId={classId}
         />
+
       </Box>
     </Box>
   )
