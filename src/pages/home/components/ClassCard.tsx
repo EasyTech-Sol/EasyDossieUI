@@ -41,7 +41,7 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
     // lógica para editar
   };
 
-  const handleDelete = (e) => {
+  const handleDelete = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
     e.stopPropagation()
     handleClose();
     onDelete();
