@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import "./importstudents.css"
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -15,9 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 interface ImportStudentsProps {
   classId: number;
   registerDropzoneRoot: ReturnType<typeof useDropzone>['getRootProps'];
-  registerDropzoneInput: ReturnType<typeof useDropzone>['getInputProps'];
-  handleExcelParse: (file: File) => void;
-  open: boolean
+  registerDropzoneInput: ReturnType<typeof useDropzone>['getInputProps'];  open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   excelData: Student[]
   setExcelData: React.Dispatch<React.SetStateAction<Student[]>>
@@ -25,7 +23,7 @@ interface ImportStudentsProps {
 }
 
 export default function ImportStudents({ classId: classId,
-  registerDropzoneInput, registerDropzoneRoot, handleExcelParse,
+  registerDropzoneInput, registerDropzoneRoot,
   open, setOpen, excelData, setExcelData, setStudents }: ImportStudentsProps) {
   // Armazena mensagens de erro
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +33,7 @@ export default function ImportStudents({ classId: classId,
   // Mutação para enviar os dados para o backend
   const mutation = useMutation<AxiosResponse<any>, Error, void>({
     mutationFn: () => apiService.importStudents(classId, excelData),
-    onSuccess: ({data}) => {
-      console.log(data)
+    onSuccess: ({ data }) => {
       setSuccess('Dados enviados com sucesso!');
       setStudents(prev => [...prev, ...data.inseridos])
       setError(null);

@@ -19,9 +19,9 @@ client.interceptors.response.use(
 );
 
 export const apiService = {
-  login: async (data: LoginData) => client.post("/teacher/login", data),
-  signup: async (data: SignUpData) => client.post("/teacher/register", data),
-  editTeacher: async (data: Teacher) => client.patch("/teacher", data),
+  login: async (data: LoginData) => client.post("/teachers/login", data),
+  signup: async (data: SignUpData) => client.post("/teachers/register", data),
+  editTeacher: async (data: Teacher) => client.patch("/teachers", data),
   getClasses: async () => client.get("/classes"),
   editClass: async (data: Class) => client.post(`/classes/edit`, data),
   createClass: async (data: TurmaData) => client.post("/classes/create", data),

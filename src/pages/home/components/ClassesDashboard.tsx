@@ -1,100 +1,39 @@
 import {
-  AppBar,
   Box,
-  Divider,
-  Drawer,
-  IconButton,
-  InputBase,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Toolbar,
   Fab,
   useTheme,
   useMediaQuery,
   Snackbar,
   Alert,
-  Container
+  Container,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Divider,
+  Paper,
+  InputBase
 } from "@mui/material";
 import {
   Add,
-  Description,
-  ExitToApp,
-  Info,
   Person,
-  School,
   Search,
 } from "@mui/icons-material";
 
 import { useEffect, useState } from "react";
-import CreateClass from "./home/components/CreateClass.tsx";
-import Logo from "../assets/logo.svg";
-import ClassCard from "./home/components/ClassCard.tsx"
-import { useNavigate } from "react-router-dom";
-import { apiService } from "../services/easydossie.service.ts";
-import { getRandomMutedColor } from "../helpers/softColors.ts";
-import EditClassModal from "./home/components/EditClassModal.tsx";
+import CreateClass from "./CreateClass.tsx";
+import ClassCard from "./ClassCard.tsx"
+import { apiService } from "../../../services/easydossie.service.ts";
+import { getRandomMutedColor } from "../../../helpers/softColors.ts";
+import EditClassModal from "./EditClassModal.tsx";
 import { isAxiosError } from "axios";
 
 const drawerWidth = 240;
 
-const DrawerContent = ({
-  selectedTab,
-  onLogout,
-}: {
-  selectedTab: "turmas" | "dossies";
-  onLogout: () => void;
-}) => (
-  <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-    <Box>
-      <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-        <img src={Logo} alt="Logo" style={{ height: 40 }} />
-      </Box>
-      <List>
-        <ListItemButton selected={selectedTab === "turmas"}>
-          <ListItemIcon>
-            <School />
-          </ListItemIcon>
-          <ListItemText primary="Turmas" />
-        </ListItemButton>
-        <ListItemButton disabled selected={selectedTab === "dossies"}>
-          <ListItemIcon>
-            <Description />
-          </ListItemIcon>
-          <ListItemText primary="Dossiês" />
-        </ListItemButton>
-      </List>
-    </Box>
-    <Box sx={{ mt: "auto" }}>
-      <List>
-        <ListItemButton>
-          <ListItemIcon>
-            <Info />
-          </ListItemIcon>
-          <ListItemText primary="Sobre" />
-        </ListItemButton>
-        <ListItemButton onClick={onLogout}>
-          <ListItemIcon>
-            <ExitToApp />
-          </ListItemIcon>
-          <ListItemText primary="Sair" />
-        </ListItemButton>
-      </List>
-    </Box>
-  </Box>
-);
-
-const Home = () => {
+const ClassesDashboard = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedTab] = useState<"turmas" | "dossies">("turmas");
   const [classes, setClasses] = useState<Turma[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editModalOpened, setEditModalOpened] = useState(false)
-  const [idEditModal, setIdEditModal] = useState(0)
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -108,17 +47,6 @@ const Home = () => {
     periodoLetivo: "",
     instituicao: ""
   })
-
-  const navigate = useNavigate();
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/auth/sign-in");
-  };
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -140,14 +68,14 @@ const Home = () => {
       });
     } catch (error) {
       if (isAxiosError(error))
-        if(error.status === 403)
+        if (error.status === 403)
           window.location.href = "auth/sign-in"
         else
-        setSnackbar({
-          open: true,
-          message: error.response?.data.error,
-          severity: "error",
-        });
+          setSnackbar({
+            open: true,
+            message: error.response?.data.error,
+            severity: "error",
+          });
       else
         setSnackbar({
           open: true,
@@ -176,7 +104,7 @@ const Home = () => {
 
   const handleDeleteClass = async (id: number) => {
     try {
-      const result = await apiService.deleteClass(id)
+      await apiService.deleteClass(id)
       setClasses(prev => prev.filter(cls => cls.id !== id))
     } catch (error) {
       setSnackbar({
@@ -212,41 +140,7 @@ const Home = () => {
   }, [])
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      {/* Drawer */}
-      {isMobile ? (
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-            },
-          }}
-        >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
-        </Drawer>
-      ) : (
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            },
-          }}
-        >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
-        </Drawer>
-      )}
-
+    <>
       {/* Main */}
       <Box
         component="main"
@@ -257,6 +151,7 @@ const Home = () => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
+
         {/* Top AppBar */}
         <AppBar position="static" color="transparent" elevation={0}>
           <Toolbar
@@ -364,8 +259,8 @@ const Home = () => {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </>
   );
 };
 
-export default Home;
+export default ClassesDashboard;

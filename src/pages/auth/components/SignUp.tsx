@@ -19,7 +19,6 @@ const SignUp = () => {
   const onSubmit = async (values: any) => {
     try {
       const result = await apiService.signup(values)
-      console.log(result)
       localStorage.setItem("token", result.data.token)
       window.location.href = "/auth/sign-in"
     } catch (error) {

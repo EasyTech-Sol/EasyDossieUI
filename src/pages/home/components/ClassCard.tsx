@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { truncateString } from '../../../helpers/string';
+import { useNavigate } from 'react-router-dom';
 
 interface ClassCardProps {
   title: string
@@ -22,9 +23,10 @@ interface ClassCardProps {
   onDelete: Function
 }
 
-export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
+export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,7 +64,7 @@ export default function CustomCard({ title, bgColor, id, onEdit, onDelete }: Cla
           },
         }}
         onClick={() =>
-          window.location.href = `/class/${id}`
+          navigate(`/class/${id}`, {state: {title, classId: id}})
         }
       >
         <CardHeader
