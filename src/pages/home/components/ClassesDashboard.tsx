@@ -5,10 +5,18 @@ import {
   useMediaQuery,
   Snackbar,
   Alert,
-  Container
+  Container,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Divider,
+  Paper,
+  InputBase
 } from "@mui/material";
 import {
   Add,
+  Person,
+  Search,
 } from "@mui/icons-material";
 
 import { useEffect, useState } from "react";
@@ -132,8 +140,7 @@ const ClassesDashboard = () => {
   }, [])
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-
+    <>
       {/* Main */}
       <Box
         component="main"
@@ -144,6 +151,46 @@ const ClassesDashboard = () => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
+
+        {/* Top AppBar */}
+        <AppBar position="static" color="transparent" elevation={0}>
+          <Toolbar
+            sx={{
+              flexDirection: "column",
+              alignItems: "stretch",
+              gap: 1,
+            }}
+          >
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <IconButton>
+                <Person />
+              </IconButton>
+            </Box>
+
+            <Divider />
+
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              <Paper
+                component="form"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  maxWidth: 600,
+                  px: 2,
+                  py: 0.5,
+                }}
+              >
+                <Search />
+                <InputBase
+                  placeholder="Buscar turmas..."
+                  inputProps={{ "aria-label": "buscar turmas" }}
+                  sx={{ ml: 1, flex: 1 }}
+                />
+              </Paper>
+            </Box>
+          </Toolbar>
+        </AppBar>
 
         <Container>
           <Box
@@ -212,7 +259,7 @@ const ClassesDashboard = () => {
           </Alert>
         </Snackbar>
       </Box>
-    </Box>
+    </>
   );
 };
 

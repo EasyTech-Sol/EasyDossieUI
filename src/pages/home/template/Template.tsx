@@ -75,61 +75,13 @@ const Template = () => {
         </Drawer>
       )}
 
-      {/* Main */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          position: "relative",
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        {/* Top AppBar */}
-        <AppBar position="static" color="transparent" elevation={0}>
-          <Toolbar
-            sx={{
-              flexDirection: "column",
-              alignItems: "stretch",
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <IconButton>
-                <Person />
-              </IconButton>
-            </Box>
 
-            <Divider />
 
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Paper
-                component="form"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: 600,
-                  px: 2,
-                  py: 0.5,
-                }}
-              >
-                <Search />
-                <InputBase
-                  placeholder="Buscar turmas..."
-                  inputProps={{ "aria-label": "buscar turmas" }}
-                  sx={{ ml: 1, flex: 1 }}
-                />
-              </Paper>
-            </Box>
-          </Toolbar>
-        </AppBar>
 
-        <Container>
-          <Outlet />
-        </Container>
+      {/* <Container> */}
+      <Outlet />
+      {/* </Container> */}
 
-      </Box>
     </Box>
   );
 };
