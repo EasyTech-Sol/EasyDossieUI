@@ -75,12 +75,7 @@ const Template = () => {
         </Drawer>
       )}
 
-
-
-
-      {/* <Container> */}
       <Outlet />
-      {/* </Container> */}
 
     </Box>
   );

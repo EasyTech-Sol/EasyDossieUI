@@ -1,7 +1,7 @@
-import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, } from "@mui/material"
+import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, Paper, InputBase, } from "@mui/material"
 import { Add, Article, } from "@mui/icons-material"
 import { useState, useCallback } from "react"
-import { useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import AddStudentModal from '../../auth/components/AddStudentModal';
 import { useEffect } from "react"
 import { apiService } from "../../../services/easydossie.service"
@@ -11,12 +11,13 @@ import { useDropzone } from 'react-dropzone';
 import { handleExcelParse } from "../../../utils/csvManaging";
 import ClassAppBar from "./ClassAppBar";
 import Students from "./Students";
+import Search from "../../../components/Search";
 const drawerWidth = 240
 
 const Class = () => {
   // ------------------ Estados principais ------------------
 
-  const classId = Number(useParams().classId)
+  const { classId, title } = useLocation().state
   const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
 
   const [openAddStudentModal, setOpenAddStudentModal] = useState(false) // Controle do modal de adicionar aluno
@@ -65,7 +66,6 @@ const Class = () => {
   // ------------------ Lógica de dados ------------------
 
 
-
   const handleDeleteAluno = async (id: number, classId: number) => {
     try {
       await apiService.deleteStudent(classId, id);
@@ -74,7 +74,6 @@ const Class = () => {
       console.error("Erro ao deletar aluno:", err);
     }
   };
-
 
   const getAlunos = useCallback(async (id: number) => {
     try {
@@ -88,7 +87,6 @@ const Class = () => {
   useEffect(() => {
     getAlunos(classId)
   }, [getAlunos])
-
 
 
   const handleSaveEdit = useCallback(
@@ -125,6 +123,8 @@ const Class = () => {
       >
         <ClassAppBar />
 
+        <Search/>
+
         <Students alunos={alunos} handleOpenEditModal={handleOpenEditModal} handleDeleteAluno={handleDeleteAluno} />
 
         <SpeedDial
@@ -141,7 +141,8 @@ const Class = () => {
               },
             },
           }}
-          icon={<SpeedDialIcon />} ariaLabel={"Opções"}        >
+
+          icon={<SpeedDialIcon />} ariaLabel={"Opções"}>
           <SpeedDialAction
             key={"add"}
             icon={<Add />}

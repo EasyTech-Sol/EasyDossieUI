@@ -64,7 +64,7 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: Clas
           },
         }}
         onClick={() =>
-          navigate(`/class/${id}`)
+          navigate(`/class/${id}`, {state: {title, classId: id}})
         }
       >
         <CardHeader
