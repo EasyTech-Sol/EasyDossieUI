@@ -19,6 +19,7 @@ import {
 import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import DrawerContent from "../components/DrawerContent.tsx";
+import { useEffect } from "react";
 
 const drawerWidth = 240;
 
@@ -26,7 +27,7 @@ const Template = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedTab] = useState<"turmas" | "dossies">("turmas");
+  const [selectedTab, setSelectedTab] = useState<"turmas" | "dossies">("turmas");
   const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
@@ -38,6 +39,14 @@ const Template = () => {
     navigate("/auth/sign-in");
   };
 
+  // Redireciona com base na aba selecionada
+  useEffect(() => {
+    if (selectedTab === "dossies") {
+      navigate("/dossiers-dashboard");
+    } else if (selectedTab === "turmas") {
+      navigate("/home");
+    }
+  }, [selectedTab, navigate]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -54,7 +63,11 @@ const Template = () => {
             },
           }}
         >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
+          <DrawerContent
+            selectedTab={selectedTab}
+            onTabChange={setSelectedTab}
+            onLogout={handleLogout}
+          />
         </Drawer>
       ) : (
         <Drawer
@@ -71,12 +84,15 @@ const Template = () => {
             },
           }}
         >
-          <DrawerContent selectedTab={selectedTab} onLogout={handleLogout} />
+          <DrawerContent
+            selectedTab={selectedTab}
+            onTabChange={setSelectedTab}
+            onLogout={handleLogout}
+          />
         </Drawer>
       )}
 
       <Outlet />
-
     </Box>
   );
 };
