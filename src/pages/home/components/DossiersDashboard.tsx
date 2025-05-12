@@ -6,12 +6,72 @@ import {
   InputBase,
   Paper,
   Toolbar,
+  Snackbar,
   Fab,
 } from "@mui/material";
 import { Add, Person, Search } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { isAxiosError } from "axios";
+import { apiService } from "../../../services/easydossie.service.ts";
+import CreateDossie from "./CreateDossie.tsx";
 const drawerWidth = 240;
 
 const DossiersDashboard = () => {
+
+  const [classes, setDossies] = useState<Dossie[]>([])
+  const [editModalOpened, setEditModalOpened] = useState(false)
+  const emptyDossie: Dossie = {
+    titulo: '',
+    descricao: '',
+    area_avaliacao: '',
+    categorias: [],
+  };
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const handleCreateDossie = async (data: Dossie) => {
+    try {
+      const result = await apiService.createDossie(data);
+      const newClass = result.data;
+      setDossies(prev => [...prev, newClass])
+      setSnackbar({
+        open: true,
+        message: "Dossie criado com sucesso!",
+        severity: "success",
+      });
+    } catch (error) {
+      if (isAxiosError(error))
+        if (error.status === 403)
+          window.location.href = "auth/sign-in"
+        else
+          setSnackbar({
+            open: true,
+            message: error.response?.data.error,
+            severity: "error",
+          });
+      else
+        setSnackbar({
+          open: true,
+          message: "Erro ao criar dossie.",
+          severity: "error",
+        });
+    }
+    setDialogOpen(false);
+  };
+
+
   return (
       <>
         {/* Main */}
@@ -85,9 +145,17 @@ const DossiersDashboard = () => {
           bottom: 32,
           right: 32,
         }}
+        onClick={handleOpenDialog}
+
       >
         <Add />
       </Fab>
+      <CreateDossie
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        onSave={handleCreateDossie}
+        dossieData={emptyDossie}
+/>
     </Box>
       </>
   );
