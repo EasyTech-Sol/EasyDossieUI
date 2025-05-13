@@ -4,18 +4,20 @@ import ClassesDashboard from "./components/ClassesDashboard";
 import DossiersDashboard from "./components/DossiersDashboard"; // Importe o componente
 import Class from "./components/Class";
 import { TabsProvider } from "../../contexts/TabContext";
+import ListDossie from "./components/DossiersDashboard";
+
 
 export function routes(startPath: string) {
     return {
         path: startPath,
         element: <Template />,
-        async loader() {
-            if (!localStorage.getItem("token")) {
-                window.location.href = "/auth/sign-in";
-                return;
-            }
-            return true;
-        },
+        // async loader() {
+        //     if (!localStorage.getItem("token")) {
+        //         window.location.href = "/auth/sign-in";
+        //         return;
+        //     }
+        //     return true;
+        // },
         children: [
             {
                 path: "",
@@ -23,7 +25,8 @@ export function routes(startPath: string) {
             },
             { path: "home", element: <ClassesDashboard /> },
             { path: "dossiers-dashboard", element: <DossiersDashboard /> }, // Adicionada a rota para DossiersDashboard
-            { path: "/class/:classId", element: <TabsProvider><Class /></TabsProvider> }
+            { path: "/class/:classId", element: <TabsProvider><Class /></TabsProvider> },
+            { path: "listadossie", element: <ListDossie /> },
         ],
     };
 }
