@@ -43,4 +43,5 @@ export const apiService = {
   }) => client.patch("/students", data), //dentro da turma
   getDossies: async () => client.get("/dossies"), 
   deleteDossie: (id: number) => client.delete(`/dossies/${id}`),
+  editDossier: async (payload: any) => client.put("/dossier/edit", payload),
 };
