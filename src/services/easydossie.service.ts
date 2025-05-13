@@ -41,4 +41,6 @@ export const apiService = {
     registration: string;
     classId: number;
   }) => client.patch("/students", data), //dentro da turma
+  editDossier: async (payload: any) => client.put("/dossier/edit", payload),
+
 };
