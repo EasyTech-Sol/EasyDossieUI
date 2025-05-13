@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Box, CircularProgress, Snackbar, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, Snackbar} from '@mui/material';
 import { DossieList } from '../../../components/DossieList';
 import { ConfirmDialog } from '../../../components/ConfirmDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -110,9 +110,9 @@ export default function ListaDossiesPage() {
 
   if (isError) {
     return (
-      <Box sx={{ maxWidth: 1000, mx: 'auto', mt: 4, px: 2 }}>
+      <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, px: 2 }}>
         <Alert severity="error">
-          Ocorreu um erro ao carregar os dossiês: {error.message}
+          Ocorreu um erro ao carregar dossiês: {error.message}
         </Alert>
       </Box>
     );
