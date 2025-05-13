@@ -9,7 +9,7 @@ import {
   Fab,
 } from "@mui/material";
 import { Add, Person, Search } from "@mui/icons-material";
-import ListaDossiesPage from "./ListDossie";
+import ListaDossiesPage from "./ListDossiePage";
 const drawerWidth = 240;
 
 const DossiersDashboard = () => {

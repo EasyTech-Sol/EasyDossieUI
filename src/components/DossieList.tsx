@@ -33,7 +33,7 @@ export const DossieList: React.FC<DossieListProps> = ({
 }) => {
   
     return (
-        <Box sx={{ px: 4 }}> {/* padding horizontal para não colar nas bordas */}
+        <Box sx={{ px: 4 }}> 
           <List sx={{ width: '100%' }}>
             {dossies.map((dossie) => (
               <ListItem
