@@ -1,15 +1,26 @@
+type Quesito = {
+  id: number;
+  titulo: string;
+}
+
 type Descricao = {
-    titulo: string;
-  };
-  
+  id: number;
+  titulo: string;
+  quesitos: Quesito[];
+}
+
 type Categoria = {
-    nome: string;
-    descricoes: Descricao[];
-  };
-  
+  id: number;
+  titulo: string;
+  peso: number;
+  descricoes: Descricao[];
+}
+
 type Dossie = {
-    titulo: string;
-    descricao: string;
-    area_avaliacao: string;
-    categorias: Categoria[];
-  };
+  id: number;
+  titulo: string;
+  descricao: string;
+  area_avaliacao: string;
+  conceitos: string[];
+  categorias: Categoria[];
+}
