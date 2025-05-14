@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
+import ListaDossiersPage from "./ListDossierPage";
+
 const drawerWidth = 240;
 
 const DossiersDashboard = () => {
@@ -91,11 +93,55 @@ const DossiersDashboard = () => {
           severity={snackbar.severity}
           sx={{ width: "100%" }}
         >
+
           {snackbar.message}
         </Alert>
       </Snackbar>
 
       {/* Main */}
+
+  
+          {/* Top AppBar */}
+          <AppBar position="static" color="transparent" elevation={0}>
+            <Toolbar
+              sx={{
+                flexDirection: "column",
+                alignItems: "stretch",
+                gap: 1,
+              }}
+            >
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton>
+                  <Person />
+                </IconButton>
+              </Box>
+  
+              <Divider />
+  
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+                <Paper
+                  component="form"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    maxWidth: 600,
+                    px: 2,
+                    py: 0.5,
+                  }}
+                >
+                  <Search />
+                  <InputBase
+                    placeholder="Buscar dossiês..."
+                    inputProps={{ "aria-label": "buscar dossiês" }}
+                    sx={{ ml: 1, flex: 1 }}
+                  />
+                </Paper>
+              </Box>
+            </Toolbar>
+          </AppBar>
+
+      <ListaDossiersPage />
       <Box
         component="main"
         sx={{
