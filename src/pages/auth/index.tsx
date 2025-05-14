@@ -16,7 +16,7 @@ export function routes(startPath: string) {
             },
             { path: "sign-in", element: <SignIn /> },
             { path: "sign-up", element: <SignUp /> },
-            { path: "recuperar-senha", element: <ForgotPassword /> },
+            { path: "recover-password", element: <ForgotPassword /> },
             { path: "reset-password", element: <ResetPassword /> }
         ],
     };

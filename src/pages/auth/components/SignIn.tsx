@@ -43,7 +43,7 @@ const SignIn = () => {
       </Box>
       <Box typography={"caption"}>
         <Buttons.success title="Entrar" />
-        <Link href="/auth/recuperar-senha">Esqueceu sua senha?</Link>
+        <Link href="/auth/recover-password">Esqueceu sua senha?</Link>
       </Box>
       <Buttons.text title="Cadastrar-se"
         onClick={() => { window.location.href = "/auth/sign-up" }} />
