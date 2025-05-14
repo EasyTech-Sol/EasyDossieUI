@@ -54,10 +54,23 @@ const DossiersDashboard = () => {
   const { mutate: createDossier } = useMutation({
     mutationFn: async ({ templateData, categories }: DossierInput) => {
       const response = await apiService.createDossier({ templateData, categories });
-      return response.data;
+      return response.data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dossiers"] }); // Atualiza a lista de dossiês
+    onSuccess: (newDossier) => {
+      queryClient.setQueryData(["dossiers"], (oldDossiers: DossierListItem[] | undefined) => {
+        const { template } = newDossier;
+
+        const newItem: DossierListItem = {
+          id: template.id,
+          titulo: template.titulo,
+          descricao: template.descricao,
+        };
+        console.log("eis o item", newItem)
+        if (!oldDossiers) return [newItem];
+
+        return [...oldDossiers, newItem];
+      });
+
       setSnackbar({
         open: true,
         message: "Dossie criado com sucesso!",
