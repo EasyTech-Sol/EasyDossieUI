@@ -17,6 +17,7 @@ const SignIn = () => {
     try {
       const result = await apiService.login(values)
       localStorage.setItem("token", result.data.token)
+      // localStorage.setItem("TeacherId", result.data.teacher.teacherId)
       window.location.href = "/home"
     } catch (error) {
       if (isAxiosError(error) && error.status === 400)
@@ -42,7 +43,7 @@ const SignIn = () => {
       </Box>
       <Box typography={"caption"}>
         <Buttons.success title="Entrar" />
-        <Link href="/recuperar-senha">Esqueceu sua senha?</Link>
+        <Link href="/auth/recuperar-senha">Esqueceu sua senha?</Link>
       </Box>
       <Buttons.text title="Cadastrar-se"
         onClick={() => { window.location.href = "/auth/sign-up" }} />

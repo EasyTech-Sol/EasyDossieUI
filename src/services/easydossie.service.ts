@@ -41,4 +41,10 @@ export const apiService = {
     registration: string;
     classId: number;
   }) => client.patch("/students", data), //dentro da turma
+
+  forgotPassword: async (email: string) =>
+    client.post("/teachers/send-reset-link", {email}), //V
+
+  resetPassword: async (token: string, newPassword: string) =>
+    client.patch("/teachers/reset-password", { token, newPassword }),//V
 };
