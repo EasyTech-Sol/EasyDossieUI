@@ -65,7 +65,6 @@ const DossiersDashboard = () => {
           titulo: template.titulo,
           descricao: template.descricao,
         };
-        console.log("eis o item", newItem)
         if (!oldDossiers) return [newItem];
 
         return [...oldDossiers, newItem];

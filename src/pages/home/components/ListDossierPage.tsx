@@ -30,21 +30,26 @@ export default function ListDossierPage() {
     select: (data) =>
       data.map((dossier) => ({
         id: dossier.id,
-        title: dossier.title,
-        description: dossier.description,
+        titulo: dossier.title,
+        descricao: dossier.description,
       })),
   });
 
   // Mutação para deletar um dossiê
   const deleteDossierMutation = useMutation({
-    mutationFn: (id: number) => apiService.deleteDossier(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dossiers"] });
-      setSnackbar({
-        open: true,
-        message: "Dossiê excluído com sucesso!",
-        severity: "success",
-      });
+    mutationFn: async (id: number) => {
+      await apiService.deleteDossier(id)
+      return id
+    },
+    onSuccess: (id: number) => {
+      queryClient.setQueryData(["dossiers"], (oldDossiers: DossierListItem[] | undefined) => {
+        setSnackbar({
+          open: true,
+          message: "Dossiê excluído com sucesso!",
+          severity: "success",
+        });  
+        return oldDossiers?.filter(d => d.id !== id)
+      })
     },
     onError: (error: Error) => {
       setSnackbar({
