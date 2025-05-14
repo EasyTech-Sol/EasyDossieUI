@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { mocked_classes } from "./mocked_data";
+import dossiersList from "./dossiers_list.json"
 
 export const handlers = [
   http.post("http://localhost:3000/login", () => {
@@ -23,12 +24,15 @@ export const handlers = [
     return HttpResponse.json({ mensagem: "deu certo" }, { status: 200 });
   }),
 
-  http.get("http://localhost:3000/turmas/:id", ({ params }) => {
-    const { id } = params;
-    return HttpResponse.json(
-      mocked_classes.find((cls) => cls.id === id),
-      { status: 200 }
-    );
+  // http.get("http://localhost:3000/turmas/:id", ({ params }) => {
+  //   const { id } = params;
+  //   return HttpResponse.json(
+  //     mocked_classes.find((cls) => cls.id === id),
+  //     { status: 200 }
+  //   );
+  // }),
+  http.get("http://localhost:3000/dossiers", () => {
+    return HttpResponse.json(dossiersList, {status: 200})
   }),
 
   http.post("http://localhost:3000/turmas", async ({ request }) => {

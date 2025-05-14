@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import { Add, Person,  } from "@mui/icons-material";
+import { Add, Person, } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
@@ -22,15 +22,16 @@ import ListaDossiersPage from "./ListDossierPage";
 const drawerWidth = 240;
 
 import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
+import ListDossierPage from "./ListDossierPage";
 
 
 const DossiersDashboard = () => {
 
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [dossiers, setDossiers] = useState<Dossie[]>([])
+  const [dossiers, setDossiers] = useState<Dossier[]>([])
   const [editModalOpened, setEditModalOpened] = useState(false)
-  const emptyDossie: Dossie = {
+  const emptyDossie: Dossier = {
     id: 0,
     title: '',
     description: '',
@@ -38,6 +39,7 @@ const DossiersDashboard = () => {
     categories: [],
     concepts: []
   };
+
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -84,9 +86,7 @@ const DossiersDashboard = () => {
         });
     }
     setDialogOpen(false);
-  };
-
-
+  }
 
   return (
     <>
@@ -108,29 +108,29 @@ const DossiersDashboard = () => {
 
       {/* Main */}
 
-  
-          {/* Top AppBar */}
-          <AppBar position="static" color="transparent" elevation={0}>
-            <Toolbar
-              sx={{
-                flexDirection: "column",
-                alignItems: "stretch",
-                gap: 1,
-              }}
-            >
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <IconButton>
-                  <Person />
-                </IconButton>
-              </Box>
-  
-              <Divider />
-  
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Search value={searchTerm} onChange={setSearchTerm} />
-            </Box>
-            </Toolbar>
-          </AppBar>
+
+      {/* Top AppBar */}
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar
+          sx={{
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: 1,
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton>
+              <Person />
+            </IconButton>
+          </Box>
+
+          <Divider />
+
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+            <Search value={searchTerm} onChange={setSearchTerm} />
+          </Box>
+        </Toolbar>
+      </AppBar>
 
       <ListaDossiersPage />
       <Box
@@ -193,6 +193,7 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
+          <ListDossierPage />
         </Box>
 
         {/* Floating Action Button */}

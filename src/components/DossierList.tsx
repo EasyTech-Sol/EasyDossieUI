@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import { DossierListProps } from "../types/dossier";
 
 export const DossierList: React.FC<DossierListProps> = ({
   dossiers,

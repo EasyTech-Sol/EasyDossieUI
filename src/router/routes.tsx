@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import * as authApp from "../pages/auth";
 import * as home from "../pages/home"
+import ListDossierPage from "../pages/home/components/ListDossierPage";
 
 export const routes = createBrowserRouter([
   authApp.routes("/auth"),
@@ -9,4 +10,7 @@ export const routes = createBrowserRouter([
     element: <Navigate to="auth" replace />,
   },
   home.routes("/"),
+  {
+    path: "/test", element: <ListDossierPage />
+  }
 ]);
