@@ -37,11 +37,20 @@ type TemplateDossier = {
   evaluation_area: string;
   concept: string;
 }
+
+type Template = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  conceito: string;
+  areaAvaliacao: string;
+}
+
   
 type DossierListItem = {
     id: number;
-    title: string;
-    description: string;
+    titulo: string;
+    descricao: string;
 }
   
 type DossierListProps = {

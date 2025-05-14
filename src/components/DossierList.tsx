@@ -64,12 +64,12 @@ export const DossierList: React.FC<DossierListProps> = ({
           >
             <ListItemAvatar>
               <Avatar sx={{ bgcolor: "#e5d5ff", color: "#4b0082" }}>
-                {dossier.title.charAt(0)}
+                {dossier.titulo.charAt(0)}
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={dossier.title}
-              secondary={dossier.description}
+              primary={dossier.titulo}
+              secondary={dossier.descricao}
               sx={{ ml: 2 }}
             />
           </ListItem>
