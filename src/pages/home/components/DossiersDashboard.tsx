@@ -9,7 +9,7 @@ import {
   Fab,
 } from "@mui/material";
 import { Add, Person, Search } from "@mui/icons-material";
-import ListaDossiesPage from "./ListDossiePage";
+import ListaDossiersPage from "./ListDossierPage";
 const drawerWidth = 240;
 
 const DossiersDashboard = () => {
@@ -66,7 +66,7 @@ const DossiersDashboard = () => {
             </Toolbar>
           </AppBar>
 
-      <ListaDossiesPage />
+      <ListaDossiersPage />
       <Box
         sx={{
           flexGrow: 1,
