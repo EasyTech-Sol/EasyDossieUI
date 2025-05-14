@@ -4,7 +4,6 @@ import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiService } from "../../../services/easydossie.service";
-import { Dossier, DossierListItem } from "../../../types/dossier";
 
 export default function ListDossierPage() {
   const queryClient = useQueryClient();
@@ -22,7 +21,7 @@ export default function ListDossierPage() {
     isLoading,
     isError,
     error,
-  } = useQuery<Dossier[], Error, DossierListItem[]>({
+  } = useQuery<TemplateDossier[], Error, DossierListItem[]>({
     queryKey: ["dossiers"],
     queryFn: async () => {
       const response = await apiService.getDossiers();

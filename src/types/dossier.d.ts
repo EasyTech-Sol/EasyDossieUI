@@ -16,7 +16,7 @@ type Categoria = {
   descricoes: Descricao[];
 }
 
-type Dossie = {
+type Dossier = {
   id: number;
   title: string;
   description: string;
@@ -30,29 +30,21 @@ type DossierInput = {
   categories: Category[];
 };
 
-type TemplateDossie = {
+type TemplateDossier = {
   id: number;
   title: string;
   description: string;
   evaluation_area: string;
   concept: string;
-
-export interface Dossier {
-    id: number;
-    title: string;
-    description: string;
-    assessmentArea: string;
-    concepts: string;
-    professorId: number;
 }
   
-export interface DossierListItem {
+type DossierListItem = {
     id: number;
     title: string;
     description: string;
 }
   
-export interface DossierListProps {
+type DossierListProps = {
     dossiers: DossierListItem[];
     onEdit?: (id: number) => void;
     onDelete?: (id: number) => void;
