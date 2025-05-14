@@ -11,7 +11,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 
 
-
 interface ImportStudentsProps {
   classId: number;
   registerDropzoneRoot: ReturnType<typeof useDropzone>['getRootProps'];

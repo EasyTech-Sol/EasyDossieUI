@@ -25,6 +25,8 @@ export const apiService = {
   getClasses: async () => client.get("/classes"),
   editClass: async (data: Class) => client.post(`/classes/edit`, data),
   createClass: async (data: TurmaData) => client.post("/classes/create", data),
+  createDossier: async ({ templateData, categories }: DossierInput) =>
+    client.post("/dossie/complete", { templateData, categories }),
   getClassById: async (id: number) => client.get(`/classes/${id}`),
   deleteClass: async (id: number) => client.delete(`/classes/${id}`),
   importStudents: async (classId: number, students: Student[]) =>
@@ -42,9 +44,15 @@ export const apiService = {
     classId: number;
   }) => client.patch("/students", data), //dentro da turma
 
+
   forgotPassword: async (email: string) =>
     client.post("/teachers/send-reset-link", {email}), //V
 
   resetPassword: async (token: string, newPassword: string) =>
     client.patch("/teachers/reset-password", { token, newPassword }),//V
+
+  getDossiers: async () => client.get("/dossiers"), 
+  deleteDossier: (id: number) => client.delete(`/dossiers/${id}`),
+  editDossier: async (payload: any) => client.put("/dossier/edit", payload),
+
 };
