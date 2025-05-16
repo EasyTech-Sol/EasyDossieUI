@@ -3,14 +3,14 @@ type LoginData = {
   password: string;
 };
 
-type SignUpData = {
+type RegisterData = {
   name: string;
   cpf: string;
   email: string;
   password: string;
 };
 
-type TurmaData = {
+type ClassData = {
   title: string;
   shift: string;
   institution: string;
@@ -20,7 +20,7 @@ type TurmaData = {
 
 type Teacher = {
   id: string;
+  name: string;
   email: string;
-  email: string;
-  password: string;
+  cpf: string;
 };
