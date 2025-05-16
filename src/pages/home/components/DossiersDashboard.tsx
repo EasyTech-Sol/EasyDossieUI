@@ -10,17 +10,27 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Add, Person, Search } from "@mui/icons-material";
+
+import { useState } from "react";
+import { Add, Person,  } from "@mui/icons-material";
+
+
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
 import ListaDossiersPage from "./ListDossierPage";
 
+
 const drawerWidth = 240;
+
+import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
+
 
 const DossiersDashboard = () => {
 
+
+  const [searchTerm, setSearchTerm] = useState("");
   const [dossiers, setDossiers] = useState<Dossie[]>([])
   const [editModalOpened, setEditModalOpened] = useState(false)
   const emptyDossie: Dossie = {
@@ -80,6 +90,7 @@ const DossiersDashboard = () => {
   };
 
 
+
   return (
     <>
       <Snackbar
@@ -118,26 +129,9 @@ const DossiersDashboard = () => {
   
               <Divider />
   
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-                <Paper
-                  component="form"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "100%",
-                    maxWidth: 600,
-                    px: 2,
-                    py: 0.5,
-                  }}
-                >
-                  <Search />
-                  <InputBase
-                    placeholder="Buscar dossiês..."
-                    inputProps={{ "aria-label": "buscar dossiês" }}
-                    sx={{ ml: 1, flex: 1 }}
-                  />
-                </Paper>
-              </Box>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              <Search value={searchTerm} onChange={setSearchTerm} />
+            </Box>
             </Toolbar>
           </AppBar>
 
