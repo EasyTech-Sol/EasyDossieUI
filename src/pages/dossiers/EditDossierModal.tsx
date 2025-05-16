@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -17,89 +17,157 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
+import { apiService } from '../../services/easydossie.service';
 
-interface CreateDossieProps {
+interface Quesito {
+  id: number;
+  titulo: string;
+}
+
+interface Descricao {
+  id: number;
+  titulo: string;
+  quesitos: Quesito[];
+}
+
+interface Categoria {
+  id: number;
+  titulo: string;
+  peso: number;
+  descricoes: Descricao[];
+}
+
+interface Dossie {
+  id: number;
+  titulo: string;
+  descricao: string;
+  area_avaliacao: string;
+  conceitos: string[];
+  categorias: Categoria[];
+}
+
+interface EditDossieModalProps {
   open: boolean;
   onClose: () => void;
   dossieData: Dossie;
-  onSave: ({ templateData, categories }: DossierInput) => void;
+  onSave: (updatedDossie: Dossie) => void;
 }
 
-
-export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
-  const [dossie, setDossie] = useState<Dossie>({
-    ...dossieData,
-    concepts: dossieData.concepts ?? [],
-  });
+export default function EditDossieModal({
+  open,
+  onClose,
+  dossieData,
+  onSave,
+}: EditDossieModalProps) {
+  const [dossie, setDossie] = useState<Dossie>(dossieData);
   const [conceitosError, setConceitosError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setDossie({
-      ...dossieData,
-      concepts: dossieData.concepts ?? [],
-    });
+    setDossie(dossieData);
     setConceitosError(null);
   }, [dossieData]);
-
-  if (!dossie) return null;
 
   const handleChange = (field: keyof Dossie, value: any) => {
     setDossie({ ...dossie, [field]: value });
   };
 
   const handleCategoriaChange = (ci: number, field: keyof Categoria, val: any) => {
-    const cats = [...dossie.categories];
+    const cats = [...dossie.categorias];
     cats[ci] = { ...cats[ci], [field]: val };
-    setDossie({ ...dossie, categories: cats });
+    setDossie({ ...dossie, categorias: cats });
   };
 
   const handleDescricaoChange = (ci: number, di: number, val: string) => {
-    const cats = [...dossie.categories];
-    cats[ci].descricoes[di].title = val;
-    setDossie({ ...dossie, categories: cats });
+    const cats = [...dossie.categorias];
+    cats[ci].descricoes[di].titulo = val;
+    setDossie({ ...dossie, categorias: cats });
   };
 
   const handleQuesitoChange = (ci: number, di: number, qi: number, val: string) => {
-    const cats = [...dossie.categories];
+    const cats = [...dossie.categorias];
     cats[ci].descricoes[di].quesitos[qi].titulo = val;
-    setDossie({ ...dossie, categories: cats });
+    setDossie({ ...dossie, categorias: cats });
   };
 
   const addCategoria = () => {
     setDossie({
       ...dossie,
-      categories: [...dossie.categories, { id: 0, title: '', weight: 1, descricoes: [] }],
+      categorias: [...dossie.categorias, { id: 0, titulo: '', peso: 1, descricoes: [] }],
     });
   };
 
   const addDescricao = (ci: number) => {
-    const cats = [...dossie.categories];
-    cats[ci].descricoes.push({ id: 0, title: '', quesitos: [] });
-    setDossie({ ...dossie, categories: cats });
+    const cats = [...dossie.categorias];
+    cats[ci].descricoes.push({ id: 0, titulo: '', quesitos: [] });
+    setDossie({ ...dossie, categorias: cats });
   };
 
   const addQuesito = (ci: number, di: number) => {
-    const cats = [...dossie.categories];
+    const cats = [...dossie.categorias];
     cats[ci].descricoes[di].quesitos.push({ id: 0, titulo: '' });
-    setDossie({ ...dossie, categories: cats });
+    setDossie({ ...dossie, categorias: cats });
   };
 
   const validarConceitos = (c: string[]) => c.length >= 3;
 
-
   const handleSave = async () => {
-    if (!validarConceitos(dossie.concepts)) {
-      setConceitosError('Selecione pelo menos 3 concepts (A, B, C, D, E).');
+    if (!validarConceitos(dossie.conceitos)) {
+      setConceitosError('Selecione pelo menos 3 conceitos (A, B, C, D, E).');
       return;
     }
     setConceitosError(null);
     setLoading(true);
 
+    // 1) conceitos em string
+    const conceptsString = dossie.conceitos.join(', ');
+
+    // 2) categoryIDs
+    const categoryIDs = dossie.categorias.reduce<Record<number, [string, number]>>(
+      (acc, cat) => {
+        if (cat.id) acc[cat.id] = [cat.titulo, cat.peso];
+        return acc;
+      },
+      {}
+    );
+
+    // 3) descriptionIDs
+    const descriptionIDs = dossie.categorias
+      .flatMap((cat) =>
+        cat.descricoes.map((desc) => ({ id: desc.id, tuple: [desc.titulo, cat.id] as [string, number] }))
+      )
+      .reduce<Record<number, [string, number]>>((acc, { id, tuple }) => {
+        if (id) acc[id] = tuple;
+        return acc;
+      }, {});
+
+    // 4) questionsIDs
+    const questionsIDs = dossie.categorias
+      .flatMap((cat) =>
+        cat.descricoes.flatMap((desc) =>
+          desc.quesitos.map((q) => ({
+            id: q.id,
+            tuple: [q.titulo, desc.id, cat.id] as [string, number, number],
+          }))
+        )
+      )
+      .reduce<Record<number, [string, number, number]>>((acc, { id, tuple }) => {
+        if (id) acc[id] = tuple;
+        return acc;
+      }, {});
+
     try {
-      const conceptsString = dossie.concepts.join(', ');
-      const { categories, ...templateData } = dossie
-      onSave({ templateData: { ...templateData, concept: conceptsString }, categories });
+      const resp = await apiService.editDossier({
+        dossierId: dossie.id,
+        title: dossie.titulo,
+        descriptionDossier: dossie.descricao,
+        valuation_area: dossie.area_avaliacao,
+        concepts: conceptsString,
+        questionsIDs,
+        categoryIDs,
+        descriptionIDs,
+      });
+      onSave(resp.data.data);
       onClose();
     } catch (err: any) {
       alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));
@@ -110,27 +178,27 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Cadastrar Dossiê</DialogTitle>
+      <DialogTitle>Editar Dossiê</DialogTitle>
       <DialogContent>
         <TextField
           fullWidth
           label="Título"
-          value={dossie.title}
-          onChange={(e) => handleChange('title', e.target.value)}
+          value={dossie.titulo}
+          onChange={(e) => handleChange('titulo', e.target.value)}
           margin="normal"
         />
         <TextField
           fullWidth
           label="Descrição"
-          value={dossie.description}
-          onChange={(e) => handleChange('description', e.target.value)}
+          value={dossie.descricao}
+          onChange={(e) => handleChange('descricao', e.target.value)}
           margin="normal"
         />
         <TextField
           fullWidth
           label="Área de Avaliação"
-          value={dossie.evaluation_area}
-          onChange={(e) => handleChange('evaluation_area', e.target.value)}
+          value={dossie.area_avaliacao}
+          onChange={(e) => handleChange('area_avaliacao', e.target.value)}
           margin="normal"
         />
 
@@ -144,13 +212,13 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
               control={
                 <Checkbox
                   color="success"
-                  checked={dossie.concepts.includes(c)}
+                  checked={dossie.conceitos.includes(c)}
                   onChange={(e) =>
                     handleChange(
-                      'concepts',
+                      'conceitos',
                       e.target.checked
-                        ? [...dossie.concepts, c]
-                        : dossie.concepts.filter((x) => x !== c)
+                        ? [...dossie.conceitos, c]
+                        : dossie.conceitos.filter((x) => x !== c)
                     )
                   }
                 />
@@ -169,26 +237,26 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
           Categorias de Avaliação
         </Typography>
 
-        {dossie.categories.map((cat, ci) => (
+        {dossie.categorias.map((cat, ci) => (
           <Accordion key={ci} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{cat.title || `Categoria ${ci + 1}`}</Typography>
+              <Typography>{cat.titulo || `Categoria ${ci + 1}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <TextField
                 fullWidth
                 label="Título da Categoria"
-                value={cat.title}
-                onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)}
+                value={cat.titulo}
+                onChange={(e) => handleCategoriaChange(ci, 'titulo', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Peso"
                 type="number"
-                value={cat.weight}
+                value={cat.peso}
                 onChange={(e) =>
-                  handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)
+                  handleCategoriaChange(ci, 'peso', parseFloat(e.target.value) || 0)
                 }
                 margin="normal"
               />
@@ -201,7 +269,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                   <TextField
                     fullWidth
                     label={`Título da Descrição ${di + 1}`}
-                    value={desc.title}
+                    value={desc.titulo}
                     onChange={(e) => handleDescricaoChange(ci, di, e.target.value)}
                     margin="normal"
                   />

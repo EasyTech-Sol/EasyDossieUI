@@ -14,7 +14,7 @@ import { useForm, Controller } from "react-hook-form";
 interface CreateClassProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: TurmaData) => void;
+  onSave: (data: Class) => void;
 }
 
 
@@ -24,7 +24,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
     handleSubmit,
     control,
     reset
-  } = useForm<TurmaData>({
+  } = useForm<Class>({
     defaultValues: {
       title: "",
       shift: "",
@@ -33,7 +33,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
     }
   });
 
-  const onSubmit = (data: TurmaData) => {
+  const onSubmit = (data: Class) => {
     onSave(data); // ou envie todos os dados se necessário
     reset();
     onClose();

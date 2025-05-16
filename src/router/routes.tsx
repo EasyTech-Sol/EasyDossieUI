@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import * as authApp from "../pages/auth";
 import * as home from "../pages/home"
-import ListDossierPage from "../pages/home/components/ListDossierPage";
+import ListDossierPage from "../pages/dossiers/ListDossierPage";
 
 export const routes = createBrowserRouter([
   authApp.routes("/auth"),

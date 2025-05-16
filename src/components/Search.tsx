@@ -37,5 +37,3 @@ interface SearchProps {
   }
   
   export default Search;
-  
-Search.tsx
