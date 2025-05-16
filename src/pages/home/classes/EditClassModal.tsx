@@ -72,7 +72,6 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
     setLoading(true);
     try {
       const result = await apiService.editClass({...data, classId: classToEdit.id});
-
       const updated = result.data.data;
       alert("Dados atualizados com sucesso!");
       setClasses(prev => {

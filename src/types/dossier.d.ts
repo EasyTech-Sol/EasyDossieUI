@@ -52,11 +52,3 @@ type DossierListItem = {
     titulo: string;
     descricao: string;
 }
-  
-type DossierListProps = {
-    dossiers: DossierListItem[];
-    onEdit?: (id: number) => void;
-    onDelete?: (id: number) => void;
-    onAssociate?: (id: number) => void;
-
-}

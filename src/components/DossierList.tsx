@@ -12,6 +12,13 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
+interface DossierListProps {
+  dossiers: Dossier[];
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
+  onAssociate?: (id: number) => void;
+}
+
 export const DossierList: React.FC<DossierListProps> = ({
   dossiers,
   onEdit,
@@ -64,12 +71,12 @@ export const DossierList: React.FC<DossierListProps> = ({
           >
             <ListItemAvatar>
               <Avatar sx={{ bgcolor: "#e5d5ff", color: "#4b0082" }}>
-                {dossier.titulo.charAt(0)}
+                {dossier.title.charAt(0)}
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={dossier.titulo}
-              secondary={dossier.descricao}
+              primary={dossier.title}
+              secondary={dossier.description}
               sx={{ ml: 2 }}
             />
           </ListItem>

@@ -2,7 +2,7 @@ import { Box, TextField, Modal, Button, Typography, IconButton } from "@mui/mate
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { apiService } from "../../../services/easydossie.service"; // import do serviço de API
+import { apiService } from "../../services/easydossie.service"; // import do serviço de API
 
 interface AddStudentModalProps {
   open: boolean;

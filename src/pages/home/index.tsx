@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
-import ClassesDashboard from "./components/ClassesDashboard";
-import DossiersDashboard from "../dossiers/DossiersDashboard"; // Importe o componente
+import ClassesDashboard from "./classes/ClassesDashboard";
+import DossiersDashboard from "./dossiers/DossiersDashboard"; // Importe o componente
 import Class from "../class/Class";
 import { TabsProvider } from "../../contexts/TabContext";
 import MainLayout from "../../components/layout/MainLayout";
