@@ -3,7 +3,7 @@ import { routeTo } from "../utils/routeTo";
 import { mocked_classes } from "../utils/mockedClasses";
 
 export const classMocks = [
-  http.put(routeTo("/turmas/:id"), async ({ request }) => {
+  http.post(routeTo("/classes/edit"), async ({ request }) => {
     const data = await request.json();
     return HttpResponse.json(data, { status: 200 });
   }),
@@ -12,7 +12,7 @@ export const classMocks = [
     return HttpResponse.json({ classes: mocked_classes }, { status: 200 });
   }),
 
-  http.delete(routeTo("/turmas/:id"), () => {
+  http.delete(routeTo("/classes/:id"), () => {
     return HttpResponse.json({ mensagem: "deu certo" }, { status: 200 });
   }),
 

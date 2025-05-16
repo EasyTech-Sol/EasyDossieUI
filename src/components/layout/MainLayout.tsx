@@ -80,8 +80,9 @@ const MainLayout = () => {
                     />
                 </Drawer>
             )}
-
-            <Outlet />
+            <Box display={"flex"} flexDirection={"column"} width={"100%"} alignItems={"center"}>
+                <Outlet />
+            </Box>
         </Box>
     );
 };

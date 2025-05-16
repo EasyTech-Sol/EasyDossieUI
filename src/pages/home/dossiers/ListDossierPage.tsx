@@ -1,0 +1,134 @@
+import * as React from "react";
+import { Alert, Box, Snackbar } from "@mui/material";
+import { DossierList } from "../../../components/DossierList";
+import { ConfirmDialog } from "../../../components/ConfirmDialog";
+import { apiService } from "../../../services/easydossie.service";
+import { isAxiosError } from "axios";
+
+interface ListDossiersPageProps {
+  dossiers: Dossier[]
+  setDossiers: React.Dispatch<React.SetStateAction<Dossier[]>>
+}
+
+export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersPageProps) {
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [selectedId, setSelectedId] = React.useState<number | null>(null);
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
+  React.useEffect(() => {
+    const fetchDossiers = async () => {
+      try {
+        const result = await apiService.getDossiers()
+        setDossiers(result.data)
+        console.log(result.data)
+
+      } catch (error) {
+        if (isAxiosError(error))
+          setSnackbar({
+            open: true,
+            message: `Erro ao listar dossiês: ${error.message}`,
+            severity: "error",
+          });
+
+      }
+    }
+
+    fetchDossiers()
+  }, [])
+
+  // Mutação para deletar um dossiê
+  const deleteDossie = async (id: number) => {
+
+    try {
+      await apiService.deleteDossier(id)
+      setDossiers(prev => prev.filter(d => d.id !== id))
+      setSnackbar({
+        open: true,
+        message: `Dossiê excluído com sucesso!`,
+        severity: "success",
+      })
+
+    } catch (error) {
+      if (isAxiosError(error))
+        setSnackbar({
+          open: true,
+          message: `Erro ao excluir dossiê: ${error.message}`,
+          severity: "error",
+        });
+      else
+        setSnackbar({
+          open: true,
+          message: `Erro desconhecido ao excluir dossiê`,
+          severity: "error",
+        });
+
+    }
+
+  }
+
+
+  const handleEdit = (id: number) => {
+    console.log(`Editar dossiê com id: ${id}`);
+    // Faltando a navegação pra essa parte
+  };
+
+  const handleDeleteRequest = (id: number) => {
+    setSelectedId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedId !== null) {
+      deleteDossie(selectedId)
+    }
+    setConfirmOpen(false);
+    setSelectedId(null);
+  };
+
+  const handleAssociate = (id: number) => {
+    console.log(`Associar dossiê com id: ${id}`);
+    // Faltando a navegação pra essa parte
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  return (
+    <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, px: 2 }}>
+      <DossierList
+        dossiers={dossiers}
+        onEdit={handleEdit}
+        onDelete={handleDeleteRequest}
+        onAssociate={handleAssociate}
+      />
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Confirmar exclusão"
+        description="Tem certeza que deseja excluir este dossiê? Essa ação não pode ser desfeita."
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+}

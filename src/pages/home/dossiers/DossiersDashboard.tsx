@@ -9,21 +9,19 @@ import {
   Alert,
 } from "@mui/material";
 
-import { useState } from "react";
-import { Add, Person  } from "@mui/icons-material";import { isAxiosError } from "axios";
-import { apiService } from "../../services/easydossie.service.ts";
+import { useEffect, useState } from "react";
+import { Add, Person } from "@mui/icons-material"; import { isAxiosError } from "axios";
+import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
-import ListaDossiersPage from "./ListDossierPage.tsx";
+import ListDossiersPage from "./ListDossierPage.tsx";
+import Search from "../../../components/Search.tsx";
 
 
 const drawerWidth = 240;
 
-import Search from "../../components/Search.tsx"; // ajuste o caminho conforme necessário
 
 
 const DossiersDashboard = () => {
-
-
   const [searchTerm, setSearchTerm] = useState("");
   const [dossiers, setDossiers] = useState<Dossier[]>([])
   const [editModalOpened, setEditModalOpened] = useState(false)
@@ -83,8 +81,6 @@ const DossiersDashboard = () => {
     setDialogOpen(false);
   };
 
-
-
   return (
     <>
       <Snackbar
@@ -103,33 +99,29 @@ const DossiersDashboard = () => {
         </Alert>
       </Snackbar>
 
-      {/* Main */}
+      {/* Top AppBar */}
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar
+          sx={{
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: 1,
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton>
+              <Person />
+            </IconButton>
+          </Box>
 
-  
-          {/* Top AppBar */}
-          <AppBar position="static" color="transparent" elevation={0}>
-            <Toolbar
-              sx={{
-                flexDirection: "column",
-                alignItems: "stretch",
-                gap: 1,
-              }}
-            >
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <IconButton>
-                  <Person />
-                </IconButton>
-              </Box>
-  
-              <Divider />
-  
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Search value={searchTerm} onChange={setSearchTerm} />
-            </Box>
-            </Toolbar>
-          </AppBar>
+          <Divider />
 
-      <ListaDossiersPage />
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+            <Search value={searchTerm} onChange={setSearchTerm} />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
       <Box
         component="main"
         sx={{
@@ -150,6 +142,7 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
+          <ListDossiersPage dossiers={dossiers} setDossiers={setDossiers} />
         </Box>
 
         {/* Floating Action Button */}

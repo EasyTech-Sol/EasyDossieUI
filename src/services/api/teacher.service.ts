@@ -8,4 +8,8 @@ export const teacherApi = {
   deleteTeacher: async () => client.delete("/teachers"),
   sendResetLink: async (data: { email: string }) =>
     client.post("/teachers/send-reset-link", data),
+  forgotPassword: async (email: string) =>
+    client.post("/teachers/send-reset-link", { email }),
+  resetPassword: async (token: string, newPassword: string) =>
+    client.patch("/teachers/reset-password", { token, newPassword }),
 };

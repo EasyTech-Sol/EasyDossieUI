@@ -2,10 +2,10 @@ import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, } from "@mui/material"
 import { Add, Article, } from "@mui/icons-material"
 import { useState, useCallback } from "react"
 import { useLocation } from "react-router-dom"
-import AddStudentModal from '../auth/components/AddStudentModal';
+import AddStudentModal from './AddStudentModal';
 import { useEffect } from "react"
 import { apiService } from "../../services/easydossie.service";
-import EditStudentModal from '../auth/components/EditStudentModal';
+import EditStudentModal from './EditStudentModal';
 import ImportStudents from "../../components/importStudents/ImportStudents"
 import { useDropzone } from 'react-dropzone';
 import { handleExcelParse } from "../../utils/csvManaging";
