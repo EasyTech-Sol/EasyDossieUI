@@ -1,17 +1,17 @@
-import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, Paper, InputBase, } from "@mui/material"
+import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, } from "@mui/material"
 import { Add, Article, } from "@mui/icons-material"
 import { useState, useCallback } from "react"
-import { useLocation, useParams } from "react-router-dom"
-import AddStudentModal from '../../auth/components/AddStudentModal';
+import { useLocation } from "react-router-dom"
+import AddStudentModal from '../auth/components/AddStudentModal';
 import { useEffect } from "react"
-import { apiService } from "../../../services/easydossie.service"
-import EditStudentModal from '../../auth/components/EditStudentModal';
-import ImportStudents from "../../../components/importStudents/ImportStudents"
+import { apiService } from "../../services/easydossie.service";
+import EditStudentModal from '../auth/components/EditStudentModal';
+import ImportStudents from "../../components/importStudents/ImportStudents"
 import { useDropzone } from 'react-dropzone';
-import { handleExcelParse } from "../../../utils/csvManaging";
+import { handleExcelParse } from "../../utils/csvManaging";
 import ClassAppBar from "./ClassAppBar";
 import Students from "./Students";
-import Search from "../../../components/Search";
+import Search from "../../components/Search";
 const drawerWidth = 240
 
 const Class = () => {

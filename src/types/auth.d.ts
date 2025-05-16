@@ -10,13 +10,6 @@ type RegisterData = {
   password: string;
 };
 
-type ClassData = {
-  title: string;
-  shift: string;
-  institution: string;
-  period: string;
-};
-
 
 type Teacher = {
   id: string;

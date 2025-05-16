@@ -2,16 +2,13 @@ import {
   Box,
   Fab,
   useTheme,
-  useMediaQuery,
   Snackbar,
   Alert,
   Container,
   AppBar,
   Toolbar,
   IconButton,
-  Divider,
-  Paper,
-  InputBase
+  Divider
 } from "@mui/material";
 import {
   Add,
@@ -59,7 +56,7 @@ const ClassesDashboard = () => {
     setDialogOpen(false);
   };
 
-  const handleCreateTurma = async (data: TurmaData) => {
+  const handleCreateTurma = async (data: Class) => {
     try {
       const result = await apiService.createClass(data);
       const newClass = result.data;
@@ -173,7 +170,7 @@ const ClassesDashboard = () => {
             <Divider />
 
             <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-            <Search value={searchTerm} onChange={setSearchTerm} />
+              <Search value={searchTerm} onChange={setSearchTerm} />
             </Box>
           </Toolbar>
         </AppBar>
@@ -189,17 +186,17 @@ const ClassesDashboard = () => {
             flexDirection={"row"}
           >
             {classes
-            .filter(cls => cls.titulo.toLowerCase().includes(searchTerm.toLowerCase()))
-            .map(cls => (
-              <ClassCard
-                id={cls.id}
-                key={cls.id}
-                title={cls.titulo}
-                onEdit={() => handleEditClass(cls.id)}
-                onDelete={() => handleDeleteClass(cls.id)}
-                bgColor={getRandomMutedColor()}
-              />
-          ))}
+              .filter(cls => cls.titulo.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map(cls => (
+                <ClassCard
+                  id={cls.id}
+                  key={cls.id}
+                  title={cls.titulo}
+                  onEdit={() => handleEditClass(cls.id)}
+                  onDelete={() => handleDeleteClass(cls.id)}
+                  bgColor={getRandomMutedColor()}
+                />
+              ))}
           </Box>
         </Container>
 

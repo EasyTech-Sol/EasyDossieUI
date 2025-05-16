@@ -1,9 +1,9 @@
-import { NavigateNext, Person, Search, Title } from '@mui/icons-material'
+import { NavigateNext, Person } from '@mui/icons-material'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { AppBar, Box, Breadcrumbs, Button, Divider, IconButton, InputBase, Paper, Tab, Tabs, Toolbar, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { AppBar, Box, Breadcrumbs, Button, Divider, IconButton, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useTabsContext } from '../../../contexts/TabContext';
+import { useTabsContext } from '../../contexts/TabContext';
 
 const ClassAppBar = () => {
     const { title } = useLocation().state

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
-import { DossierList } from "../../../components/DossierList";
-import { ConfirmDialog } from "../../../components/ConfirmDialog";
+import { DossierList } from "../../components/DossierList";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiService } from "../../../services/easydossie.service";
+import { apiService } from "../../services/easydossie.service";
 
 export default function ListDossierPage() {
   const queryClient = useQueryClient();

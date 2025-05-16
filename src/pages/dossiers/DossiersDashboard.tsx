@@ -3,8 +3,6 @@ import {
   Box,
   Divider,
   IconButton,
-  InputBase,
-  Paper,
   Toolbar,
   Fab,
   Snackbar,
@@ -12,27 +10,24 @@ import {
 } from "@mui/material";
 
 import { useState } from "react";
-import { Add, Person,  } from "@mui/icons-material";
-
-
-import { useEffect, useState } from "react";
-import { isAxiosError } from "axios";
-import { apiService } from "../../../services/easydossie.service.ts";
+import { Add, Person  } from "@mui/icons-material";import { isAxiosError } from "axios";
+import { apiService } from "../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
-import ListDossierPage from "./ListDossierPage.tsx";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ListaDossiersPage from "./ListDossierPage.tsx";
 
 
 const drawerWidth = 240;
 
-import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
+import Search from "../../components/Search.tsx"; // ajuste o caminho conforme necessário
 
 
 const DossiersDashboard = () => {
+
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [dossiers, setDossiers] = useState<Dossie[]>([])
+  const [dossiers, setDossiers] = useState<Dossier[]>([])
   const [editModalOpened, setEditModalOpened] = useState(false)
-  const emptyDossie: Dossie = {
+  const emptyDossie: Dossier = {
     id: 0,
     title: '',
     description: '',
@@ -40,7 +35,6 @@ const DossiersDashboard = () => {
     categories: [],
     concepts: []
   };
-
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -60,52 +54,33 @@ const DossiersDashboard = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const { mutate: createDossier } = useMutation({
-    mutationFn: async ({ templateData, categories }: DossierInput) => {
-      const response = await apiService.createDossier({ templateData, categories });
-      return response.data
-    },
-    onSuccess: (newDossier) => {
-      queryClient.setQueryData(["dossiers"], (oldDossiers: DossierListItem[] | undefined) => {
-        const { template } = newDossier;
-
-        const newItem: DossierListItem = {
-          id: template.id,
-          titulo: template.titulo,
-          descricao: template.descricao,
-        };
-        if (!oldDossiers) return [newItem];
-
-        return [...oldDossiers, newItem];
+  const handleCreateDossie = async ({ templateData, categories }: DossierInput) => {
+    try {
+      const result = await apiService.createDossier({
+        templateData, categories
       });
-
+      const newClass = result.data;
+      setDossiers(prev => [...prev, newClass])
       setSnackbar({
         open: true,
         message: "Dossie criado com sucesso!",
         severity: "success",
       });
-      setDialogOpen(false);
-    },
-    onError: (error) => {
-      if (isAxiosError(error)) {
+    } catch (error) {
+      if (isAxiosError(error))
         setSnackbar({
           open: true,
-          message: error.response?.data.error || "Erro ao criar dossie.",
+          message: error.response?.data.error,
           severity: "error",
         });
-      } else {
+      else
         setSnackbar({
           open: true,
           message: "Erro ao criar dossie.",
           severity: "error",
         });
-      }
-      setDialogOpen(false);
     }
-  });
-
-  const handleCreateDossie = (data: DossierInput) => {
-    createDossier(data);
+    setDialogOpen(false);
   };
 
 
@@ -128,7 +103,9 @@ const DossiersDashboard = () => {
         </Alert>
       </Snackbar>
 
-      {/* Main */} 
+      {/* Main */}
+
+  
           {/* Top AppBar */}
           <AppBar position="static" color="transparent" elevation={0}>
             <Toolbar
@@ -163,46 +140,6 @@ const DossiersDashboard = () => {
         }}
       >
 
-        {/* Top AppBar */}
-        <AppBar position="static" color="transparent" elevation={0}>
-          <Toolbar
-            sx={{
-              flexDirection: "column",
-              alignItems: "stretch",
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <IconButton>
-                <Person />
-              </IconButton>
-            </Box>
-
-            <Divider />
-
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Paper
-                component="form"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: 600,
-                  px: 2,
-                  py: 0.5,
-                }}
-              >
-                <Search />
-                <InputBase
-                  placeholder="Buscar dossiês..."
-                  inputProps={{ "aria-label": "buscar dossiês" }}
-                  sx={{ ml: 1, flex: 1 }}
-                />
-              </Paper>
-            </Box>
-          </Toolbar>
-        </AppBar>
-
         {/* Content */}
         <Box
           sx={{
@@ -213,7 +150,6 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
-          <ListDossierPage />
         </Box>
 
         {/* Floating Action Button */}
