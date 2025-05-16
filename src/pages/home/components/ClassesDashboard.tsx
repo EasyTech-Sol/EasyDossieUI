@@ -16,7 +16,6 @@ import {
 import {
   Add,
   Person,
-  Search,
 } from "@mui/icons-material";
 
 import { useEffect, useState } from "react";
@@ -26,6 +25,9 @@ import { apiService } from "../../../services/easydossie.service.ts";
 import { getRandomMutedColor } from "../../../helpers/softColors.ts";
 import EditClassModal from "./EditClassModal.tsx";
 import { isAxiosError } from "axios";
+
+
+import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
 
 const drawerWidth = 240;
 
@@ -48,6 +50,7 @@ const ClassesDashboard = () => {
     instituicao: ""
   })
 
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const handleOpenDialog = () => {
     setDialogOpen(true);
   };
@@ -170,24 +173,7 @@ const ClassesDashboard = () => {
             <Divider />
 
             <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Paper
-                component="form"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: 600,
-                  px: 2,
-                  py: 0.5,
-                }}
-              >
-                <Search />
-                <InputBase
-                  placeholder="Buscar turmas..."
-                  inputProps={{ "aria-label": "buscar turmas" }}
-                  sx={{ ml: 1, flex: 1 }}
-                />
-              </Paper>
+            <Search value={searchTerm} onChange={setSearchTerm} />
             </Box>
           </Toolbar>
         </AppBar>
@@ -202,7 +188,9 @@ const ClassesDashboard = () => {
             gap={"1rem"}
             flexDirection={"row"}
           >
-            {classes.map(cls => (
+            {classes
+            .filter(cls => cls.titulo.toLowerCase().includes(searchTerm.toLowerCase()))
+            .map(cls => (
               <ClassCard
                 id={cls.id}
                 key={cls.id}
@@ -211,7 +199,7 @@ const ClassesDashboard = () => {
                 onDelete={() => handleDeleteClass(cls.id)}
                 bgColor={getRandomMutedColor()}
               />
-            ))}
+          ))}
           </Box>
         </Container>
 

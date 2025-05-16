@@ -10,7 +10,11 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Add, Person, Search } from "@mui/icons-material";
+
+import { useState } from "react";
+import { Add, Person,  } from "@mui/icons-material";
+
+
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
@@ -18,12 +22,17 @@ import CreateDossie from "./CreateDossie.tsx";
 import ListDossierPage from "./ListDossierPage.tsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+
 const drawerWidth = 240;
 
+import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
+
+
 const DossiersDashboard = () => {
-  // Dentro do componente
-  const queryClient = useQueryClient();
-  const emptyDossie: Dossier = {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dossiers, setDossiers] = useState<Dossie[]>([])
+  const [editModalOpened, setEditModalOpened] = useState(false)
+  const emptyDossie: Dossie = {
     id: 0,
     title: '',
     description: '',
@@ -100,6 +109,7 @@ const DossiersDashboard = () => {
   };
 
 
+
   return (
     <>
       <Snackbar
@@ -118,8 +128,31 @@ const DossiersDashboard = () => {
         </Alert>
       </Snackbar>
 
-      {/* Main */}
+      {/* Main */} 
+          {/* Top AppBar */}
+          <AppBar position="static" color="transparent" elevation={0}>
+            <Toolbar
+              sx={{
+                flexDirection: "column",
+                alignItems: "stretch",
+                gap: 1,
+              }}
+            >
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton>
+                  <Person />
+                </IconButton>
+              </Box>
+  
+              <Divider />
+  
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+              <Search value={searchTerm} onChange={setSearchTerm} />
+            </Box>
+            </Toolbar>
+          </AppBar>
 
+      <ListaDossiersPage />
       <Box
         component="main"
         sx={{

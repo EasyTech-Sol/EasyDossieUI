@@ -16,6 +16,7 @@ const drawerWidth = 240
 
 const Class = () => {
   // ------------------ Estados principais ------------------
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { classId, title } = useLocation().state
   const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
@@ -62,6 +63,10 @@ const Class = () => {
   }) => {
     setAlunoEditando(aluno);
   };
+
+  const alunosFiltrados = alunos.filter((aluno) =>
+    aluno.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // ------------------ Lógica de dados ------------------
 
@@ -123,9 +128,13 @@ const Class = () => {
       >
         <ClassAppBar />
 
-        <Search/>
+        <Search value={searchTerm} onChange={setSearchTerm} />
 
-        <Students alunos={alunos} handleOpenEditModal={handleOpenEditModal} handleDeleteAluno={handleDeleteAluno} />
+        <Students
+          alunos={alunosFiltrados}
+          handleOpenEditModal={handleOpenEditModal}
+          handleDeleteAluno={handleDeleteAluno}
+        />
 
         <SpeedDial
           color="success"
