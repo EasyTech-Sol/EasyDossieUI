@@ -9,7 +9,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Add, Person } from "@mui/icons-material"; import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
@@ -31,7 +31,7 @@ const DossiersDashboard = () => {
     description: '',
     evaluation_area: '',
     categories: [],
-    concepts: []
+    concept: "A,B,C"
   };
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -100,12 +100,13 @@ const DossiersDashboard = () => {
       </Snackbar>
 
       {/* Top AppBar */}
-      <AppBar position="static" color="transparent" elevation={0}>
+      <AppBar position="relative" color="transparent" elevation={0}>
         <Toolbar
           sx={{
             flexDirection: "column",
             alignItems: "stretch",
             gap: 1,
+            margin: 1
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
@@ -164,6 +165,13 @@ const DossiersDashboard = () => {
           onSave={handleCreateDossie}
           dossieData={emptyDossie}
         />
+
+        {/* <EditDossieModal
+          open={false}
+          onClose={ }
+          dossieData={ }
+          onSave={ } /> */}
+
       </Box>
     </>
   );

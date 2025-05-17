@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
-import { apiService } from '../../services/easydossie.service';
+import { apiService } from '../../../services/easydossie.service';
 
 interface Quesito {
   id: number;
@@ -158,15 +158,17 @@ export default function EditDossieModal({
 
     try {
       const resp = await apiService.editDossier({
-        dossierId: dossie.id,
+        id: dossie.id,
         title: dossie.titulo,
-        descriptionDossier: dossie.descricao,
-        valuation_area: dossie.area_avaliacao,
-        concepts: conceptsString,
+        description: dossie.descricao,
+        evaluation_area: dossie.area_avaliacao,
+        concept: conceptsString,
+        categories: dossie.categorias
+      },
         questionsIDs,
         categoryIDs,
         descriptionIDs,
-      });
+      );
       onSave(resp.data.data);
       onClose();
     } catch (err: any) {

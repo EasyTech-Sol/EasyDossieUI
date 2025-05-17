@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -11,12 +11,10 @@ import {
   AccordionDetails,
   Typography,
   Box,
-  FormHelperText,
-  Checkbox,
-  FormControlLabel,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
+import CustomLabelSlider from './CustomLabelSlider';
 
 interface CreateDossieProps {
   open: boolean;
@@ -27,79 +25,65 @@ interface CreateDossieProps {
 
 
 export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
-  const [dossie, setDossie] = useState<Dossier>({
-    ...dossieData,
-    concepts: dossieData.concepts ?? [],
-  });
-  const [conceitosError, setConceitosError] = useState<string | null>(null);
+  const [dossier, setDossier] = useState<Dossier>(dossieData);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setDossie({
+    setDossier({
       ...dossieData,
-      concepts: dossieData.concepts ?? [],
+      concept: dossieData.concept ?? [],
     });
-    setConceitosError(null);
   }, [dossieData]);
 
-  if (!dossie) return null;
+  if (!dossier) return null;
 
   const handleChange = (field: keyof Dossier, value: any) => {
-    setDossie({ ...dossie, [field]: value });
+    setDossier({ ...dossier, [field]: value });
   };
 
-  const handleCategoriaChange = (ci: number, field: keyof Categoria, val: any) => {
-    const cats = [...dossie.categories];
+  const handleCategoriaChange = (ci: number, field: keyof Category, val: any) => {
+    const cats = [...dossier.categories];
     cats[ci] = { ...cats[ci], [field]: val };
-    setDossie({ ...dossie, categories: cats });
+    setDossier({ ...dossier, categories: cats });
   };
 
   const handleDescricaoChange = (ci: number, di: number, val: string) => {
-    const cats = [...dossie.categories];
-    cats[ci].descricoes[di].title = val;
-    setDossie({ ...dossie, categories: cats });
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].title = val;
+    setDossier({ ...dossier, categories: cats });
   };
 
   const handleQuesitoChange = (ci: number, di: number, qi: number, val: string) => {
-    const cats = [...dossie.categories];
-    cats[ci].descricoes[di].quesitos[qi].titulo = val;
-    setDossie({ ...dossie, categories: cats });
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].criteria[qi].title = val;
+    setDossier({ ...dossier, categories: cats });
   };
 
   const addCategoria = () => {
-    setDossie({
-      ...dossie,
-      categories: [...dossie.categories, { id: 0, title: '', weight: 1, descricoes: [] }],
+    setDossier({
+      ...dossier,
+      categories: [...dossier.categories, { id: 0, title: '', weight: 1, descriptions: [] }],
     });
   };
 
   const addDescricao = (ci: number) => {
-    const cats = [...dossie.categories];
-    cats[ci].descricoes.push({ id: 0, title: '', quesitos: [] });
-    setDossie({ ...dossie, categories: cats });
+    const cats = [...dossier.categories];
+    cats[ci].descriptions.push({ id: 0, title: '', criteria: [] });
+    setDossier({ ...dossier, categories: cats });
   };
 
   const addQuesito = (ci: number, di: number) => {
-    const cats = [...dossie.categories];
-    cats[ci].descricoes[di].quesitos.push({ id: 0, titulo: '' });
-    setDossie({ ...dossie, categories: cats });
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].criteria.push({ id: 0, title: '' });
+    setDossier({ ...dossier, categories: cats });
   };
 
-  const validarConceitos = (c: string[]) => c.length >= 3;
-
-
   const handleSave = async () => {
-    if (!validarConceitos(dossie.concepts)) {
-      setConceitosError('Selecione pelo menos 3 concepts (A, B, C, D, E).');
-      return;
-    }
-    setConceitosError(null);
     setLoading(true);
-
     try {
-      const conceptsString = dossie.concepts.join(', ');
-      const { categories, ...templateData } = dossie
-      onSave({ templateData: { ...templateData, concept: conceptsString }, categories });
+      const { categories, ...templateData } = dossier
+      console.log(dossier)
+      onSave({ templateData, categories });
       onClose();
     } catch (err: any) {
       alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));
@@ -115,61 +99,38 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
         <TextField
           fullWidth
           label="Título"
-          value={dossie.title}
+          value={dossier.title}
           onChange={(e) => handleChange('title', e.target.value)}
           margin="normal"
         />
         <TextField
           fullWidth
           label="Descrição"
-          value={dossie.description}
+          value={dossier.description}
           onChange={(e) => handleChange('description', e.target.value)}
           margin="normal"
         />
         <TextField
           fullWidth
           label="Área de Avaliação"
-          value={dossie.evaluation_area}
+          value={dossier.evaluation_area}
           onChange={(e) => handleChange('evaluation_area', e.target.value)}
           margin="normal"
         />
 
-        <Box display="flex" alignItems="center" gap={2} mt={2} flexWrap="wrap">
+        <Box display="flex" flexDirection={"row"} alignItems="center" gap={2} mt={2} flexWrap="wrap">
           <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
             Conceitos:
           </Typography>
-          {['A', 'B', 'C', 'D', 'E'].map((c) => (
-            <FormControlLabel
-              key={c}
-              control={
-                <Checkbox
-                  color="success"
-                  checked={dossie.concepts.includes(c)}
-                  onChange={(e) =>
-                    handleChange(
-                      'concepts',
-                      e.target.checked
-                        ? [...dossie.concepts, c]
-                        : dossie.concepts.filter((x) => x !== c)
-                    )
-                  }
-                />
-              }
-              label={c}
-            />
-          ))}
+          <CustomLabelSlider setOutput={
+            (concepts: string) => setDossier(prev => ({...prev, concepts: concepts}))}/>
         </Box>
-        {conceitosError && (
-          <FormHelperText error sx={{ mt: 1 }}>
-            {conceitosError}
-          </FormHelperText>
-        )}
 
         <Typography variant="h6" mt={2}>
           Categorias de Avaliação
         </Typography>
 
-        {dossie.categories.map((cat, ci) => (
+        {dossier.categories.map((cat, ci) => (
           <Accordion key={ci} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>{cat.title || `Categoria ${ci + 1}`}</Typography>
@@ -196,7 +157,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
               <Typography variant="subtitle1" mt={2}>
                 Descrições
               </Typography>
-              {cat.descricoes.map((desc, di) => (
+              {cat.descriptions.map((desc: any, di: any) => (
                 <Box key={di} mb={2} pl={2} borderLeft="2px solid #ccc">
                   <TextField
                     fullWidth
@@ -205,12 +166,12 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                     onChange={(e) => handleDescricaoChange(ci, di, e.target.value)}
                     margin="normal"
                   />
-                  {desc.quesitos.map((q, qi) => (
+                  {desc.criteria.map((q: any, qi: any) => (
                     <TextField
                       key={qi}
                       fullWidth
                       label={`Quesito ${qi + 1}`}
-                      value={q.titulo}
+                      value={q.title}
                       onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
                       margin="normal"
                     />
