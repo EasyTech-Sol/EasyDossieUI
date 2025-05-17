@@ -15,16 +15,20 @@ import { useState } from "react";
 import { Add, Person,  } from "@mui/icons-material";
 
 
-import { useEffect, useState } from "react";
+
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
-import ListaDossiersPage from "./ListDossierPage";
+import ListDossierPage from "./ListDossierPage";
+import AssociateDossierClass from "./AssociateDossierClass.tsx"; {/*REMOVER DAQUI DEPOIS DE TESTE*/}
+
 
 
 const drawerWidth = 240;
 
 import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
+
+
 
 
 const DossiersDashboard = () => {
@@ -33,6 +37,7 @@ const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dossiers, setDossiers] = useState<Dossie[]>([])
   const [editModalOpened, setEditModalOpened] = useState(false)
+  const [open, setOpen] = useState(true); // já começa aberto
   const emptyDossie: Dossie = {
     id: 0,
     title: '',
@@ -135,7 +140,8 @@ const DossiersDashboard = () => {
             </Toolbar>
           </AppBar>
 
-      <ListaDossiersPage />
+      <ListDossierPage />
+      <AssociateDossierClass open={open} onClose={() => setOpen(false)}/> {/*REMOVER DAQUI DEPOIS DE TESTE*/}
       <Box
         component="main"
         sx={{

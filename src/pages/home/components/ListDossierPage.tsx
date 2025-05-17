@@ -5,6 +5,7 @@ import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiService } from "../../../services/easydossie.service";
 import { Dossier, DossierListItem } from "../../../types/dossier";
+import AssociateDossierClass from "./AssociateDossierClass";
 
 export default function ListDossierPage() {
   const queryClient = useQueryClient();
