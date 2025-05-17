@@ -23,9 +23,7 @@ export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersP
     const fetchDossiers = async () => {
       try {
         const result = await apiService.getDossiers()
-        setDossiers(result.data)
-        console.log(result.data)
-
+        setDossiers(result.data.dossiers)
       } catch (error) {
         if (isAxiosError(error))
           setSnackbar({

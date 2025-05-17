@@ -20,7 +20,7 @@ const ClassAppBar = () => {
 
     return (
         <>
-            <AppBar position="absolute" color="transparent" elevation={0}>
+            <AppBar position="relative" color="transparent" elevation={0}>
                 <Toolbar
                     sx={{
                         flexDirection: "column",
@@ -97,7 +97,6 @@ const ClassAppBar = () => {
                 </Toolbar>
 
             </AppBar>
-            <Box sx={{ height: 220 }} />
         </>
     )
 }

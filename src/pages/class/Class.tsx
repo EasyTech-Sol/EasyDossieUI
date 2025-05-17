@@ -117,88 +117,77 @@ const Class = () => {
   return (
     <>
       {/* Main */}
-      <Box
-        component="main"
+      <ClassAppBar />
+
+      <Search value={searchTerm} onChange={setSearchTerm} />
+
+      <Students
+        alunos={alunosFiltrados}
+        handleOpenEditModal={handleOpenEditModal}
+        handleDeleteAluno={handleDeleteAluno}
+      />
+
+      <SpeedDial
+        color="success"
         sx={{
-          flexGrow: 1,
-          p: 3,
-          position: "relative",
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        <ClassAppBar />
-
-        <Search value={searchTerm} onChange={setSearchTerm} />
-
-        <Students
-          alunos={alunosFiltrados}
-          handleOpenEditModal={handleOpenEditModal}
-          handleDeleteAluno={handleDeleteAluno}
-        />
-
-        <SpeedDial
-          color="success"
-          sx={{
-            position: 'absolute',
-            bottom: 32,
-            right: 32,
-            '& .MuiFab-primary': {
-              backgroundColor: theme => theme.palette.success.main,
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'darkgreen',
-              },
+          position: 'absolute',
+          bottom: 32,
+          right: 32,
+          '& .MuiFab-primary': {
+            backgroundColor: theme => theme.palette.success.main,
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'darkgreen',
             },
-          }}
+          },
+        }}
 
-          icon={<SpeedDialIcon />} ariaLabel={"Opções"}>
-          <SpeedDialAction
-            key={"add"}
-            icon={<Add />}
-            tooltipTitle={"Adicionar aluno"}
-            onClick={() => {
-              handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
-            }} />
-          <SpeedDialAction
-            key={"import"}
-            icon={< Article />}
-            tooltipTitle={"Importar aluno (CSV)"}
-            onClick={() => {
-              openFileDialog()
-            }} />
-        </SpeedDial>
+        icon={<SpeedDialIcon />} ariaLabel={"Opções"}>
+        <SpeedDialAction
+          key={"add"}
+          icon={<Add />}
+          tooltipTitle={"Adicionar aluno"}
+          onClick={() => {
+            handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
+          }} />
+        <SpeedDialAction
+          key={"import"}
+          icon={< Article />}
+          tooltipTitle={"Importar aluno (CSV)"}
+          onClick={() => {
+            openFileDialog()
+          }} />
+      </SpeedDial>
 
-        <AddStudentModal
-          open={openAddStudentModal}
-          handleClose={handleCloseAddStudentModal}
-          classId={classId}
-          onSuccess={() => {
-            // Fecha o modal e re-busca a lista de alunos
-            handleCloseAddStudentModal()
-            getAlunos(classId)
-          }}
-        />
+      <AddStudentModal
+        open={openAddStudentModal}
+        handleClose={handleCloseAddStudentModal}
+        classId={classId}
+        onSuccess={() => {
+          // Fecha o modal e re-busca a lista de alunos
+          handleCloseAddStudentModal()
+          getAlunos(classId)
+        }}
+      />
 
-        <ImportStudents
-          classId={classId}
-          registerDropzoneRoot={getRootProps}
-          registerDropzoneInput={getInputProps}
-          open={open}
-          setOpen={setOpen}
-          excelData={excelData}
-          setExcelData={setExcelData}
-          setStudents={setAlunos}
-        />
+      <ImportStudents
+        classId={classId}
+        registerDropzoneRoot={getRootProps}
+        registerDropzoneInput={getInputProps}
+        open={open}
+        setOpen={setOpen}
+        excelData={excelData}
+        setExcelData={setExcelData}
+        setStudents={setAlunos}
+      />
 
-        <EditStudentModal
-          open={!!alunoEditando}
-          handleClose={() => setAlunoEditando(null)}
-          student={alunoEditando}
-          onEdit={handleSaveEdit}
-          classId={classId}
-        />
-
-      </Box>
+      <EditStudentModal
+        open={!!alunoEditando}
+        handleClose={() => setAlunoEditando(null)}
+        student={alunoEditando}
+        onEdit={handleSaveEdit}
+        classId={classId}
+      />
     </>
   )
 }

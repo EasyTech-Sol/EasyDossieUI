@@ -40,6 +40,10 @@ export const DossierList: React.FC<DossierListProps> = ({
               boxShadow: 1,
               display: "flex",
               alignItems: "center",
+              transition: "transform 0.1s ease-in",
+              "&:hover": {
+                transform: "translateY(-.5rem)",
+              }
             }}
             secondaryAction={
               <Box sx={{ display: "flex", gap: 1 }}>
