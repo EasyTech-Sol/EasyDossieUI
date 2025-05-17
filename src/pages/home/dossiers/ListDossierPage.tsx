@@ -7,6 +7,7 @@ import { isAxiosError } from "axios";
 import EditDossieModal from "./EditDossierModal";
 import { useDossiers } from "../../../contexts/DossierContext";
 
+import AssociateDossierClass from "./AssociateDossierClass";
 
 export default function ListDossierPage() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);

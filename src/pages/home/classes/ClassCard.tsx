@@ -19,8 +19,8 @@ interface ClassCardProps {
   title: string
   bgColor: string
   id: number
-  onEdit: Function
-  onDelete: Function
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
@@ -39,14 +39,14 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: Clas
   const handleEdit = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
     e.stopPropagation()
     handleClose();
-    onEdit();
+    onEdit?.(); // Executa onEdit() apenas se ela foi fornecida via props.
     // lógica para editar
   };
 
   const handleDelete = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
     e.stopPropagation()
     handleClose();
-    onDelete();
+    onDelete?.(); /// Executa onDelete() apenas se ela foi fornecida via props.
     // lógica para excluir
   };
 
@@ -74,29 +74,29 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: Clas
               {truncateString(title, 10)}
             </Typography>
           }
-          action={
-            <>
-              <Tooltip title="Opções">
-                <IconButton onClick={(e) => {
-                  e.stopPropagation()
-                  handleClick(e)
-                }}>
-                  <MoreVertIcon sx={{ color: "white" }} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClick={(e) => e.stopPropagation()}
-                onClose={handleClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-              >
-                <MenuItem onClick={(e) => handleEdit(e)}>Editar turma</MenuItem>
-                <MenuItem onClick={(e) => handleDelete(e)}>Excluir turma</MenuItem>
-              </Menu>
-            </>
-          }
+          action={ (onEdit || onDelete) && (
+              <>
+                <Tooltip title="Opções">
+                  <IconButton onClick={(e) => {
+                    e.stopPropagation();
+                    handleClick(e);
+                  }}>
+                    <MoreVertIcon sx={{ color: "white" }} />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClick={(e) => e.stopPropagation()}
+                  onClose={handleClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                  {onEdit && <MenuItem onClick={(e) => handleEdit(e)}>Editar turma</MenuItem>}
+                  {onDelete && <MenuItem onClick={(e) => handleDelete(e)}>Excluir turma</MenuItem>}
+                </Menu>
+              </>
+            )}
         />
         <Divider />
         <CardContent sx={{ height: '100%', backgroundColor: "#E2E2E2" }}>
