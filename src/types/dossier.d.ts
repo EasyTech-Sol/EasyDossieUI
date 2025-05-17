@@ -6,7 +6,7 @@ type Question = {
 type Description = {
   id: number;
   title: string;
-  questions: Question[];
+  criteria: Question[];
 }
 
 type Category = {
@@ -21,7 +21,7 @@ type Dossier = {
   title: string;
   description: string;
   evaluation_area: string;
-  concepts: string;
+  concept: string;
   categories: Categoria[];
 }
 

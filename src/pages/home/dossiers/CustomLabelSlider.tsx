@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
 
 const options = [
   'A,B,C',
@@ -8,11 +7,14 @@ const options = [
   'A,B,C,D,E'
 ];
 
+interface CustomLabelSliderProps {
+  setOutput: (output: string) => void
+}
 
 
-export default function CustomLabelSlider() {
+
+export default function CustomLabelSlider({setOutput}: CustomLabelSliderProps) {
   const [value, setValue] = React.useState(0);
-  const [output, setOutput] = React.useState("A,B,C")
 
   return (
     <Slider

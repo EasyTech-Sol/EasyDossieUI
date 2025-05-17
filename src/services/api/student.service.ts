@@ -6,9 +6,9 @@ export const studentApi = {
   addStudent: async (classId: number, student: Student) =>
     client.post("/students/manual", { classId, ...student }),
   deleteStudent: async (classId: number, studentId: number) =>
-    client.delete("/students", { params: { classId, studentId } }),
+    client.delete(`/students/${studentId}/class/${classId}`),
   getClassStudents: async (classId: number) =>
-    client.get("/students", { params: { classId } }),
+    client.get(`/students/classes/${classId}`),
   editStudent: async (data: {
     id: number;
     name: string;

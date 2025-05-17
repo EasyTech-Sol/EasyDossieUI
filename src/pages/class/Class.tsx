@@ -12,11 +12,13 @@ import { handleExcelParse } from "../../utils/csvManaging";
 import ClassAppBar from "./ClassAppBar";
 import Students from "./Students";
 import Search from "../../components/Search";
-const drawerWidth = 240
+import { useTabsContext } from "../../contexts/TabContext";
 
 const Class = () => {
   // ------------------ Estados principais ------------------
   const [searchTerm, setSearchTerm] = useState("");
+
+  const { selectedSubTab, setSelectedSubTab } = useTabsContext();
 
   const { classId, title } = useLocation().state
   const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
@@ -121,11 +123,13 @@ const Class = () => {
 
       <Search value={searchTerm} onChange={setSearchTerm} />
 
-      <Students
-        alunos={alunosFiltrados}
-        handleOpenEditModal={handleOpenEditModal}
-        handleDeleteAluno={handleDeleteAluno}
-      />
+      {selectedSubTab === "alunos" &&
+        <Students
+          alunos={alunosFiltrados}
+          handleOpenEditModal={handleOpenEditModal}
+          handleDeleteAluno={handleDeleteAluno}
+        />
+      }
 
       <SpeedDial
         color="success"
