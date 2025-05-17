@@ -1,19 +1,19 @@
-type Quesito = {
+type Question = {
   id: number;
   titulo: string;
 }
 
-type Descricao = {
+type Description = {
   id: number;
   title: string;
-  quesitos: Quesito[];
+  questions: Question[];
 }
 
-type Categoria = {
+type Category = {
   id: number;
   title: string;
   weight: number;
-  descricoes: Descricao[];
+  descriptions: Descricao[];
 }
 
 type Dossier = {
@@ -21,7 +21,7 @@ type Dossier = {
   title: string;
   description: string;
   evaluation_area: string;
-  concepts: string[];
+  concepts: string;
   categories: Categoria[];
 }
 
