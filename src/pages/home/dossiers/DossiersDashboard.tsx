@@ -3,8 +3,6 @@ import {
   Box,
   Divider,
   IconButton,
-  InputBase,
-  Paper,
   Toolbar,
   Fab,
   Snackbar,
@@ -12,34 +10,28 @@ import {
 } from "@mui/material";
 
 import { useState } from "react";
-import { Add, Person,  } from "@mui/icons-material";
-
-
-import { useEffect, useState } from "react";
-import { isAxiosError } from "axios";
+import { Add, Person } from "@mui/icons-material"; import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
-import ListaDossiersPage from "./ListDossierPage";
+import ListDossiersPage from "./ListDossierPage.tsx";
+import Search from "../../../components/Search.tsx";
 
 
 const drawerWidth = 240;
 
-import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
 
 
 const DossiersDashboard = () => {
-
-
   const [searchTerm, setSearchTerm] = useState("");
-  const [dossiers, setDossiers] = useState<Dossie[]>([])
+  const [dossiers, setDossiers] = useState<Dossier[]>([])
   const [editModalOpened, setEditModalOpened] = useState(false)
-  const emptyDossie: Dossie = {
+  const emptyDossie: Dossier = {
     id: 0,
     title: '',
     description: '',
     evaluation_area: '',
     categories: [],
-    concepts: []
+    concept: "A,B,C"
   };
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -89,8 +81,6 @@ const DossiersDashboard = () => {
     setDialogOpen(false);
   };
 
-
-
   return (
     <>
       <Snackbar
@@ -109,33 +99,30 @@ const DossiersDashboard = () => {
         </Alert>
       </Snackbar>
 
-      {/* Main */}
+      {/* Top AppBar */}
+      <AppBar position="relative" color="transparent" elevation={0}>
+        <Toolbar
+          sx={{
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: 1,
+            margin: 1
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton>
+              <Person />
+            </IconButton>
+          </Box>
 
-  
-          {/* Top AppBar */}
-          <AppBar position="static" color="transparent" elevation={0}>
-            <Toolbar
-              sx={{
-                flexDirection: "column",
-                alignItems: "stretch",
-                gap: 1,
-              }}
-            >
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <IconButton>
-                  <Person />
-                </IconButton>
-              </Box>
-  
-              <Divider />
-  
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Search value={searchTerm} onChange={setSearchTerm} />
-            </Box>
-            </Toolbar>
-          </AppBar>
+          <Divider />
 
-      <ListaDossiersPage />
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+            <Search value={searchTerm} onChange={setSearchTerm} />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
       <Box
         component="main"
         sx={{
@@ -145,46 +132,6 @@ const DossiersDashboard = () => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-
-        {/* Top AppBar */}
-        <AppBar position="static" color="transparent" elevation={0}>
-          <Toolbar
-            sx={{
-              flexDirection: "column",
-              alignItems: "stretch",
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <IconButton>
-                <Person />
-              </IconButton>
-            </Box>
-
-            <Divider />
-
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-              <Paper
-                component="form"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: 600,
-                  px: 2,
-                  py: 0.5,
-                }}
-              >
-                <Search />
-                <InputBase
-                  placeholder="Buscar dossiês..."
-                  inputProps={{ "aria-label": "buscar dossiês" }}
-                  sx={{ ml: 1, flex: 1 }}
-                />
-              </Paper>
-            </Box>
-          </Toolbar>
-        </AppBar>
 
         {/* Content */}
         <Box
@@ -196,6 +143,7 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
+          <ListDossiersPage dossiers={dossiers} setDossiers={setDossiers} />
         </Box>
 
         {/* Floating Action Button */}
@@ -217,6 +165,13 @@ const DossiersDashboard = () => {
           onSave={handleCreateDossie}
           dossieData={emptyDossie}
         />
+
+        {/* <EditDossieModal
+          open={false}
+          onClose={ }
+          dossieData={ }
+          onSave={ } /> */}
+
       </Box>
     </>
   );

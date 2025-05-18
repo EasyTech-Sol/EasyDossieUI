@@ -1,25 +1,24 @@
 import { Box, Link, TextField } from "@mui/material"
 import Buttons from "../../../components/Buttons"
-import { apiService } from "../../../services/easydossie.service"
 import { useForm } from "react-hook-form"
 import AdviceText from "./AdviceText"
 import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
 import PasswordField from "../../../components/PasswordField"
+import { apiService } from "../../../services/easydossie.service"
 
-type SignUpForm = SignUpData & {
+type RegisterForm = RegisterData & {
   passwordCheck: string
 }
 
-const SignUp = () => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<SignUpForm>()
+const Register = () => {
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>()
   const { setError, setErrorMessage } = useError()
   const password = watch("password")
 
   const onSubmit = async (values: any) => {
     try {
-      const result = await apiService.signup(values)
-      localStorage.setItem("token", result.data.token)
+      await apiService.register(values)
       window.location.href = "/auth/sign-in"
     } catch (error) {
       if (isAxiosError(error) && error.status === 400)
@@ -80,4 +79,4 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+export default Register

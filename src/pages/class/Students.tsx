@@ -13,11 +13,17 @@ interface StudentsProps {
     handleDeleteAluno: (id: number, classId: number) => void
 }
 
+const drawerWidth = 240;
+
 const Students = ({ alunos, handleOpenEditModal, handleDeleteAluno }: StudentsProps) => {
     const classId = Number(useParams().classId)
 
     return (
-        <Box sx={{ mt: 3, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{
+            mt: 3, display: "flex",
+            flexDirection: "column", gap: 2,
+            width: { md: `calc(100% - ${drawerWidth}px)` },
+        }}>
             {alunos.map((aluno) => (
                 <Paper
                     key={aluno.id}

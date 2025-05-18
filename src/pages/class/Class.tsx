@@ -1,22 +1,24 @@
-import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, Paper, InputBase, } from "@mui/material"
+import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, } from "@mui/material"
 import { Add, Article, } from "@mui/icons-material"
 import { useState, useCallback } from "react"
-import { useLocation, useParams } from "react-router-dom"
-import AddStudentModal from '../../auth/components/AddStudentModal';
+import { useLocation } from "react-router-dom"
+import AddStudentModal from './AddStudentModal';
 import { useEffect } from "react"
-import { apiService } from "../../../services/easydossie.service"
-import EditStudentModal from '../../auth/components/EditStudentModal';
-import ImportStudents from "../../../components/importStudents/ImportStudents"
+import { apiService } from "../../services/easydossie.service";
+import EditStudentModal from './EditStudentModal';
+import ImportStudents from "../../components/importStudents/ImportStudents"
 import { useDropzone } from 'react-dropzone';
-import { handleExcelParse } from "../../../utils/csvManaging";
+import { handleExcelParse } from "../../utils/csvManaging";
 import ClassAppBar from "./ClassAppBar";
 import Students from "./Students";
-import Search from "../../../components/Search";
-const drawerWidth = 240
+import Search from "../../components/Search";
+import { useTabsContext } from "../../contexts/TabContext";
 
 const Class = () => {
   // ------------------ Estados principais ------------------
   const [searchTerm, setSearchTerm] = useState("");
+
+  const { selectedSubTab, setSelectedSubTab } = useTabsContext();
 
   const { classId, title } = useLocation().state
   const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
@@ -117,88 +119,79 @@ const Class = () => {
   return (
     <>
       {/* Main */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          position: "relative",
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
-        <ClassAppBar />
+      <ClassAppBar />
 
-        <Search value={searchTerm} onChange={setSearchTerm} />
+      <Search value={searchTerm} onChange={setSearchTerm} />
 
+      {selectedSubTab === "alunos" &&
         <Students
           alunos={alunosFiltrados}
           handleOpenEditModal={handleOpenEditModal}
           handleDeleteAluno={handleDeleteAluno}
         />
+      }
 
-        <SpeedDial
-          color="success"
-          sx={{
-            position: 'absolute',
-            bottom: 32,
-            right: 32,
-            '& .MuiFab-primary': {
-              backgroundColor: theme => theme.palette.success.main,
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'darkgreen',
-              },
+      <SpeedDial
+        color="success"
+        sx={{
+          position: 'absolute',
+          bottom: 32,
+          right: 32,
+          '& .MuiFab-primary': {
+            backgroundColor: theme => theme.palette.success.main,
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'darkgreen',
             },
-          }}
+          },
+        }}
 
-          icon={<SpeedDialIcon />} ariaLabel={"Opções"}>
-          <SpeedDialAction
-            key={"add"}
-            icon={<Add />}
-            tooltipTitle={"Adicionar aluno"}
-            onClick={() => {
-              handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
-            }} />
-          <SpeedDialAction
-            key={"import"}
-            icon={< Article />}
-            tooltipTitle={"Importar aluno (CSV)"}
-            onClick={() => {
-              openFileDialog()
-            }} />
-        </SpeedDial>
+        icon={<SpeedDialIcon />} ariaLabel={"Opções"}>
+        <SpeedDialAction
+          key={"add"}
+          icon={<Add />}
+          tooltipTitle={"Adicionar aluno"}
+          onClick={() => {
+            handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
+          }} />
+        <SpeedDialAction
+          key={"import"}
+          icon={< Article />}
+          tooltipTitle={"Importar aluno (CSV)"}
+          onClick={() => {
+            openFileDialog()
+          }} />
+      </SpeedDial>
 
-        <AddStudentModal
-          open={openAddStudentModal}
-          handleClose={handleCloseAddStudentModal}
-          classId={classId}
-          onSuccess={() => {
-            // Fecha o modal e re-busca a lista de alunos
-            handleCloseAddStudentModal()
-            getAlunos(classId)
-          }}
-        />
+      <AddStudentModal
+        open={openAddStudentModal}
+        handleClose={handleCloseAddStudentModal}
+        classId={classId}
+        onSuccess={() => {
+          // Fecha o modal e re-busca a lista de alunos
+          handleCloseAddStudentModal()
+          getAlunos(classId)
+        }}
+      />
 
-        <ImportStudents
-          classId={classId}
-          registerDropzoneRoot={getRootProps}
-          registerDropzoneInput={getInputProps}
-          open={open}
-          setOpen={setOpen}
-          excelData={excelData}
-          setExcelData={setExcelData}
-          setStudents={setAlunos}
-        />
+      <ImportStudents
+        classId={classId}
+        registerDropzoneRoot={getRootProps}
+        registerDropzoneInput={getInputProps}
+        open={open}
+        setOpen={setOpen}
+        excelData={excelData}
+        setExcelData={setExcelData}
+        setStudents={setAlunos}
+      />
 
-        <EditStudentModal
-          open={!!alunoEditando}
-          handleClose={() => setAlunoEditando(null)}
-          student={alunoEditando}
-          onEdit={handleSaveEdit}
-          classId={classId}
-        />
-
-      </Box>
+      <EditStudentModal
+        open={!!alunoEditando}
+        handleClose={() => setAlunoEditando(null)}
+        student={alunoEditando}
+        onEdit={handleSaveEdit}
+        classId={classId}
+      />
     </>
   )
 }

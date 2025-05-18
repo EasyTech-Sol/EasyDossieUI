@@ -1,27 +1,27 @@
-type Quesito = {
+type Question = {
   id: number;
   titulo: string;
 }
 
-type Descricao = {
+type Description = {
   id: number;
   title: string;
-  quesitos: Quesito[];
+  criteria: Question[];
 }
 
-type Categoria = {
+type Category = {
   id: number;
   title: string;
   weight: number;
-  descricoes: Descricao[];
+  descriptions: Descricao[];
 }
 
-type Dossie = {
+type Dossier = {
   id: number;
   title: string;
   description: string;
   evaluation_area: string;
-  concepts: string[];
+  concept: string;
   categories: Categoria[];
 }
 
@@ -30,32 +30,25 @@ type DossierInput = {
   categories: Category[];
 };
 
-type TemplateDossie = {
+type TemplateDossier = {
   id: number;
   title: string;
   description: string;
   evaluation_area: string;
   concept: string;
-
-export interface Dossier {
-    id: number;
-    title: string;
-    description: string;
-    assessmentArea: string;
-    concepts: string;
-    professorId: number;
 }
-  
-export interface DossierListItem {
-    id: number;
-    title: string;
-    description: string;
-}
-  
-export interface DossierListProps {
-    dossiers: DossierListItem[];
-    onEdit?: (id: number) => void;
-    onDelete?: (id: number) => void;
-    onAssociate?: (id: number) => void;
 
+type Template = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  conceito: string;
+  areaAvaliacao: string;
+}
+
+  
+type DossierListItem = {
+    id: number;
+    titulo: string;
+    descricao: string;
 }

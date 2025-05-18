@@ -1,13 +1,16 @@
 import * as React from "react";
-import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
+import { Alert, Box, Snackbar } from "@mui/material";
 import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiService } from "../../../services/easydossie.service";
-import { Dossier, DossierListItem } from "../../../types/dossier";
+import { isAxiosError } from "axios";
 
-export default function ListDossierPage() {
-  const queryClient = useQueryClient();
+interface ListDossiersPageProps {
+  dossiers: Dossier[]
+  setDossiers: React.Dispatch<React.SetStateAction<Dossier[]>>
+}
+
+export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersPageProps) {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState<number | null>(null);
   const [snackbar, setSnackbar] = React.useState({
@@ -16,45 +19,55 @@ export default function ListDossierPage() {
     severity: "success" as "success" | "error",
   });
 
-  // Buscar dossiês do backend
-  const {
-    data: dossiers,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Dossier[], Error, DossierListItem[]>({
-    queryKey: ["dossiers"],
-    queryFn: async () => {
-      const response = await apiService.getDossiers();
-      return response.data; 
-    },
-    select: (data) =>
-      data.map((dossier) => ({
-        id: dossier.id,
-        title: dossier.title,
-        description: dossier.description,
-      })),
-  });
+  React.useEffect(() => {
+    const fetchDossiers = async () => {
+      try {
+        const result = await apiService.getDossiers()
+        setDossiers(result.data.dossiers)
+      } catch (error) {
+        if (isAxiosError(error))
+          setSnackbar({
+            open: true,
+            message: `Erro ao listar dossiês: ${error.message}`,
+            severity: "error",
+          });
+
+      }
+    }
+
+    fetchDossiers()
+  }, [])
 
   // Mutação para deletar um dossiê
-  const deleteDossierMutation = useMutation({
-    mutationFn: (id: number) => apiService.deleteDossier(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dossiers"] });
+  const deleteDossie = async (id: number) => {
+
+    try {
+      await apiService.deleteDossier(id)
+      setDossiers(prev => prev.filter(d => d.id !== id))
       setSnackbar({
         open: true,
-        message: "Dossiê excluído com sucesso!",
+        message: `Dossiê excluído com sucesso!`,
         severity: "success",
-      });
-    },
-    onError: (error: Error) => {
-      setSnackbar({
-        open: true,
-        message: `Erro ao excluir dossiê: ${error.message}`,
-        severity: "error",
-      });
-    },
-  });
+      })
+
+    } catch (error) {
+      if (isAxiosError(error))
+        setSnackbar({
+          open: true,
+          message: `Erro ao excluir dossiê: ${error.message}`,
+          severity: "error",
+        });
+      else
+        setSnackbar({
+          open: true,
+          message: `Erro desconhecido ao excluir dossiê`,
+          severity: "error",
+        });
+
+    }
+
+  }
+
 
   const handleEdit = (id: number) => {
     console.log(`Editar dossiê com id: ${id}`);
@@ -68,7 +81,7 @@ export default function ListDossierPage() {
 
   const handleConfirmDelete = () => {
     if (selectedId !== null) {
-      deleteDossierMutation.mutate(selectedId);
+      deleteDossie(selectedId)
     }
     setConfirmOpen(false);
     setSelectedId(null);
@@ -83,28 +96,10 @@ export default function ListDossierPage() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
-        <Alert severity="error">
-          Ocorreu um erro ao carregar dossiês: {error.message}
-        </Alert>
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, px: 2 }}>
       <DossierList
-        dossiers={dossiers || []}
+        dossiers={dossiers}
         onEdit={handleEdit}
         onDelete={handleDeleteRequest}
         onAssociate={handleAssociate}
@@ -122,7 +117,7 @@ export default function ListDossierPage() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
           onClose={handleCloseSnackbar}

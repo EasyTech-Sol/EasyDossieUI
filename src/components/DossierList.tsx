@@ -11,7 +11,13 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import { DossierListProps } from "../types/dossier";
+
+interface DossierListProps {
+  dossiers: Dossier[];
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
+  onAssociate?: (id: number) => void;
+}
 
 export const DossierList: React.FC<DossierListProps> = ({
   dossiers,
@@ -34,6 +40,10 @@ export const DossierList: React.FC<DossierListProps> = ({
               boxShadow: 1,
               display: "flex",
               alignItems: "center",
+              transition: "transform 0.1s ease-in",
+              "&:hover": {
+                transform: "translateY(-.5rem)",
+              }
             }}
             secondaryAction={
               <Box sx={{ display: "flex", gap: 1 }}>
