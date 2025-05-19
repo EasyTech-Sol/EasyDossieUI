@@ -4,7 +4,28 @@ import { mocked_dossiers } from "../utils/mockedDossiers";
 
 export const dossierMocks = [
   http.get(routeTo("/dossiers"), () => {
-    return HttpResponse.json(mocked_dossiers, { status: 200 });
+    return HttpResponse.json(
+      { message: "ok", dossiers: mocked_dossiers },
+      { status: 200 }
+    );
+  }),
+
+  http.put(routeTo("/dossiers/edit"), async ({ request }) => {
+
+    const data: any = await request.json()
+
+    return HttpResponse.json(
+      {
+        message: "ok",
+        data: {
+          credentials: {
+            id: data.id,
+            title: data.title,
+          },
+        },
+      },
+      { status: 200 }
+    );
   }),
 
   http.delete(routeTo("/dossiers/:id"), () => {

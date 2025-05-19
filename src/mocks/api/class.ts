@@ -8,7 +8,7 @@ export const classMocks = [
     return HttpResponse.json(data, { status: 200 });
   }),
 
-  http.get(routeTo("/return_classes"), () => {
+  http.get(routeTo("/classes"), () => {
     return HttpResponse.json({ classes: mocked_classes }, { status: 200 });
   }),
 

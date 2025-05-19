@@ -2,7 +2,7 @@ import client from "./client.service";
 
 export const dossierApi = {
   createDossier: async ({ templateData, categories }: DossierInput) =>
-    client.post("/dossier/create", { templateData, categories }),
+    client.post("/dossiers/create", { templateData, categories }),
   getDossiers: async () => client.get("/dossiers"),
   deleteDossier: (id: number) => client.delete(`/dossiers/${id}`),
   editDossier: async (
@@ -11,7 +11,7 @@ export const dossierApi = {
     categoryIDs: any,
     descriptionIDs: any
   ) =>
-    client.put("/dossier/edit", {
+    client.put("/dossiers/edit", {
       ...dossier,
       questionIDs: questionIDs,
       categoryIDs: categoryIDs,
