@@ -4,13 +4,11 @@ import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { apiService } from "../../../services/easydossie.service";
 import { isAxiosError } from "axios";
+import EditDossieModal from "./EditDossierModal";
+import { useDossiers } from "../../../contexts/DossierContext";
 
-interface ListDossiersPageProps {
-  dossiers: Dossier[]
-  setDossiers: React.Dispatch<React.SetStateAction<Dossier[]>>
-}
 
-export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersPageProps) {
+export default function ListDossierPage() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState<number | null>(null);
   const [snackbar, setSnackbar] = React.useState({
@@ -18,25 +16,7 @@ export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersP
     message: "",
     severity: "success" as "success" | "error",
   });
-
-  React.useEffect(() => {
-    const fetchDossiers = async () => {
-      try {
-        const result = await apiService.getDossiers()
-        setDossiers(result.data.dossiers)
-      } catch (error) {
-        if (isAxiosError(error))
-          setSnackbar({
-            open: true,
-            message: `Erro ao listar dossiês: ${error.message}`,
-            severity: "error",
-          });
-
-      }
-    }
-
-    fetchDossiers()
-  }, [])
+  const { dossiers, setDossiers, loading } = useDossiers();
 
   // Mutação para deletar um dossiê
   const deleteDossie = async (id: number) => {
@@ -63,11 +43,8 @@ export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersP
           message: `Erro desconhecido ao excluir dossiê`,
           severity: "error",
         });
-
     }
-
   }
-
 
   const handleEdit = (id: number) => {
     console.log(`Editar dossiê com id: ${id}`);
@@ -100,7 +77,7 @@ export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersP
     <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, px: 2 }}>
       <DossierList
         dossiers={dossiers}
-        onEdit={handleEdit}
+        // onEdit={handleEdit}
         onDelete={handleDeleteRequest}
         onAssociate={handleAssociate}
       />
@@ -112,7 +89,6 @@ export default function ListDossierPage({ dossiers, setDossiers }: ListDossiersP
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
       />
-
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
