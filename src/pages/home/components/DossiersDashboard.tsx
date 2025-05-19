@@ -142,6 +142,7 @@ const DossiersDashboard = () => {
 
       <ListDossierPage />
       <AssociateDossierClass open={open} onClose={() => setOpen(false)}/> {/*REMOVER DAQUI DEPOIS DE TESTE*/}
+        
       <Box
         component="main"
         sx={{
