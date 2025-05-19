@@ -9,7 +9,8 @@ import {
   Menu,
   MenuItem,
   Tooltip,
-  CardHeader
+  CardHeader,
+  Checkbox,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { truncateString } from '../../../helpers/string';
@@ -21,9 +22,11 @@ interface ClassCardProps {
   id: number
   onEdit?: () => void;
   onDelete?: () => void;
+  selectMode?: boolean; // prop para controlar o modo seleção
+  selected?: boolean;   // prop para marcar o card como selecionado
 }
 
-export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: ClassCardProps) {
+export default function ClassCard({ title, bgColor, id, onEdit, onDelete, selectMode = false, selected = false, }: ClassCardProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
@@ -63,8 +66,10 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: Clas
             },
           },
         }}
-        onClick={() =>
-          navigate(`/class/${id}`, {state: {title, classId: id}})
+        onClick={() =>{
+          if (!selectMode) { // Navega para a turma apenas se não estiver no modo seleção
+            navigate(`/class/${id}`, { state: { title, classId: id } });
+          }}
         }
       >
         <CardHeader
@@ -99,8 +104,26 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete }: Clas
             )}
         />
         <Divider />
+
         <CardContent sx={{ height: '100%', backgroundColor: "#E2E2E2" }}>
         </CardContent>
+        
+        {selectMode && (
+          <Checkbox
+            checked={selected}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              zIndex: 2,
+              bgcolor: 'white',
+              borderRadius: '25%',
+              p: '4px',
+            }}
+            disableRipple
+          />
+        )}
+
       </CardActionArea>
     </Card>
   );
