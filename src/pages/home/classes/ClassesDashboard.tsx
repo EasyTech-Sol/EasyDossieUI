@@ -30,7 +30,7 @@ const drawerWidth = 240;
 
 const ClassesDashboard = () => {
   const theme = useTheme();
-  const [classes, setClasses] = useState<Turma[]>([])
+  const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editModalOpened, setEditModalOpened] = useState(false)
   const [snackbar, setSnackbar] = useState<{
@@ -39,12 +39,12 @@ const ClassesDashboard = () => {
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
 
-  const [classToEdit, setClassToEdit] = useState<Turma>({
-    titulo: "0",
+  const [classToEdit, setClassToEdit] = useState<Class>({
+    title: "0",
     id: 0,
-    turno: "",
-    periodoLetivo: "",
-    instituicao: ""
+    shift: "",
+    period: "",
+    institution: ""
   })
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -94,11 +94,11 @@ const ClassesDashboard = () => {
   const handleCloseEdit = () => {
     setEditModalOpened(false)
     setClassToEdit({
-      titulo: "0",
+      title: "0",
       id: 0,
-      turno: "",
-      periodoLetivo: "",
-      instituicao: ""
+      shift: "",
+      period: "",
+      institution: ""
     })
   }
 
@@ -178,12 +178,12 @@ const ClassesDashboard = () => {
           flexDirection={"row"}
         >
           {classes
-            .filter(cls => cls.titulo.toLowerCase().includes(searchTerm.toLowerCase()))
+            .filter(cls => cls.title.toLowerCase().includes(searchTerm.toLowerCase()))
             .map(cls => (
               <ClassCard
                 id={cls.id}
                 key={cls.id}
-                title={cls.titulo}
+                title={cls.title}
                 onEdit={() => handleEditClass(cls.id)}
                 onDelete={() => handleDeleteClass(cls.id)}
                 bgColor={getRandomMutedColor()}

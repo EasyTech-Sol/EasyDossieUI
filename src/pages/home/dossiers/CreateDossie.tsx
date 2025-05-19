@@ -82,7 +82,6 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     setLoading(true);
     try {
       const { categories, ...templateData } = dossier
-      console.log(dossier)
       onSave({ templateData, categories });
       onClose();
     } catch (err: any) {

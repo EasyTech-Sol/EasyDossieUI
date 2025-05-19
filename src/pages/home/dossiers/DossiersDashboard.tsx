@@ -9,13 +9,13 @@ import {
   Alert,
 } from "@mui/material";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Add, Person } from "@mui/icons-material"; import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
 import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
-
+import { useDossiers } from "../../../contexts/DossierContext.tsx";
 
 const drawerWidth = 240;
 
@@ -23,15 +23,16 @@ const drawerWidth = 240;
 
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [dossiers, setDossiers] = useState<Dossier[]>([])
-  const [editModalOpened, setEditModalOpened] = useState(false)
+  const { setDossiers, loading } = useDossiers();
+
   const emptyDossie: Dossier = {
     id: 0,
     title: '',
     description: '',
     evaluation_area: '',
     categories: [],
-    concept: "A,B,C"
+    concept: "A,B,C",
+    teacherId: ""
   };
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -143,7 +144,7 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
-          <ListDossiersPage dossiers={dossiers} setDossiers={setDossiers} />
+          <ListDossiersPage />
         </Box>
 
         {/* Floating Action Button */}
@@ -165,13 +166,6 @@ const DossiersDashboard = () => {
           onSave={handleCreateDossie}
           dossieData={emptyDossie}
         />
-
-        {/* <EditDossieModal
-          open={false}
-          onClose={ }
-          dossieData={ }
-          onSave={ } /> */}
-
       </Box>
     </>
   );

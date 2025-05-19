@@ -2,7 +2,7 @@ import { http, HttpResponse } from "msw";
 import { routeTo } from "../utils/routeTo";
 
 export const teacherMocks = [
-  http.post(routeTo("teachers/login"), () => {
+  http.post(routeTo("/teachers/login"), () => {
     return HttpResponse.json(
       {
         message: "string",

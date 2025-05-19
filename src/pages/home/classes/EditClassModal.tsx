@@ -14,8 +14,8 @@ interface classInfo {
 interface EditClassModalProps {
   open: boolean;
   handleClose: () => void;
-  setClasses: React.Dispatch<React.SetStateAction<Turma[]>>;
-  classToEdit: Turma;
+  setClasses: React.Dispatch<React.SetStateAction<Class[]>>;
+  classToEdit: Class;
 }
 
 const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClassModalProps) => {
@@ -35,16 +35,16 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
 
   useEffect(() => {
     if (classToEdit) {
-      setValue("title", classToEdit.titulo);
-      setValue("shift", classToEdit.turno);
-      setValue("institution", classToEdit.instituicao);
-      setValue("period", classToEdit.periodoLetivo);
+      setValue("title", classToEdit.title);
+      setValue("shift", classToEdit.shift);
+      setValue("institution", classToEdit.institution);
+      setValue("period", classToEdit.period);
 
       originalData.current = {
-        title: classToEdit.titulo,
-        shift: classToEdit.turno,
-        institution: classToEdit.instituicao,
-        period: classToEdit.periodoLetivo,
+        title: classToEdit.title,
+        shift: classToEdit.shift,
+        institution: classToEdit.institution,
+        period: classToEdit.period,
         id: classToEdit.id
       };
     }
@@ -60,10 +60,10 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
     }
 
     if (
-      data.title === classToEdit.titulo &&
-      data.shift === classToEdit.turno &&
-      data.institution === classToEdit.instituicao &&
-      data.period === classToEdit.periodoLetivo
+      data.title === classToEdit.title &&
+      data.shift === classToEdit.shift &&
+      data.institution === classToEdit.institution &&
+      data.period === classToEdit.period
     ) {
       alert("Nenhuma alteração detectada.");
       return;
