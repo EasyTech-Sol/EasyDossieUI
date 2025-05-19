@@ -12,16 +12,17 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditDossieModal from "../pages/home/dossiers/EditDossierModal";
+import { useDossiers } from "../contexts/DossierContext";
 
 interface DossierListProps {
-  dossiers: Dossier[];
+  // dossiers: Dossier[];
   // onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
   onAssociate?: (id: number) => void;
 }
 
 export const DossierList: React.FC<DossierListProps> = ({
-  dossiers,
+  // dossiers,
   // onEdit,
   onDelete,
   onAssociate,
@@ -35,7 +36,7 @@ export const DossierList: React.FC<DossierListProps> = ({
     concept: "A,B,C",
     teacherId: ""
   };
-
+  const { dossiers, setDossiers, loading } = useDossiers();
   const [editModal, setEditModal] = React.useState(false)
   const [dossierToEdit, setDossierToEdit] = React.useState<Dossier>(emptyDossie)
 
@@ -45,18 +46,19 @@ export const DossierList: React.FC<DossierListProps> = ({
     setEditModal(true)
   }
 
-  const handleEdit = () => {
-  
+  const handleEdit = (data: any) => {
+    const { id, title } = data.credentials
+    setDossiers(prev => prev.map(d => d.id === id ? { ...d, title } : d))
   }
 
   return (
     <>
-    <EditDossieModal 
-      open={editModal}
-      dossierData={dossierToEdit}
-      onClose={() => setEditModal(false)}
-      onSave={handleEdit}
-    />
+      <EditDossieModal
+        open={editModal}
+        dossierData={dossierToEdit}
+        onClose={() => setEditModal(false)}
+        onSave={handleEdit}
+      />
       <Box sx={{ px: 4 }}>
         <List sx={{ width: "100%" }}>
           {dossiers.map((dossier) => (
