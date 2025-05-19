@@ -46,11 +46,6 @@ export default function ListDossierPage() {
     }
   }
 
-  const handleEdit = (id: number) => {
-    console.log(`Editar dossiê com id: ${id}`);
-    // Faltando a navegação pra essa parte
-  };
-
   const handleDeleteRequest = (id: number) => {
     setSelectedId(id);
     setConfirmOpen(true);
@@ -76,7 +71,7 @@ export default function ListDossierPage() {
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, px: 2 }}>
       <DossierList
-        dossiers={dossiers}
+        // dossiers={dossiers}
         // onEdit={handleEdit}
         onDelete={handleDeleteRequest}
         onAssociate={handleAssociate}

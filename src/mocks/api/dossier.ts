@@ -10,8 +10,22 @@ export const dossierMocks = [
     );
   }),
 
-  http.put(routeTo("/dossiers/edit"), async () => {
-    return HttpResponse.json({message: "ok"}, {status: 200})
+  http.put(routeTo("/dossiers/edit"), async ({ request }) => {
+
+    const data: any = await request.json()
+
+    return HttpResponse.json(
+      {
+        message: "ok",
+        data: {
+          credentials: {
+            id: data.id,
+            title: data.title,
+          },
+        },
+      },
+      { status: 200 }
+    );
   }),
 
   http.delete(routeTo("/dossiers/:id"), () => {
