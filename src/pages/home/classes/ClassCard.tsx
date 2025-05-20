@@ -112,15 +112,20 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete, select
           <Checkbox
             checked={selected}
             sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              zIndex: 2,
-              bgcolor: 'white',
-              borderRadius: '25%',
-              p: '4px',
-            }}
-            disableRipple
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 2,
+            color: 'white', 
+            backgroundColor: 'transparent',
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+            '& .MuiSvgIcon-root': {
+              fontSize: 22, 
+            },
+          }}
+          disableRipple
           />
         )}
 
