@@ -1,190 +1,267 @@
-import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, } from "@mui/material"
-import { Add, Article, } from "@mui/icons-material"
-import { useState, useCallback } from "react"
-import { useLocation } from "react-router-dom"
-import AddStudentModal from './AddStudentModal';
-import { useEffect } from "react"
-import { apiService } from "../../services/easydossie.service";
-import EditStudentModal from './EditStudentModal';
-import ImportStudents from "../../components/importStudents/ImportStudents"
-import { useDropzone } from 'react-dropzone';
-import { handleExcelParse } from "../../utils/csvManaging";
+import {
+  Box,
+  SpeedDial,
+  SpeedDialIcon,
+  SpeedDialAction,
+} from "@mui/material";
+import { Add, Settings } from "@mui/icons-material";
+import { useState, useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useDropzone } from "react-dropzone";
+
 import ClassAppBar from "./ClassAppBar";
-import Students from "./Students";
 import Search from "../../components/Search";
+import Students from "./Students";
+import Dossiers from "./Dossiers";
+
+import AddStudentModal from "./AddStudentModal";
+import EditStudentModal from "./EditStudentModal";
+import ImportStudents from "../../components/importStudents/ImportStudents";
+
+import { handleExcelParse } from "../../utils/csvManaging";
+import { apiService } from "../../services/easydossie.service";
 import { useTabsContext } from "../../contexts/TabContext";
 
 const Class = () => {
-  // ------------------ Estados principais ------------------
   const [searchTerm, setSearchTerm] = useState("");
+  const { selectedSubTab } = useTabsContext();
+  const { classId } = useLocation().state as { classId: number; title: string };
 
-  const { selectedSubTab, setSelectedSubTab } = useTabsContext();
+  const [alunos, setAlunos] = useState<any[]>([]);
+  const [dossies, setDossies] = useState<any[]>([]);
 
-  const { classId, title } = useLocation().state
-  const [alunos, setAlunos] = useState<any[]>([]) // Lista de alunos da turma
-
-  const [openAddStudentModal, setOpenAddStudentModal] = useState(false) // Controle do modal de adicionar aluno
-
+  const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
   const [alunoEditando, setAlunoEditando] = useState<any | null>(null);
-  // Armazena os dados extraídos do arquivo Excel
-  const [excelData, setExcelData] = useState<Student[]>([]);
-  // Controla a visibilidade do modal de pré-visualização
-  const [open, setOpen] = useState(false);
-  // Função para abrir o modal
-  const handleOpenImportModal = () => setOpen(true);
-  // Função para fechar o modal
 
-  // ------------------ Funções de controle ------------------
+  const [excelData, setExcelData] = useState<any[]>([]);
+  const [openImport, setOpenImport] = useState(false);
+  const handleOpenImportModal = () => setOpenImport(true);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
+  const onDrop = useCallback((files: File[]) => {
+    const file = files[0];
     if (file) handleExcelParse(file, handleOpenImportModal, setExcelData);
   }, []);
-
   const { getRootProps, getInputProps, open: openFileDialog } = useDropzone({
     onDrop,
     noClick: true,
     noKeyboard: true,
-    accept: {
-      'text/csv': ['.csv'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
-      'application/vnd.ms-excel': ['.xls'],
-    },
     multiple: false,
+    accept: {
+      "text/csv": [".csv"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+      "application/vnd.ms-excel": [".xls"],
+    },
   });
 
-  const handleOpenAddStudentModal = () => setOpenAddStudentModal(true) // Abre o modal de aluno
+  const [openAlunoDial, setOpenAlunoDial] = useState(false);
+  const toggleAlunoDial = () => setOpenAlunoDial(o => !o);
 
-  const handleCloseAddStudentModal = () => setOpenAddStudentModal(false) // Fecha o modal de aluno
-
-  const handleOpenEditModal = (aluno: {
-    id: number;
-    nome: string;
-    matricula: string;
-    classId: number;
-  }) => {
-    setAlunoEditando(aluno);
+  const actionStyle = {
+    minWidth: "auto",
+    width: "auto",
+    px: 2,
+    py: 1,
+    borderRadius: "4px",
+    boxShadow: 1,
   };
 
-  const alunosFiltrados = alunos.filter((aluno) =>
-    aluno.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  const alunosFiltrados = alunos.filter(a =>
+    a.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const dossiesFiltrados = dossies.filter(d =>
+  d.dossieTemplate.titulo
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase())
+);
 
-  // ------------------ Lógica de dados ------------------
 
+  const getAlunos = useCallback(async (id: number) => {
+    try {
+      const res = await apiService.getClassStudents(id);
+      setAlunos(res.data.students);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
-  const handleDeleteAluno = async (id: number, classId: number) => {
+  const getDossies = useCallback(async (id: number) => {
+  try {
+    const res = await apiService.getDossiersByClass(id);
+    console.log("Dossiês recebidos:", res.data.dossiersClass);
+    setDossies(res.data.dossiersClass || []);
+  } catch (err) {
+    console.error(err);
+  }
+}, []);
+
+  useEffect(() => {
+    if (selectedSubTab === "alunos") getAlunos(classId);
+    else if (selectedSubTab === "dossies") getDossies(classId);
+  }, [selectedSubTab, classId, getAlunos, getDossies]);
+
+  const handleDeleteAluno = async (id: number) => {
     try {
       await apiService.deleteStudent(classId, id);
       setAlunos(prev => prev.filter(a => a.id !== id));
     } catch (err) {
-      console.error("Erro ao deletar aluno:", err);
+      console.error(err);
     }
   };
 
-  const getAlunos = useCallback(async (id: number) => {
+ const handleDeleteDossier = async (dossierClassId: number) => {
+  try {
+    await apiService.deleteDossierFromClass(dossierClassId);
+    setDossies(prev => prev.filter(d => d.id !== dossierClassId));
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao excluir dossiê da turma.");
+  }
+};
+
+
+
+
+  const handleSaveEdit = useCallback(async (payload: any) => {
     try {
-      const response = await apiService.getClassStudents(id)
-      setAlunos(response.data.students);
-    } catch (error) {
-      console.error("Erro ao buscar alunos:", error)
+      await apiService.editStudent(payload);
+      await getAlunos(payload.classId);
+      alert("Aluno editado com sucesso!");
+    } catch (err: any) {
+      console.error(err);
+      alert(`Erro: ${err.response?.data || err.message}`);
     }
-  }, [])
-
-  useEffect(() => {
-    getAlunos(classId)
-  }, [getAlunos])
-
-
-  const handleSaveEdit = useCallback(
-    async (payload: {
-      id: number;
-      name: string;
-      registration: string;
-
-      classId: number;
-    }) => {
-      try {
-        await apiService.editStudent(payload);
-        await getAlunos(payload.classId);
-        alert("Aluno editado com sucesso!");
-      } catch (err: any) {
-        console.error("Erro ao editar aluno:", err);
-        alert(`Não foi possível editar o aluno: ${err.response?.data || err.message}`);
-      }
-    },
-    [getAlunos]
-  );
+  }, [getAlunos]);
 
   return (
     <>
-      {/* Main */}
       <ClassAppBar />
 
       <Search value={searchTerm} onChange={setSearchTerm} />
 
-      {selectedSubTab === "alunos" &&
+      {selectedSubTab === "alunos" && (
         <Students
           alunos={alunosFiltrados}
-          handleOpenEditModal={handleOpenEditModal}
+          handleOpenEditModal={setAlunoEditando}
           handleDeleteAluno={handleDeleteAluno}
         />
-      }
+      )}
 
-      <SpeedDial
-        color="success"
-        sx={{
-          position: 'absolute',
-          bottom: 32,
-          right: 32,
-          '& .MuiFab-primary': {
-            backgroundColor: theme => theme.palette.success.main,
-            color: 'white',
-            '&:hover': {
-              backgroundColor: 'darkgreen',
+      {selectedSubTab === "dossies" && (
+  <Dossiers dossiers={dossiesFiltrados} handleDeleteDossier={handleDeleteDossier} />
+      )}
+
+      {selectedSubTab === "alunos" && (
+        <SpeedDial
+          ariaLabel="Opções Alunos"
+          sx={{
+            position: "absolute",
+            bottom: 32,
+            right: 32,
+            "& .MuiFab-primary": {
+              backgroundColor: t => t.palette.success.main,
+              color: "white",
+              "&:hover": { backgroundColor: "darkgreen" },
             },
-          },
-        }}
+          }}
+          open={openAlunoDial}
+          FabProps={{ onClick: toggleAlunoDial }}
+          icon={<SpeedDialIcon icon={<Add />} />}
+        >
+          <SpeedDialAction
+            key="add"
+            FabProps={{ sx: actionStyle }}
+            icon={
+              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
+                Adicionar aluno
+              </Box>
+            }
+            tooltipTitle=""
+            onClick={() => setOpenAddStudentModal(true)}
+          />
+          <SpeedDialAction
+            key="import"
+            FabProps={{ sx: actionStyle }}
+            icon={
+              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
+                Importar CSV
+              </Box>
+            }
+            tooltipTitle=""
+            onClick={() => openFileDialog()}
+          />
+        </SpeedDial>
+      )}
 
-        icon={<SpeedDialIcon />} ariaLabel={"Opções"}>
-        <SpeedDialAction
-          key={"add"}
-          icon={<Add />}
-          tooltipTitle={"Adicionar aluno"}
-          onClick={() => {
-            handleOpenAddStudentModal() // Abre o modal e aguarda o sucesso
-          }} />
-        <SpeedDialAction
-          key={"import"}
-          icon={< Article />}
-          tooltipTitle={"Importar aluno (CSV)"}
-          onClick={() => {
-            openFileDialog()
-          }} />
-      </SpeedDial>
+      {selectedSubTab === "dossies" && (
+        <SpeedDial
+          ariaLabel="Opções Dossiês"
+          sx={{
+            position: "absolute",
+            bottom: 32,
+            right: 32,
+            "& .MuiFab-primary": {
+              backgroundColor: t => t.palette.success.main,
+              color: "white",
+              "&:hover": { backgroundColor: "darkgreen" },
+            },
+          }}
+          icon={<SpeedDialIcon icon={<Settings />} />}
+        >
+          <SpeedDialAction
+            key="relatorio"
+            FabProps={{ sx: actionStyle }}
+            icon={
+              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
+                Acessar relatório
+              </Box>
+            }
+            tooltipTitle=""
+            onClick={() => alert("Acessando o relatório...")}
+          />
+          <SpeedDialAction
+            key="dossie"
+            FabProps={{ sx: actionStyle }}
+            icon={
+              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
+                Acessar dossiê
+              </Box>
+            }
+            tooltipTitle=""
+            onClick={() => alert("Acessando o dossiê...")}
+          />
+          <SpeedDialAction
+            key="aplicar"
+            FabProps={{ sx: actionStyle }}
+            icon={
+              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
+                Aplicar dossiê
+              </Box>
+            }
+            tooltipTitle=""
+            onClick={() => alert("Aplicando o dossiê...")}
+          />
+        </SpeedDial>
+      )}
 
       <AddStudentModal
         open={openAddStudentModal}
-        handleClose={handleCloseAddStudentModal}
+        handleClose={() => setOpenAddStudentModal(false)}
         classId={classId}
         onSuccess={() => {
-          // Fecha o modal e re-busca a lista de alunos
-          handleCloseAddStudentModal()
-          getAlunos(classId)
+          setOpenAddStudentModal(false);
+          getAlunos(classId);
         }}
       />
-
       <ImportStudents
         classId={classId}
         registerDropzoneRoot={getRootProps}
         registerDropzoneInput={getInputProps}
-        open={open}
-        setOpen={setOpen}
+        open={openImport}
+        setOpen={setOpenImport}
         excelData={excelData}
         setExcelData={setExcelData}
         setStudents={setAlunos}
       />
-
       <EditStudentModal
         open={!!alunoEditando}
         handleClose={() => setAlunoEditando(null)}
@@ -193,7 +270,7 @@ const Class = () => {
         classId={classId}
       />
     </>
-  )
-}
+  );
+};
 
-export default Class
+export default Class;
