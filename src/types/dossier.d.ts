@@ -51,7 +51,17 @@ type Template = {
 };
 
 type DossierListItem = {
-  id: number;
-  titulo: string;
-  descricao: string;
+  id: number; // ID da associação entre o dossiê e a turma
+  classId: number;
+  dossierTemplateId: number;
+  dossierTemplate: {
+    id: number;
+    title: string;
+    description: string;
+    evaluationArea: string;
+    concepts: string;
+    categories: any[];
+    teacherId: number;
+  };
 };
+
