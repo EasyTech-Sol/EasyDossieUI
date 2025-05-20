@@ -55,4 +55,8 @@ export const apiService = {
   deleteDossier: (id: number) => client.delete(`/dossiers/${id}`),
   editDossier: async (payload: any) => client.put("/dossier/edit", payload),
 
+  associateDossierToClasses: async (dossierId: number, classIds: number[]) =>
+  client.post("/classesDossier/create", { dossierId, classIds }),
+
+
 };

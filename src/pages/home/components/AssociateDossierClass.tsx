@@ -9,8 +9,10 @@ import {
   Typography,
   Box,
 } from '@mui/material';
+import { useState, useEffect } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import ClassCard from './ClassCard';
+import { apiService } from "../../../services/easydossie.service";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -22,40 +24,63 @@ const Transition = React.forwardRef(function Transition(
 interface AssociateClassModalProps {
   open: boolean;
   onClose: () => void;
+  dossierId: number; 
 }
 
-const mockedClasses = [
-  { id: 1, title: 'Turma A', bgColor: '#1976d2' },
-  { id: 2, title: 'Turma B', bgColor: '#388e3c' },
-  { id: 3, title: 'Turma C', bgColor: '#f57c00' },
-  { id: 4, title: 'Turma D', bgColor: '#7b1fa2' },
-  { id: 5, title: 'Turma E', bgColor: '#0097a7' },
-  { id: 6, title: 'Turma F', bgColor: '#c2185b' },
-  { id: 7, title: 'Turma G', bgColor: '#512da8' },
-  { id: 8, title: 'Turma H', bgColor: '#00796b' },
-  { id: 9, title: 'Turma I', bgColor: '#455a64' },
-  { id: 10, title: 'Turma J', bgColor: '#5d4037' },
-  { id: 11, title: 'Turma K', bgColor: '#0288d1' },
-  { id: 12, title: 'Turma L', bgColor: '#afb42b' },
-];
+export default function AssociateDossierClass({ open, onClose, dossierId }: AssociateClassModalProps) {
+   
+  const [selectedClasses, setSelectedClasses] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [classList, setClassList] = useState<any[]>([]);
+  const [loadingClasses, setLoadingClasses] = useState(false);
+  const [errorClasses, setErrorClasses] = useState<string | null>(null);
 
-export default function AssociateDossierClass({ open, onClose }: AssociateClassModalProps) {
-   // Estado para guardar as turmas selecionadas (permite múltipla seleção)
-   const [selectedClasses, setSelectedClasses] = React.useState<number[]>([]);
+  useEffect(() => {
+    const fetchClasses = async () => {
+      setLoadingClasses(true);
+      setErrorClasses(null);
+
+      try {
+        const response = await apiService.getClasses();
+        setClassList(response.data);
+      } catch (error: any) {
+        console.error(error);
+        setErrorClasses('Erro ao carregar as turmas.');
+      } finally {
+        setLoadingClasses(false);
+      }
+    };
+
+    if (open) {
+      fetchClasses();
+    }
+  }, [open]);
 
   const handleSelectClass = (classId: number) => {
-    setSelectedClasses((prevSelected) =>
-      prevSelected.includes(classId)
-        ? prevSelected.filter((id) => id !== classId)
-        : [...prevSelected, classId]
+    setSelectedClasses((prev) =>
+      prev.includes(classId) ? prev.filter((id) => id !== classId) : [...prev, classId]
     );
   };
 
   
-  const handleConfirm = () => {
-    console.log('Turmas selecionadas para associação:', selectedClasses);
-    // Aqui você pode disparar a ação real de associação
-    onClose();
+  const handleConfirm = async () => {
+    if (selectedClasses.length === 0) return;
+
+    setLoading(true);
+    try {
+      await apiService.associateDossierToClasses(dossierId, selectedClasses);
+
+      setMessage("Associação realizada com sucesso!");
+      onClose();
+
+    } catch (error: any) {
+      console.error(error);
+      setMessage("Erro ao associar dossiê.");
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,42 +98,54 @@ export default function AssociateDossierClass({ open, onClose }: AssociateClassM
         <Typography variant="subtitle1" gutterBottom>
           Selecione uma turma da lista abaixo para associar o dossiê:
         </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            mt: 2,
-          }}
-        >
-          {mockedClasses.map((classItem) => {
-            const isSelected = selectedClasses.includes(classItem.id);
-            return (
+
+        {loadingClasses && (
+          <Typography align="center" sx={{ mt: 2 }}>
+            Carregando turmas...
+          </Typography>
+        )}
+
+        {errorClasses && (
+          <Typography color="error" align="center" sx={{ mt: 2 }}>
+            {errorClasses}
+          </Typography>
+        )}
+
+        {!loadingClasses && !errorClasses && (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              mt: 2,
+            }}
+          >
+            {classList.map((classItem) => (
               <Box key={classItem.id} onClick={() => handleSelectClass(classItem.id)}>
                 <ClassCard
                   id={classItem.id}
                   title={classItem.title}
                   bgColor={classItem.bgColor}
-                  selectMode // Habilita modo seleção para exibir checkbox
-                  selected={isSelected} // Indica se está selecionado
+                  selectMode
+                  selected={selectedClasses.includes(classItem.id)}
                 />
               </Box>
-            );
-          })}
-        </Box>
+            ))}
+          </Box>
+        )}
+
+        {message && (
+          <Typography sx={{ mt: 2 }} color="error">
+            {message}
+          </Typography>
+        )}
       </DialogContent>
 
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-
-        <Button
-          onClick={handleConfirm}
-          disabled={selectedClasses.length === 0}
-          variant="contained"
-          color="success"
-        >
-          Confirmar
+        <Button onClick={handleConfirm} disabled={loading || selectedClasses.length === 0} variant="contained" color="success">
+          {loading ? "Associando..." : "Confirmar"}
         </Button>
       </DialogActions>
     </Dialog>
