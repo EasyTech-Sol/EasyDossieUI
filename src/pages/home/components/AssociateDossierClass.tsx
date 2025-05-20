@@ -106,7 +106,7 @@ export default function AssociateDossierClass({ open, onClose }: AssociateClassM
           onClick={handleConfirm}
           disabled={selectedClasses.length === 0}
           variant="contained"
-          color="primary"
+          color="success"
         >
           Confirmar
         </Button>
