@@ -122,22 +122,33 @@ const ClassesDashboard = () => {
   };
 
   useEffect(() => {
+  const fetchClassesList = async () => {
     try {
-      const fetchClassesList = async () => {
-        const result = await apiService.getClasses()
-        setClasses(result.data.classes)
-      }
-
-      fetchClassesList()
+      const result = await apiService.getClasses()
+      console.log(result.data)
+      setClasses(
+      result.data.classes.map((cls: any) => ({
+        id: cls.id,
+        title: cls.titulo,             
+        shift: cls.turno,
+        period: cls.periodoLetivo,
+        institution: cls.instituicao,
+      }))
+    )
 
     } catch (error) {
+      console.error("Erro ao listar turmas:", error); 
       setSnackbar({
         open: true,
         message: "Erro ao listar turmas.",
         severity: "error",
       });
     }
-  }, [])
+  }
+
+  fetchClassesList()
+}, []);
+
 
   return (
     <>
@@ -178,7 +189,7 @@ const ClassesDashboard = () => {
           flexDirection={"row"}
         >
           {classes
-            .filter(cls => cls.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  .filter(cls => cls.title && typeof cls.title === 'string' && cls.title.toLowerCase().includes(searchTerm.toLowerCase()))
             .map(cls => (
               <ClassCard
                 id={cls.id}
