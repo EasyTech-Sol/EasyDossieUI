@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditDossieModal from "../pages/home/dossiers/EditDossierModal";
 import { useDossiers } from "../contexts/DossierContext";
+import DossierView from "./DossieView";
 
 interface DossierListProps {
   // dossiers: Dossier[];
@@ -38,8 +39,9 @@ export const DossierList: React.FC<DossierListProps> = ({
   };
   const { dossiers, setDossiers, loading } = useDossiers();
   const [editModal, setEditModal] = React.useState(false)
+  const [viewModal, setViewModal] = React.useState(false)
   const [dossierToEdit, setDossierToEdit] = React.useState<Dossier>(emptyDossie)
-
+  const [dossierToView, setDossierToView] = React.useState<Dossier>(emptyDossie)
 
   const onEdit = (dossier: Dossier) => {
     setDossierToEdit(dossier)
@@ -63,6 +65,10 @@ export const DossierList: React.FC<DossierListProps> = ({
         <List sx={{ width: "100%" }}>
           {dossiers.map((dossier) => (
             <ListItem
+              onClick={() => {
+                setDossierToView(dossier)
+                setViewModal(true)
+              }}
               key={dossier.id}
               sx={{
                 mb: 2,
@@ -83,14 +89,20 @@ export const DossierList: React.FC<DossierListProps> = ({
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={() => onDelete?.(dossier.id)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete?.(dossier.id)
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
                   <IconButton
                     edge="end"
                     aria-label="edit"
-                    onClick={() => onEdit?.(dossier)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onEdit?.(dossier)
+                    }}
                   >
                     <ModeEditIcon />
                   </IconButton>
@@ -99,7 +111,10 @@ export const DossierList: React.FC<DossierListProps> = ({
                     color="success"
                     size="small"
                     sx={{ ml: 1 }}
-                    onClick={() => onAssociate?.(dossier.id)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onAssociate?.(dossier.id)
+                    }}
                   >
                     ASSOCIAR
                   </Button>
@@ -119,6 +134,11 @@ export const DossierList: React.FC<DossierListProps> = ({
             </ListItem>
           ))}
         </List>
+
+        <DossierView
+          dossier={dossierToView}
+          open={viewModal}
+          onClose={() => setViewModal(false)} />
       </Box>
     </>
   );
