@@ -5,11 +5,3 @@ type Class = {
   shift: string;
   period: string;
 };
-
-type Turma = {
-  id: number;
-  titulo: string;
-  instituicao: string;
-  turno: string;
-  periodoLetivo: string;
-};

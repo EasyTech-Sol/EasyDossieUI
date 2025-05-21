@@ -1,14 +1,15 @@
 import * as React from "react";
-import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
+import { Alert, Box, Snackbar } from "@mui/material";
 import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiService } from "../../../services/easydossie.service";
-import { Dossier, DossierListItem } from "../../../types/dossier";
-import AssociateDossierClass from "./AssociateDossierClass";
+import { isAxiosError } from "axios";
+import EditDossieModal from "./EditDossierModal";
+import { useDossiers } from "../../../contexts/DossierContext";
+import AssociateDossierClass from "../components/AssociateDossierClass";
+
 
 export default function ListDossierPage() {
-  const queryClient = useQueryClient();
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [associateModalOpen, setAssociateModalOpen] = React.useState(false);
   const [selectedDossierId, setSelectedDossierId] = React.useState<number | null>(null);
@@ -21,51 +22,35 @@ export default function ListDossierPage() {
     message: "",
     severity: "success" as "success" | "error",
   });
-
-  // Buscar dossiês do backend
-  const {
-    data: dossiers,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Dossier[], Error, DossierListItem[]>({
-    queryKey: ["dossiers"],
-    queryFn: async () => {
-      const response = await apiService.getDossiers();
-      return response.data; 
-    },
-    select: (data) =>
-      data.map((dossier) => ({
-        id: dossier.id,
-        title: dossier.title,
-        description: dossier.description,
-      })),
-  });
+  const { dossiers, setDossiers, loading } = useDossiers();
 
   // Mutação para deletar um dossiê
-  const deleteDossierMutation = useMutation({
-    mutationFn: (id: number) => apiService.deleteDossier(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dossiers"] });
-      setSnackbar({
-        open: true,
-        message: "Dossiê excluído com sucesso!",
-        severity: "success",
-      });
-    },
-    onError: (error: Error) => {
-      setSnackbar({
-        open: true,
-        message: `Erro ao excluir dossiê: ${error.message}`,
-        severity: "error",
-      });
-    },
-  });
+  const deleteDossie = async (id: number) => {
 
-  const handleEdit = (id: number) => {
-    console.log(`Editar dossiê com id: ${id}`);
-    // Faltando a navegação pra essa parte
-  };
+    try {
+      await apiService.deleteDossier(id)
+      setDossiers(prev => prev.filter(d => d.id !== id))
+      setSnackbar({
+        open: true,
+        message: `Dossiê excluído com sucesso!`,
+        severity: "success",
+      })
+
+    } catch (error) {
+      if (isAxiosError(error))
+        setSnackbar({
+          open: true,
+          message: `Erro ao excluir dossiê: ${error.message}`,
+          severity: "error",
+        });
+      else
+        setSnackbar({
+          open: true,
+          message: `Erro desconhecido ao excluir dossiê`,
+          severity: "error",
+        });
+    }
+  }
 
   const handleDeleteRequest = (id: number) => {
     setSelectedId(id);
@@ -74,7 +59,7 @@ export default function ListDossierPage() {
 
   const handleConfirmDelete = () => {
     if (selectedId !== null) {
-      deleteDossierMutation.mutate(selectedId);
+      deleteDossie(selectedId)
     }
     setConfirmOpen(false);
     setSelectedId(null);
@@ -89,29 +74,11 @@ export default function ListDossierPage() {
     setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Box sx={{ maxWidth: 600, mx: "auto", mt: 4, px: 2 }}>
-        <Alert severity="error">
-          Ocorreu um erro ao carregar dossiês: {error.message}
-        </Alert>
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, px: 2 }}>
       <DossierList
-        dossiers={dossiers || []}
-        onEdit={handleEdit}
+        // dossiers={dossiers}
+        // onEdit={handleEdit}
         onDelete={handleDeleteRequest}
         onAssociate={handleAssociate}
       />
@@ -123,12 +90,11 @@ export default function ListDossierPage() {
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
       />
-
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
           onClose={handleCloseSnackbar}
@@ -145,7 +111,6 @@ export default function ListDossierPage() {
         onClose={() => {
           setAssociateModalOpen(false);
           setSelectedDossierId(null);
-          queryClient.invalidateQueries({ queryKey: ["dossiers"] });
         }}
         dossierId={selectedDossierId}
       />

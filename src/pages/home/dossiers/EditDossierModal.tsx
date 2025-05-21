@@ -12,129 +12,97 @@ import {
   Typography,
   Box,
   FormHelperText,
-  Checkbox,
-  FormControlLabel,
 } from '@mui/material';
+
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import { apiService } from '../../../services/easydossie.service';
-
-interface Quesito {
-  id: number;
-  titulo: string;
-}
-
-interface Descricao {
-  id: number;
-  titulo: string;
-  quesitos: Quesito[];
-}
-
-interface Categoria {
-  id: number;
-  titulo: string;
-  peso: number;
-  descricoes: Descricao[];
-}
-
-interface Dossie {
-  id: number;
-  titulo: string;
-  descricao: string;
-  area_avaliacao: string;
-  conceitos: string[];
-  categorias: Categoria[];
-}
+import CustomLabelSlider from './CustomLabelSlider';
 
 interface EditDossieModalProps {
   open: boolean;
   onClose: () => void;
-  dossieData: Dossie;
-  onSave: (updatedDossie: Dossie) => void;
+  dossierData: Dossier;
+  onSave: (updatedDossie: Dossier) => void;
 }
 
 export default function EditDossieModal({
   open,
   onClose,
-  dossieData,
+  dossierData,
   onSave,
 }: EditDossieModalProps) {
-  const [dossie, setDossie] = useState<Dossie>(dossieData);
+  const [dossier, setDossier] = useState<Dossier>(dossierData);
   const [conceitosError, setConceitosError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setDossie(dossieData);
+    setDossier(dossierData);
     setConceitosError(null);
-  }, [dossieData]);
+    console.log(dossier)
+  }, [dossierData]);
 
-  const handleChange = (field: keyof Dossie, value: any) => {
-    setDossie({ ...dossie, [field]: value });
+  const handleChange = (field: keyof Dossier, value: any) => {
+    setDossier({ ...dossier, [field]: value });
   };
 
-  const handleCategoriaChange = (ci: number, field: keyof Categoria, val: any) => {
-    const cats = [...dossie.categorias];
+  const handleCategoriaChange = (ci: number, field: keyof Category, val: any) => {
+    const cats = [...dossier.categories];
     cats[ci] = { ...cats[ci], [field]: val };
-    setDossie({ ...dossie, categorias: cats });
+    setDossier({ ...dossier, categories: cats });
   };
 
   const handleDescricaoChange = (ci: number, di: number, val: string) => {
-    const cats = [...dossie.categorias];
-    cats[ci].descricoes[di].titulo = val;
-    setDossie({ ...dossie, categorias: cats });
+    console.log("descrição", dossier)
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].title = val;
+    setDossier({ ...dossier, categories: cats });
   };
 
   const handleQuesitoChange = (ci: number, di: number, qi: number, val: string) => {
-    const cats = [...dossie.categorias];
-    cats[ci].descricoes[di].quesitos[qi].titulo = val;
-    setDossie({ ...dossie, categorias: cats });
+    console.log("quesito", dossier)
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].quesitos[qi].title = val;
+    setDossier({ ...dossier, categories: cats });
   };
 
   const addCategoria = () => {
-    setDossie({
-      ...dossie,
-      categorias: [...dossie.categorias, { id: 0, titulo: '', peso: 1, descricoes: [] }],
+    const newCategory: Category = {
+      id: 0, title: '', weight: 1, descriptions: [],
+      dossierTemplateId: ''
+    }
+    setDossier({
+      ...dossier,
+      categories: [...dossier.categories ?? [], newCategory],
     });
   };
 
   const addDescricao = (ci: number) => {
-    const cats = [...dossie.categorias];
-    cats[ci].descricoes.push({ id: 0, titulo: '', quesitos: [] });
-    setDossie({ ...dossie, categorias: cats });
+    const cats = [...dossier.categories];
+    cats[ci].descriptions.push({ id: 0, title: '', quesitos: [] });
+    setDossier({ ...dossier, categories: cats });
   };
 
   const addQuesito = (ci: number, di: number) => {
-    const cats = [...dossie.categorias];
-    cats[ci].descricoes[di].quesitos.push({ id: 0, titulo: '' });
-    setDossie({ ...dossie, categorias: cats });
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].quesitos.push({ id: 0, title: '' });
+    setDossier({ ...dossier, categories: cats });
   };
 
-  const validarConceitos = (c: string[]) => c.length >= 3;
-
   const handleSave = async () => {
-    if (!validarConceitos(dossie.conceitos)) {
-      setConceitosError('Selecione pelo menos 3 conceitos (A, B, C, D, E).');
-      return;
-    }
-    setConceitosError(null);
     setLoading(true);
-
-    // 1) conceitos em string
-    const conceptsString = dossie.conceitos.join(', ');
-
     // 2) categoryIDs
-    const categoryIDs = dossie.categorias.reduce<Record<number, [string, number]>>(
+    const categoryIDs = dossier.categories?.reduce<Record<number, [string, number]>>(
       (acc, cat) => {
-        if (cat.id) acc[cat.id] = [cat.titulo, cat.peso];
+        if (cat.id) acc[cat.id] = [cat.title, cat.weight];
         return acc;
       },
       {}
     );
 
     // 3) descriptionIDs
-    const descriptionIDs = dossie.categorias
-      .flatMap((cat) =>
-        cat.descricoes.map((desc) => ({ id: desc.id, tuple: [desc.titulo, cat.id] as [string, number] }))
+    const descriptionIDs = dossier.categories?.flatMap((cat) =>
+        cat.descriptions.map((desc: any) => ({ id: desc.id, tuple: [desc.title, cat.id] as [string, number] }))
       )
       .reduce<Record<number, [string, number]>>((acc, { id, tuple }) => {
         if (id) acc[id] = tuple;
@@ -142,12 +110,11 @@ export default function EditDossieModal({
       }, {});
 
     // 4) questionsIDs
-    const questionsIDs = dossie.categorias
-      .flatMap((cat) =>
-        cat.descricoes.flatMap((desc) =>
-          desc.quesitos.map((q) => ({
+    const questionsIDs = dossier.categories?.flatMap((cat) =>
+        cat.descriptions.flatMap((desc: any) =>
+          desc.quesitos.map((q: any) => ({
             id: q.id,
-            tuple: [q.titulo, desc.id, cat.id] as [string, number, number],
+            tuple: [q.title, desc.id, cat.id] as [string, number, number],
           }))
         )
       )
@@ -157,23 +124,18 @@ export default function EditDossieModal({
       }, {});
 
     try {
-      const resp = await apiService.editDossier({
-        dossierId: dossie.id,
-        title: dossie.titulo,
-        descriptionDossier: dossie.descricao,
-        valuation_area: dossie.area_avaliacao,
-        concepts: conceptsString,
+      const resp = await apiService.editDossier(dossier,
         questionsIDs,
         categoryIDs,
         descriptionIDs,
-      });
+      );
       onSave(resp.data.data);
       onClose();
     } catch (err: any) {
       alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -183,22 +145,22 @@ export default function EditDossieModal({
         <TextField
           fullWidth
           label="Título"
-          value={dossie.titulo}
-          onChange={(e) => handleChange('titulo', e.target.value)}
+          value={dossier.title}
+          onChange={(e) => handleChange('title', e.target.value)}
           margin="normal"
         />
         <TextField
           fullWidth
           label="Descrição"
-          value={dossie.descricao}
-          onChange={(e) => handleChange('descricao', e.target.value)}
+          value={dossier.description}
+          onChange={(e) => handleChange('description', e.target.value)}
           margin="normal"
         />
         <TextField
           fullWidth
           label="Área de Avaliação"
-          value={dossie.area_avaliacao}
-          onChange={(e) => handleChange('area_avaliacao', e.target.value)}
+          value={dossier.evaluation_area}
+          onChange={(e) => handleChange('evaluation_area', e.target.value)}
           margin="normal"
         />
 
@@ -206,26 +168,8 @@ export default function EditDossieModal({
           <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
             Conceitos:
           </Typography>
-          {['A', 'B', 'C', 'D', 'E'].map((c) => (
-            <FormControlLabel
-              key={c}
-              control={
-                <Checkbox
-                  color="success"
-                  checked={dossie.conceitos.includes(c)}
-                  onChange={(e) =>
-                    handleChange(
-                      'conceitos',
-                      e.target.checked
-                        ? [...dossie.conceitos, c]
-                        : dossie.conceitos.filter((x) => x !== c)
-                    )
-                  }
-                />
-              }
-              label={c}
-            />
-          ))}
+          <CustomLabelSlider setOutput={
+            (concepts: string) => setDossier(prev => ({ ...prev, concept: concepts }))} />
         </Box>
         {conceitosError && (
           <FormHelperText error sx={{ mt: 1 }}>
@@ -237,26 +181,26 @@ export default function EditDossieModal({
           Categorias de Avaliação
         </Typography>
 
-        {dossie.categorias.map((cat, ci) => (
+        {dossier.categories?.map((cat, ci) => (
           <Accordion key={ci} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{cat.titulo || `Categoria ${ci + 1}`}</Typography>
+              <Typography>{cat.title || `Categoria ${ci + 1}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <TextField
                 fullWidth
                 label="Título da Categoria"
-                value={cat.titulo}
-                onChange={(e) => handleCategoriaChange(ci, 'titulo', e.target.value)}
+                value={cat.title}
+                onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)}
                 margin="normal"
               />
               <TextField
                 fullWidth
                 label="Peso"
                 type="number"
-                value={cat.peso}
+                value={cat.weight}
                 onChange={(e) =>
-                  handleCategoriaChange(ci, 'peso', parseFloat(e.target.value) || 0)
+                  handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)
                 }
                 margin="normal"
               />
@@ -264,21 +208,21 @@ export default function EditDossieModal({
               <Typography variant="subtitle1" mt={2}>
                 Descrições
               </Typography>
-              {cat.descricoes.map((desc, di) => (
+              {cat.descriptions.map((desc: any, di: any) => (
                 <Box key={di} mb={2} pl={2} borderLeft="2px solid #ccc">
                   <TextField
                     fullWidth
                     label={`Título da Descrição ${di + 1}`}
-                    value={desc.titulo}
+                    value={desc.title}
                     onChange={(e) => handleDescricaoChange(ci, di, e.target.value)}
                     margin="normal"
                   />
-                  {desc.quesitos.map((q, qi) => (
+                  {desc.quesitos.map((q: any, qi: any) => (
                     <TextField
                       key={qi}
                       fullWidth
                       label={`Quesito ${qi + 1}`}
-                      value={q.titulo}
+                      value={q.title}
                       onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
                       margin="normal"
                     />

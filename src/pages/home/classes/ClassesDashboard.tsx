@@ -2,16 +2,13 @@ import {
   Box,
   Fab,
   useTheme,
-  useMediaQuery,
   Snackbar,
   Alert,
   Container,
   AppBar,
   Toolbar,
   IconButton,
-  Divider,
-  Paper,
-  InputBase
+  Divider
 } from "@mui/material";
 import {
   Add,
@@ -33,7 +30,7 @@ const drawerWidth = 240;
 
 const ClassesDashboard = () => {
   const theme = useTheme();
-  const [classes, setClasses] = useState<Turma[]>([])
+  const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editModalOpened, setEditModalOpened] = useState(false)
   const [snackbar, setSnackbar] = useState<{
@@ -42,12 +39,12 @@ const ClassesDashboard = () => {
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
 
-  const [classToEdit, setClassToEdit] = useState<Turma>({
-    titulo: "0",
+  const [classToEdit, setClassToEdit] = useState<Class>({
+    title: "0",
     id: 0,
-    turno: "",
-    periodoLetivo: "",
-    instituicao: ""
+    shift: "",
+    period: "",
+    institution: ""
   })
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -59,7 +56,7 @@ const ClassesDashboard = () => {
     setDialogOpen(false);
   };
 
-  const handleCreateTurma = async (data: TurmaData) => {
+  const handleCreateTurma = async (data: Class) => {
     try {
       const result = await apiService.createClass(data);
       const newClass = result.data;
@@ -97,11 +94,11 @@ const ClassesDashboard = () => {
   const handleCloseEdit = () => {
     setEditModalOpened(false)
     setClassToEdit({
-      titulo: "0",
+      title: "0",
       id: 0,
-      turno: "",
-      periodoLetivo: "",
-      instituicao: ""
+      shift: "",
+      period: "",
+      institution: ""
     })
   }
 
@@ -145,108 +142,99 @@ const ClassesDashboard = () => {
   return (
     <>
       {/* Main */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          position: "relative",
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-        }}
-      >
 
-        {/* Top AppBar */}
-        <AppBar position="static" color="transparent" elevation={0}>
-          <Toolbar
-            sx={{
-              flexDirection: "column",
-              alignItems: "stretch",
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <IconButton>
-                <Person />
-              </IconButton>
-            </Box>
+      {/* Top AppBar */}
+      <AppBar position="relative" color="transparent" elevation={0}>
+        <Toolbar
+          sx={{
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: 1,
+            margin: 1
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton>
+              <Person />
+            </IconButton>
+          </Box>
 
-            <Divider />
+          <Divider />
 
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
             <Search value={searchTerm} onChange={setSearchTerm} />
-            </Box>
-          </Toolbar>
-        </AppBar>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-        <Container>
-          <Box
-            marginTop={"1rem"}
-            display={"flex"}
-            justifyContent={"flex-start"}
-            flexWrap={"wrap"}
-            alignItems={"flex-start"}
-            gap={"1rem"}
-            flexDirection={"row"}
-          >
-            {classes
-            .filter(cls => cls.titulo.toLowerCase().includes(searchTerm.toLowerCase()))
+      <Container>
+        <Box
+          marginTop={"1rem"}
+          display={"flex"}
+          justifyContent={"flex-start"}
+          flexWrap={"wrap"}
+          alignItems={"flex-start"}
+          gap={"1rem"}
+          flexDirection={"row"}
+        >
+          {classes
+            .filter(cls => cls.title.toLowerCase().includes(searchTerm.toLowerCase()))
             .map(cls => (
               <ClassCard
                 id={cls.id}
                 key={cls.id}
-                title={cls.titulo}
+                title={cls.title}
                 onEdit={() => handleEditClass(cls.id)}
                 onDelete={() => handleDeleteClass(cls.id)}
                 bgColor={getRandomMutedColor()}
               />
-          ))}
-          </Box>
-        </Container>
+            ))}
+        </Box>
+      </Container>
 
 
 
-        {/* Floating Action Button */}
-        <Fab
-          color="success"
-          sx={{
-            position: "fixed",
-            bottom: 32,
-            right: 32,
-          }}
-          onClick={handleOpenDialog}
-        >
-          <Add />
-        </Fab>
+      {/* Floating Action Button */}
+      <Fab
+        color="success"
+        sx={{
+          position: "fixed",
+          bottom: 32,
+          right: 32,
+        }}
+        onClick={handleOpenDialog}
+      >
+        <Add />
+      </Fab>
 
-        {/* Diálogo de criação */}
-        <CreateClass
-          open={dialogOpen}
-          onClose={handleCloseDialog}
-          onSave={handleCreateTurma}
-        />
+      {/* Diálogo de criação */}
+      <CreateClass
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        onSave={handleCreateTurma}
+      />
 
-        <EditClassModal
-          open={editModalOpened}
-          handleClose={handleCloseEdit}
-          classToEdit={classToEdit}
-          setClasses={setClasses}
-        />
-        {/* Snackbar de feedback */}
-        <Snackbar
-          open={snackbar.open}
-          autoHideDuration={4000}
+      <EditClassModal
+        open={editModalOpened}
+        handleClose={handleCloseEdit}
+        classToEdit={classToEdit}
+        setClasses={setClasses}
+      />
+      {/* Snackbar de feedback */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
           onClose={handleCloseSnackbar}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
         >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={snackbar.severity}
-            sx={{ width: "100%" }}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-      </Box>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

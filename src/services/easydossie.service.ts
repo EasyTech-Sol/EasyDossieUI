@@ -1,62 +1,12 @@
-import axios from "axios";
-
-const client = axios.create({
-  baseURL: "http://localhost:3000",
-  headers: {
-    Authorization: localStorage.getItem("token"),
-  },
-});
-
-// Interceptor para redirecionar em caso de erro 403
-client.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 403) {
-      window.location.href = "/auth/sign-in";
-    }
-    return Promise.reject(error);
-  }
-);
+import { classApi } from "./api/class.service";
+import { dossierApi } from "./api/dossier.service";
+import { studentApi } from "./api/student.service";
+import { teacherApi } from "./api/teacher.service";
 
 export const apiService = {
-  login: async (data: LoginData) => client.post("/teachers/login", data),
-  signup: async (data: SignUpData) => client.post("/teachers/register", data),
-  editTeacher: async (data: Teacher) => client.patch("/teachers", data),
-  getClasses: async () => client.get("/classes"),
-  editClass: async (data: Class) => client.post(`/classes/edit`, data),
-  createClass: async (data: TurmaData) => client.post("/classes/create", data),
-  createDossier: async ({ templateData, categories }: DossierInput) =>
-    client.post("/dossie/complete", { templateData, categories }),
-  getClassById: async (id: number) => client.get(`/classes/${id}`),
-  deleteClass: async (id: number) => client.delete(`/classes/${id}`),
-  importStudents: async (classId: number, students: Student[]) =>
-    client.post("/students/import", { classId, students }),
-  addStudent: async (classId: number, student: Student) =>
-    client.post("/students/manual", { classId, ...student }),
-  deleteStudent: async (classId: number, studentId: number) =>
-    client.delete("/students", { params: { classId, studentId } }),
-  getClassStudents: async (classId: number) =>
-    client.get("/students", { params: { classId } }),
-  editStudent: async (data: {
-    id: number;
-    name: string;
-    registration: string;
-    classId: number;
-  }) => client.patch("/students", data), //dentro da turma
-
-
-  forgotPassword: async (email: string) =>
-    client.post("/teachers/send-reset-link", {email}), //V
-
-  resetPassword: async (token: string, newPassword: string) =>
-    client.patch("/teachers/reset-password", { token, newPassword }),//V
-
-  getDossiers: async () => client.get("/dossiers"), 
-  deleteDossier: (id: number) => client.delete(`/dossiers/${id}`),
-  editDossier: async (payload: any) => client.put("/dossier/edit", payload),
-
-  associateDossierToClasses: async (dossierId: number, classIds: number[]) =>
-  client.post("/classesDossier/create", { dossierId, classIds }),
-
-
+  ...teacherApi,
+  ...studentApi,
+  ...classApi,
+  ...dossierApi,
+    
 };
