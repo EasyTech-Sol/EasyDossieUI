@@ -10,15 +10,16 @@ import {
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
-import { Add, Person } from "@mui/icons-material"; import { isAxiosError } from "axios";
+import { Add, Person } from "@mui/icons-material";
+import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
 import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
 import ListDossierPage from "./ListDossierPage.tsx";
-
 const drawerWidth = 240;
+
 
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -122,8 +123,6 @@ const DossiersDashboard = () => {
           </Box>
         </Toolbar>
       </AppBar>
-
-      <ListDossierPage />
         
       <Box
         component="main"

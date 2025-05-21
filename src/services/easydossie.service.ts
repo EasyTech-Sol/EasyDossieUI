@@ -4,9 +4,8 @@ import { studentApi } from "./api/student.service";
 import { teacherApi } from "./api/teacher.service";
 
 export const apiService = {
-  ...teacherApi,
-  ...studentApi,
-  ...classApi,
-  ...dossierApi,
-    
+    ...teacherApi,
+    ...studentApi,
+    ...classApi,
+    ...dossierApi
 };

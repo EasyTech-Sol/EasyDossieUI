@@ -11,8 +11,9 @@ import {
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
-import ClassCard from './ClassCard';
+import ClassCard from '../classes/ClassCard';
 import { apiService } from "../../../services/easydossie.service";
+import { getRandomMutedColor } from '../../../helpers/softColors';
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -24,11 +25,11 @@ const Transition = React.forwardRef(function Transition(
 interface AssociateClassModalProps {
   open: boolean;
   onClose: () => void;
-  dossierId: number; 
+  dossierId: number;
 }
 
 export default function AssociateDossierClass({ open, onClose, dossierId }: AssociateClassModalProps) {
-   
+
   const [selectedClasses, setSelectedClasses] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -43,7 +44,8 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
 
       try {
         const response = await apiService.getClasses();
-        setClassList(response.data);
+        setClassList(response.data.classes);
+
       } catch (error: any) {
         console.error(error);
         setErrorClasses('Erro ao carregar as turmas.');
@@ -62,7 +64,6 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
       prev.includes(classId) ? prev.filter((id) => id !== classId) : [...prev, classId]
     );
   };
-
   
   const handleConfirm = async () => {
     if (selectedClasses.length === 0) return;
@@ -126,7 +127,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
                 <ClassCard
                   id={classItem.id}
                   title={classItem.title}
-                  bgColor={classItem.bgColor}
+                  bgColor={getRandomMutedColor()}
                   selectMode
                   selected={selectedClasses.includes(classItem.id)}
                 />
@@ -143,7 +144,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={onClose} color='success'>Cancelar</Button>
         <Button onClick={handleConfirm} disabled={loading || selectedClasses.length === 0} variant="contained" color="success">
           {loading ? "Associando..." : "Confirmar"}
         </Button>
