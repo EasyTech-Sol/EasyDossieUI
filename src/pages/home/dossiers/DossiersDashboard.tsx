@@ -126,8 +126,6 @@ const DossiersDashboard = () => {
           </Box>
         </Toolbar>
       </AppBar>
-
-      <ListDossierPage />
         
       <Box
         component="main"
