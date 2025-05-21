@@ -16,10 +16,9 @@ import CreateDossie from "./CreateDossie.tsx";
 import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
+import ListDossierPage from "./ListDossierPage.tsx";
 
 const drawerWidth = 240;
-
-
 
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -124,6 +123,8 @@ const DossiersDashboard = () => {
         </Toolbar>
       </AppBar>
 
+      <ListDossierPage />
+        
       <Box
         component="main"
         sx={{
