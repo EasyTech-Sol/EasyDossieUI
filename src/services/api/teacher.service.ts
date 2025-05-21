@@ -12,4 +12,5 @@ export const teacherApi = {
     client.post("/teachers/send-reset-link", { email }),
   resetPassword: async (token: string, newPassword: string) =>
     client.patch("/teachers/reset-password", { token, newPassword }),
+  
 };

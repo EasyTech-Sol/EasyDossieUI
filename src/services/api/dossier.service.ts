@@ -17,4 +17,7 @@ export const dossierApi = {
       categoryIDs: categoryIDs,
       descriptionIDs: descriptionIDs
     }),
+  associateDossierToClasses: async (dossierId: number, classIds: number[]) =>
+  client.post("/classesDossier/create", { dossierId, classIds }),
+  
 };

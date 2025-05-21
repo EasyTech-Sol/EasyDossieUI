@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
-import ClassCard from './ClassCard';
+import ClassCard from '../classes/ClassCard';
 import { apiService } from "../../../services/easydossie.service";
 
 const Transition = React.forwardRef(function Transition(
