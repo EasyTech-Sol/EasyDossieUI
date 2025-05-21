@@ -4,10 +4,9 @@ import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { apiService } from "../../../services/easydossie.service";
 import { isAxiosError } from "axios";
-import EditDossieModal from "./EditDossierModal";
 import { useDossiers } from "../../../contexts/DossierContext";
 
-import AssociateDossierClass from "./AssociateDossierClass";
+import AssociateDossierClass from "../components/AssociateDossierClass";
 
 export default function ListDossierPage() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
@@ -111,7 +110,6 @@ export default function ListDossierPage() {
         onClose={() => {
           setAssociateModalOpen(false);
           setSelectedDossierId(null);
-          queryClient.invalidateQueries({ queryKey: ["dossiers"] });
         }}
         dossierId={selectedDossierId}
       />

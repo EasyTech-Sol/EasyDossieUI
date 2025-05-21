@@ -62,7 +62,10 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
   const addCategoria = () => {
     setDossier({
       ...dossier,
-      categories: [...dossier.categories, { id: 0, title: '', weight: 1, descriptions: [] }],
+      categories: [...dossier.categories, {
+        id: 0, title: '', weight: 1, descriptions: [],
+        dossierTemplateId: ''
+      }],
     });
   };
 
