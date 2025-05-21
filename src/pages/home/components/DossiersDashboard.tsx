@@ -11,10 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import { useState } from "react";
 import { Add, Person,  } from "@mui/icons-material";
-
-
 import { useEffect, useState } from "react";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
@@ -175,7 +172,7 @@ const DossiersDashboard = () => {
                   py: 0.5,
                 }}
               >
-                <Search />
+                {/* <Search /> */}
                 <InputBase
                   placeholder="Buscar dossiês..."
                   inputProps={{ "aria-label": "buscar dossiês" }}

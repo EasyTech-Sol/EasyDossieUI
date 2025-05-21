@@ -36,8 +36,9 @@ type TemplateDossie = {
   description: string;
   evaluation_area: string;
   concept: string;
+}
 
-export interface Dossier {
+interface Dossier {
     id: number;
     title: string;
     description: string;
@@ -46,13 +47,13 @@ export interface Dossier {
     professorId: number;
 }
   
-export interface DossierListItem {
+interface DossierListItem {
     id: number;
     title: string;
     description: string;
 }
   
-export interface DossierListProps {
+ interface DossierListProps {
     dossiers: DossierListItem[];
     onEdit?: (id: number) => void;
     onDelete?: (id: number) => void;
