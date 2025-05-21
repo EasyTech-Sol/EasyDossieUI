@@ -21,9 +21,6 @@ import ListDossierPage from "./ListDossierPage.tsx";
 const drawerWidth = 240;
 
 
-
-
-
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { setDossiers, loading } = useDossiers();

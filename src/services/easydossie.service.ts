@@ -8,4 +8,4 @@ export const apiService = {
     ...studentApi,
     ...classApi,
     ...dossierApi
-}
+};

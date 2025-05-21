@@ -45,6 +45,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
       try {
         const response = await apiService.getClasses();
         setClassList(response.data.classes);
+
       } catch (error: any) {
         console.error(error);
         setErrorClasses('Erro ao carregar as turmas.');
@@ -63,8 +64,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
       prev.includes(classId) ? prev.filter((id) => id !== classId) : [...prev, classId]
     );
   };
-
-
+  
   const handleConfirm = async () => {
     if (selectedClasses.length === 0) return;
 

@@ -5,7 +5,6 @@ import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { apiService } from "../../../services/easydossie.service";
 import { isAxiosError } from "axios";
 import { useDossiers } from "../../../contexts/DossierContext";
-
 import AssociateDossierClass from "../components/AssociateDossierClass";
 
 export default function ListDossierPage() {
