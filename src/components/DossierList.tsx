@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import EditDossieModal from "../pages/home/dossiers/EditDossierModal";
 import { useDossiers } from "../contexts/DossierContext";
+import {DossierView} from "../components/DossieView";
 
 interface DossierListProps {
   // dossiers: Dossier[];
