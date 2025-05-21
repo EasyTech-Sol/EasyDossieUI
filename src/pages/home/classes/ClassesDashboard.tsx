@@ -103,41 +103,47 @@ const ClassesDashboard = () => {
   }
 
   const handleDeleteClass = async (id: number) => {
-    try {
-      await apiService.deleteClass(id)
-      setClasses(prev => prev.filter(cls => cls.id !== id))
-    } catch (error) {
+  try {
+    await apiService.deleteClass(id);
+    setClasses(prev => prev.filter(cls => cls.id !== id));
+  } catch (error) {
+    if (isAxiosError(error)) {
+      setSnackbar({
+        open: true,
+        message: error.response?.data?.error || "Erro ao apagar turma.",
+        severity: "error",
+      });
+    } else {
       setSnackbar({
         open: true,
         message: "Erro ao apagar turma.",
         severity: "error",
       });
-
     }
-
   }
+}
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
   useEffect(() => {
-    try {
-      const fetchClassesList = async () => {
-        const result = await apiService.getClasses()
-        setClasses(result.data.classes)
+    const fetchClassesList = async () => {
+      try {
+        const result = await apiService.getClasses();
+        setClasses(result.data.classes ?? []);
+      } catch (error) {
+          console.error(error);  // <-- usando a variável 'error'
+          setSnackbar({
+            open: true,
+            message: "Erro ao listar turmas.",
+            severity: "error",
+          });
       }
+    };
 
-      fetchClassesList()
-
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Erro ao listar turmas.",
-        severity: "error",
-      });
-    }
-  }, [])
+    fetchClassesList();
+  }, []);
 
   return (
     <>
@@ -178,8 +184,8 @@ const ClassesDashboard = () => {
           flexDirection={"row"}
         >
           {classes
-            .filter(cls => cls.title.toLowerCase().includes(searchTerm.toLowerCase()))
-            .map(cls => (
+          .filter(cls => 
+            cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
               <ClassCard
                 id={cls.id}
                 key={cls.id}
