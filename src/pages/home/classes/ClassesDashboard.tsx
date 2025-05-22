@@ -125,16 +125,15 @@ const ClassesDashboard = () => {
   const fetchClassesList = async () => {
     try {
       const result = await apiService.getClasses()
-      console.log(result.data)
       setClasses(
-      result.data.classes.map((cls: any) => ({
-        id: cls.id,
-        title: cls.titulo,             
-        shift: cls.turno,
-        period: cls.periodoLetivo,
-        institution: cls.instituicao,
-      }))
-    )
+        result.data.classes.map((cls: any) => ({
+          id: cls.id,
+          title: cls.title,
+          shift: cls.shift,
+          period: cls.period,
+          institution: cls.institution,
+        }))
+      )
 
     } catch (error) {
       console.error("Erro ao listar turmas:", error); 
