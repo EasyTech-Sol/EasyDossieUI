@@ -4,13 +4,17 @@ import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { apiService } from "../../../services/easydossie.service";
 import { isAxiosError } from "axios";
-import EditDossieModal from "./EditDossierModal";
 import { useDossiers } from "../../../contexts/DossierContext";
-
+import AssociateDossierClass from "../components/AssociateDossierClass";
 
 export default function ListDossierPage() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [associateModalOpen, setAssociateModalOpen] = React.useState(false);
+  const [selectedDossierId, setSelectedDossierId] = React.useState<number | null>(null);
+
+
   const [selectedId, setSelectedId] = React.useState<number | null>(null);
+
   const [snackbar, setSnackbar] = React.useState({
     open: false,
     message: "",
@@ -60,8 +64,8 @@ export default function ListDossierPage() {
   };
 
   const handleAssociate = (id: number) => {
-    console.log(`Associar dossiê com id: ${id}`);
-    // Faltando a navegação pra essa parte
+    setSelectedDossierId(id);
+    setAssociateModalOpen(true);
   };
 
   const handleCloseSnackbar = () => {
@@ -98,6 +102,17 @@ export default function ListDossierPage() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {selectedDossierId !== null && (
+      <AssociateDossierClass
+        open={associateModalOpen}
+        onClose={() => {
+          setAssociateModalOpen(false);
+          setSelectedDossierId(null);
+        }}
+        dossierId={selectedDossierId}
+      />
+    )}
     </Box>
   );
 }

@@ -13,6 +13,8 @@ export const dossierApi = {
   
   getDossiers: async () => client.get("/dossiers"),
   deleteDossier: (id: number) => client.delete(`/dossiers/${id}`),
+  associateDossierToClasses: async (dossierId: number, classIds: number[]) =>
+    client.post("/classesDossier/create", { dossierId, classIds }),
   editDossier: async (
     dossier: Dossier,
     questionIDs: any,
@@ -23,6 +25,6 @@ export const dossierApi = {
       ...dossier,
       questionIDs: questionIDs,
       categoryIDs: categoryIDs,
-      descriptionIDs: descriptionIDs
+      descriptionIDs: descriptionIDs,
     }),
 };
