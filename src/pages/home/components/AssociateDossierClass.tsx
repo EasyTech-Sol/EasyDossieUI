@@ -34,27 +34,28 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
 
   const [selectedClasses, setSelectedClasses] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [classList, setClassList] = useState<any[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(false);
-  const [errorClasses, setErrorClasses] = useState<string | null>(null);
 
   const { showMessage } = useSnackbar(); // Hook do contexto
 
   useEffect(() => {
     const fetchClasses = async () => {
       setLoadingClasses(true);
-      setErrorClasses(null);
 
       try {
         const response = await apiService.getClasses();
         setClassList(response.data.classes);
 
+        showMessage(
+        response.data.message || 'Turmas carregadas com sucesso.',
+        response.data.type || 'success'
+      );
       } catch (error: any) {
-        console.error(error);
-        setErrorClasses('Erro ao carregar as turmas.');
-      } finally {
-        setLoadingClasses(false);
+        showMessage(
+          error.response?.data?.message || 'Erro ao carregar as turmas.',
+          error.response?.data?.type || 'error'
+        );
       }
     };
 
@@ -73,17 +74,21 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
     if (selectedClasses.length === 0) return;
 
     setLoading(true);
-    
+
     try {
       const result = await apiService.associateDossierToClasses(dossierId, selectedClasses);
-      console.log(result.data)
-      setMessage("Associação realizada com sucesso!");
+
+      showMessage(result.data.message || 'Associação realizada com sucesso!', result.data.type || 'success');
       onClose();
 
     } catch (error: any) {
-      console.error(error);
-      setMessage("Erro ao associar dossiê.");
+      const backendMessage = error.response?.data?.message;
+      const backendType = error.response?.data?.type;
 
+      showMessage(
+        backendMessage || 'Erro ao associar dossiê.',
+        backendType || 'error'
+      );
     } finally {
       setLoading(false);
     }
@@ -111,13 +116,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
           </Typography>
         )}
 
-        {errorClasses && (
-          <Typography color="error" align="center" sx={{ mt: 2 }}>
-            {errorClasses}
-          </Typography>
-        )}
-
-        {!loadingClasses && !errorClasses && (
+        {!loadingClasses && (
           <Box
             sx={{
               display: 'flex',
@@ -139,12 +138,6 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
               </Box>
             ))}
           </Box>
-        )}
-
-        {message && (
-          <Typography sx={{ mt: 2 }} color="error">
-            {message}
-          </Typography>
         )}
       </DialogContent>
 
