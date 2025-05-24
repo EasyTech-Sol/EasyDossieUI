@@ -10,7 +10,7 @@ export const dossierMocks = [
     );
   }),
 
-  http.put(routeTo("/dossiers/edit"), async ({ request }) => {
+  http.patch(routeTo("/dossiers"), async ({ request }) => {
 
     const data: any = await request.json()
 

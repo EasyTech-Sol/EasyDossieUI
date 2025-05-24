@@ -10,7 +10,7 @@ const ClassAppBar = () => {
     const { selectedSubTab, setSelectedSubTab } = useTabsContext();
     const navigate = useNavigate()
     const handleSubTabChange = (_event: React.SyntheticEvent, newValue: string) => {
-        setSelectedSubTab(newValue as "dossies" | "alunos") // Altera subaba ativa
+        setSelectedSubTab(newValue as "dossiers" | "students") // Altera subaba ativa
     }
 
     const breadcrumbs = [
@@ -79,13 +79,13 @@ const ClassAppBar = () => {
                             TabIndicatorProps={{ sx: { height: 3 } }} // opcional: deixa o indicador mais grosso
                         >
                             <Tab
-                                value="dossies"
+                                value="dossiers"
                                 label="Dossiês"
                                 sx={{ fontSize: "1rem", fontWeight: 500, mx: 20 }}
 
                             />
                             <Tab
-                                value="alunos"
+                                value="students"
                                 label="Alunos"
                                 sx={{ fontSize: "1rem", fontWeight: 500, mx: 20 }}
                             />

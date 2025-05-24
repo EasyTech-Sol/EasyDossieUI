@@ -27,8 +27,8 @@ const Class = () => {
   const { selectedSubTab } = useTabsContext();
   const { classId } = useLocation().state as { classId: number; title: string };
 
-  const [students, setStudents] = useState<any[]>([]);
-  const [dossiers, setDossiers] = useState<any[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [dossiers, setDossiers] = useState<Dossier[]>([]);
 
   const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<any | null>(null);
@@ -67,11 +67,11 @@ const Class = () => {
   };
 
   const filteredStudents = students.filter(s =>
-    s.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredDossiers = dossiers.filter(d =>
-    d.dossieTemplate.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+    d.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStudents = useCallback(async (id: number) => {
@@ -86,7 +86,7 @@ const Class = () => {
   const getDossiers = useCallback(async (id: number) => {
     try {
       const res = await apiService.getDossiersByClass(id);
-      setDossiers(res.data.dossiersClass || []);
+      setDossiers(res.data.associatedDossiers.map((ad: any) => ad.dossierTemplate) || []);
     } catch (err) {
       console.error(err);
     }
@@ -99,7 +99,7 @@ const Class = () => {
 
   const handleDeleteStudent = async (id: number) => {
     try {
-      await apiService.deleteStudent(classId, id);
+      await apiService.deleteStudent(id);
       setStudents(prev => prev.filter(s => s.id !== id));
     } catch (err) {
       console.error(err);

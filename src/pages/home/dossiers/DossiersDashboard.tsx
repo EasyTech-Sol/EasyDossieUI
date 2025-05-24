@@ -53,13 +53,13 @@ const DossiersDashboard = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const handleCreateDossie = async ({ templateData, categories }: DossierInput) => {
+  const handleCreateDossie = async ({ templateData }: DossierInput) => {
     try {
       const result = await apiService.createDossier({
-        templateData, categories
+        templateData
       });
-      const newClass = result.data;
-      setDossiers(prev => [...prev, newClass])
+      const newDossier = result.data.template;
+      setDossiers(prev => [...prev, newDossier])
       setSnackbar({
         open: true,
         message: "Dossie criado com sucesso!",
@@ -123,7 +123,7 @@ const DossiersDashboard = () => {
           </Box>
         </Toolbar>
       </AppBar>
-        
+
       <Box
         component="main"
         sx={{

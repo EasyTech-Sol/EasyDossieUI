@@ -39,34 +39,31 @@ export default function EditDossieModal({
   useEffect(() => {
     setDossier(dossierData);
     setConceitosError(null);
-    console.log(dossier)
   }, [dossierData]);
 
   const handleChange = (field: keyof Dossier, value: any) => {
     setDossier({ ...dossier, [field]: value });
   };
 
-  const handleCategoriaChange = (ci: number, field: keyof Category, val: any) => {
+  const handleCategoryChange = (ci: number, field: keyof Category, val: any) => {
     const cats = [...dossier.categories];
     cats[ci] = { ...cats[ci], [field]: val };
     setDossier({ ...dossier, categories: cats });
   };
 
-  const handleDescricaoChange = (ci: number, di: number, val: string) => {
-    console.log("descrição", dossier)
+  const handleDescriptionChange = (ci: number, di: number, val: string) => {
     const cats = [...dossier.categories];
     cats[ci].descriptions[di].title = val;
     setDossier({ ...dossier, categories: cats });
   };
 
-  const handleQuesitoChange = (ci: number, di: number, qi: number, val: string) => {
-    console.log("quesito", dossier)
+  const handleCriterionChange = (ci: number, di: number, qi: number, val: string) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions[di].quesitos[qi].title = val;
+    cats[ci].descriptions[di].criteria[qi].title = val;
     setDossier({ ...dossier, categories: cats });
   };
 
-  const addCategoria = () => {
+  const addCategory = () => {
     const newCategory: Category = {
       id: 0, title: '', weight: 1, descriptions: [],
       dossierTemplateId: ''
@@ -77,15 +74,15 @@ export default function EditDossieModal({
     });
   };
 
-  const addDescricao = (ci: number) => {
+  const addDescription = (ci: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions.push({ id: 0, title: '', quesitos: [] });
+    cats[ci].descriptions.push({ id: 0, title: '', criteria: [] });
     setDossier({ ...dossier, categories: cats });
   };
 
-  const addQuesito = (ci: number, di: number) => {
+  const addCriterion = (ci: number, di: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions[di].quesitos.push({ id: 0, title: '' });
+    cats[ci].descriptions[di].criteria.push({ id: 0, title: '' });
     setDossier({ ...dossier, categories: cats });
   };
 
@@ -109,10 +106,10 @@ export default function EditDossieModal({
         return acc;
       }, {});
 
-    // 4) questionsIDs
-    const questionsIDs = dossier.categories?.flatMap((cat) =>
+    // 4) criteriaIDs
+    const criteriaIDs = dossier.categories?.flatMap((cat) =>
         cat.descriptions.flatMap((desc: any) =>
-          desc.quesitos.map((q: any) => ({
+          desc.criteria.map((q: any) => ({
             id: q.id,
             tuple: [q.title, desc.id, cat.id] as [string, number, number],
           }))
@@ -125,7 +122,7 @@ export default function EditDossieModal({
 
     try {
       const resp = await apiService.editDossier(dossier,
-        questionsIDs,
+        criteriaIDs,
         categoryIDs,
         descriptionIDs,
       );
@@ -159,8 +156,8 @@ export default function EditDossieModal({
         <TextField
           fullWidth
           label="Área de Avaliação"
-          value={dossier.evaluation_area}
-          onChange={(e) => handleChange('evaluation_area', e.target.value)}
+          value={dossier.evaluationArea}
+          onChange={(e) => handleChange('evaluationArea', e.target.value)}
           margin="normal"
         />
 
@@ -191,7 +188,7 @@ export default function EditDossieModal({
                 fullWidth
                 label="Título da Categoria"
                 value={cat.title}
-                onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)}
+                onChange={(e) => handleCategoryChange(ci, 'title', e.target.value)}
                 margin="normal"
               />
               <TextField
@@ -200,7 +197,7 @@ export default function EditDossieModal({
                 type="number"
                 value={cat.weight}
                 onChange={(e) =>
-                  handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)
+                  handleCategoryChange(ci, 'weight', parseFloat(e.target.value) || 0)
                 }
                 margin="normal"
               />
@@ -214,23 +211,23 @@ export default function EditDossieModal({
                     fullWidth
                     label={`Título da Descrição ${di + 1}`}
                     value={desc.title}
-                    onChange={(e) => handleDescricaoChange(ci, di, e.target.value)}
+                    onChange={(e) => handleDescriptionChange(ci, di, e.target.value)}
                     margin="normal"
                   />
-                  {desc.quesitos.map((q: any, qi: any) => (
+                  {desc.criteria.map((q: any, qi: any) => (
                     <TextField
                       key={qi}
                       fullWidth
                       label={`Quesito ${qi + 1}`}
                       value={q.title}
-                      onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
+                      onChange={(e) => handleCriterionChange(ci, di, qi, e.target.value)}
                       margin="normal"
                     />
                   ))}
                   <Button
                     variant="outlined"
                     startIcon={<AddIcon />}
-                    onClick={() => addQuesito(ci, di)}
+                    onClick={() => addCriterion(ci, di)}
                     sx={{ mt: 1 }}
                   >
                     Adicionar Quesito
@@ -240,7 +237,7 @@ export default function EditDossieModal({
               <Button
                 variant="outlined"
                 startIcon={<AddIcon />}
-                onClick={() => addDescricao(ci)}
+                onClick={() => addDescription(ci)}
                 sx={{ mt: 1 }}
               >
                 Adicionar Descrição
@@ -252,7 +249,7 @@ export default function EditDossieModal({
         <Box mt={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             startIcon={<AddIcon />}
-            onClick={addCategoria}
+            onClick={addCategory}
             variant="contained"
             sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#388e3c' } }}
           >

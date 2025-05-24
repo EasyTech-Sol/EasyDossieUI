@@ -12,10 +12,9 @@ import {
   Button,
 } from "@mui/material";
 import { useState } from "react";
-import type { DossierListItem } from "../../types/dossier";
 
 interface DossiersProps {
-  dossiers: DossierListItem[];
+  dossiers: Dossier[];
   handleDeleteDossier: (dossierClassId: number) => void;
 }
 
@@ -54,7 +53,6 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
         }}
       >
         {dossiers.map((dossier) => {
-          const template = dossier.dossierTemplate;
           return (
             <Paper
               key={dossier.id}
@@ -69,8 +67,8 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
               }}
             >
               <Box>
-                <Typography variant="h6">{template.title}</Typography>
-                <Typography variant="body2">{template.description}</Typography>
+                <Typography variant="h6">{dossier.title}</Typography>
+                <Typography variant="body2">{dossier.description}</Typography>
               </Box>
               <IconButton sx={{ color: "black" }} onClick={() => handleOpenDialog(dossier.id)}>
                 <Delete fontSize="small" />

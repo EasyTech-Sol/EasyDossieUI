@@ -43,7 +43,7 @@ const ClassesDashboard = () => {
     title: "0",
     id: 0,
     shift: "",
-    period: "",
+    lectivePeriod: "",
     institution: ""
   })
 
@@ -56,7 +56,7 @@ const ClassesDashboard = () => {
     setDialogOpen(false);
   };
 
-  const handleCreateTurma = async (data: Class) => {
+  const handleCreateClass = async (data: Class) => {
     try {
       const result = await apiService.createClass(data);
       const newClass = result.data;
@@ -97,7 +97,7 @@ const ClassesDashboard = () => {
       title: "0",
       id: 0,
       shift: "",
-      period: "",
+      lectivePeriod: "",
       institution: ""
     })
   }
@@ -217,7 +217,7 @@ const ClassesDashboard = () => {
       <CreateClass
         open={dialogOpen}
         onClose={handleCloseDialog}
-        onSave={handleCreateTurma}
+        onSave={handleCreateClass}
       />
 
       <EditClassModal
