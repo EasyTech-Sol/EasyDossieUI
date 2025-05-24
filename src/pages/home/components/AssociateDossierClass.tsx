@@ -14,6 +14,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import ClassCard from '../classes/ClassCard';
 import { apiService } from "../../../services/easydossie.service";
 import { getRandomMutedColor } from '../../../helpers/softColors';
+import { useSnackbar } from '../../../contexts/SnackBarContext'; 
+
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -36,6 +38,8 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
   const [classList, setClassList] = useState<any[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(false);
   const [errorClasses, setErrorClasses] = useState<string | null>(null);
+
+  const { showMessage } = useSnackbar(); // Hook do contexto
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -69,6 +73,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
     if (selectedClasses.length === 0) return;
 
     setLoading(true);
+    
     try {
       const result = await apiService.associateDossierToClasses(dossierId, selectedClasses);
       console.log(result.data)
