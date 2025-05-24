@@ -34,7 +34,7 @@ export default function ImportStudents({ classId: classId,
     mutationFn: () => apiService.importStudents(classId, excelData),
     onSuccess: ({ data }) => {
       setSuccess('Dados enviados com sucesso!');
-      setStudents(prev => [...prev, ...data.inseridos])
+      setStudents(prev => [...prev, ...data.success])
       setError(null);
       setExcelData([]);
     },

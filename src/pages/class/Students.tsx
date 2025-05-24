@@ -10,7 +10,7 @@ interface StudentsProps {
         registration: string;
         classId: number;
     }) => void
-    handleDeleteStudent: (id: number, classId: number) => void
+    handleDeleteStudent: (id: number) => void
 }
 
 const drawerWidth = 240;
@@ -60,7 +60,7 @@ const Students = ({ students, handleOpenEditModal, handleDeleteStudent }: Studen
                         </IconButton>
                         <IconButton
                             sx={{ color: "black" }}
-                            onClick={() => handleDeleteStudent(student.id, classId)}
+                            onClick={() => handleDeleteStudent(student.id)}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

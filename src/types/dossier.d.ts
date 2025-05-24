@@ -1,13 +1,13 @@
-type Criteria = {
+type Criterion = {
   id: number;
-  titulo: string;
+  title: string;
   descriptionId: string;
 };
 
 type Description = {
   id: number;
   title: string;
-  criteria: Criteria[];
+  criteria: Criterion[];
   categoryId: string;
 };
 
@@ -23,7 +23,7 @@ type Dossier = {
   id: number;
   title: string;
   description: string;
-  evaluation_area: string;
+  evaluationArea: string;
   concept: string;
   categories: Category[];
   teacherId: string;
@@ -31,7 +31,6 @@ type Dossier = {
 
 type DossierInput = {
   templateData: TemplateDossie;
-  categories: Category[];
 };
 
 type TemplateDossier = {
@@ -42,26 +41,12 @@ type TemplateDossier = {
   concept: string;
 };
 
-type Template = {
-  id: number;
-  titulo: string;
-  descricao: string;
-  conceito: string;
-  areaAvaliacao: string;
-};
-
 type DossierListItem = {
-  id: number; // ID da associação entre o dossiê e a turma
-  classId: number;
-  dossierTemplateId: number;
-  dossierTemplate: {
-    id: number;
-    title: string;
-    description: string;
-    evaluationArea: string;
-    concepts: string;
-    categories: any[];
-    teacherId: number;
-  };
+  id: number;
+  title: string;
+  description: string;
+  evaluationArea: string;
+  concepts: string;
+  categories: any[];
+  teacherId: number;
 };
-

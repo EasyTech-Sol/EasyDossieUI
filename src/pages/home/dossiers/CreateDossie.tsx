@@ -20,7 +20,7 @@ interface CreateDossieProps {
   open: boolean;
   onClose: () => void;
   dossieData: Dossier;
-  onSave: ({ templateData, categories }: DossierInput) => void;
+  onSave: ({ templateData }: DossierInput) => void;
 }
 
 
@@ -84,8 +84,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
   const handleSave = async () => {
     setLoading(true);
     try {
-      const { categories, ...templateData } = dossier
-      onSave({ templateData, categories });
+      onSave({ templateData: dossier });
       onClose();
     } catch (err: any) {
       alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));

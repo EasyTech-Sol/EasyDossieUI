@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 interface EditStudentModalProps {
   open: boolean;
   handleClose: () => void;
-  student: { id: number; nome: string; matricula: string } | null;
+  student: Student | null;
 
   classId: number;
   onEdit: (payload: {
@@ -42,8 +42,8 @@ const EditStudentModal = ({
   // Preenche o form quando abrir e houver aluno
   useEffect(() => {
     if (open && student) {
-      setValue("name", student.nome);
-      setValue("registration", student.matricula);
+      setValue("name", student.name);
+      setValue("registration", student.registration);
     }
   }, [open, student, setValue]);
 

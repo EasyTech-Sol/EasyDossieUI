@@ -38,13 +38,13 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
       setValue("title", classToEdit.title);
       setValue("shift", classToEdit.shift);
       setValue("institution", classToEdit.institution);
-      setValue("period", classToEdit.period);
+      setValue("period", classToEdit.lectivePeriod);
 
       originalData.current = {
         title: classToEdit.title,
         shift: classToEdit.shift,
         institution: classToEdit.institution,
-        period: classToEdit.period,
+        period: classToEdit.lectivePeriod,
         id: classToEdit.id
       };
     }
@@ -63,7 +63,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
       data.title === classToEdit.title &&
       data.shift === classToEdit.shift &&
       data.institution === classToEdit.institution &&
-      data.period === classToEdit.period
+      data.lectivePeriod === classToEdit.lectivePeriod
     ) {
       alert("Nenhuma alteração detectada.");
       return;
@@ -164,8 +164,8 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
                 validate: validatePeriodoLetivo,
               })}
             />
-            {errors.period && (
-              <Typography color="error">{String(errors.period.message)}</Typography>
+            {errors.lectivePeriod && (
+              <Typography color="error">{String(errors.lectivePeriod.message)}</Typography>
             )}
           </Box>
           <Box display="flex" justifyContent="space-between">

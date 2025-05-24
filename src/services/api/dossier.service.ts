@@ -1,29 +1,30 @@
 import client from "./client.service";
 
 export const dossierApi = {
-  createDossier: async ({ templateData, categories }: DossierInput) =>
-    client.post("/dossiers/create", { templateData, categories }),
+  createDossier: async ({ templateData }: DossierInput) =>
+    client.post("/dossiers/create", { templateData }),
 
   deleteDossierFromClass: async (dossierClassId: number) =>
     client.delete(`/dossiersClass/${dossierClassId}`), 
 
   getDossiersByClass: async (classId: number) =>
-    client.get(`/dossiersClass/classes/${classId}`),
+    client.get(`/classes/${classId}/dossiers`),
 
   
   getDossiers: async () => client.get("/dossiers"),
   deleteDossier: (id: number) => client.delete(`/dossiers/${id}`),
-  associateDossierToClasses: async (dossierId: number, classIds: number[]) =>
-    client.post("/classesDossier/create", { dossierId, classIds }),
+  associateDossierToClasses: async (dossierId: number, classIds: number[]) => {
+    return client.post(`/dossiers/${dossierId}/classes/create`, { dossierId, classIds })
+  },
   editDossier: async (
     dossier: Dossier,
-    questionIDs: any,
+    criteriaIDs: any,
     categoryIDs: any,
     descriptionIDs: any
   ) =>
-    client.put("/dossiers/edit", {
+    client.patch("/dossiers", {
       ...dossier,
-      questionIDs: questionIDs,
+      questionsIDs: criteriaIDs,
       categoryIDs: categoryIDs,
       descriptionIDs: descriptionIDs,
     }),

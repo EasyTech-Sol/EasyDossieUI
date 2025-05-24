@@ -70,8 +70,8 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
 
     setLoading(true);
     try {
-      await apiService.associateDossierToClasses(dossierId, selectedClasses);
-
+      const result = await apiService.associateDossierToClasses(dossierId, selectedClasses);
+      console.log(result.data)
       setMessage("Associação realizada com sucesso!");
       onClose();
 

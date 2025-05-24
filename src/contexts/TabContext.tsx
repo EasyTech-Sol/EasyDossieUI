@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 type TabType = "turmas" | "dossies";
-type SubTabType = "dossies" | "alunos";
+type SubTabType = "dossiers" | "students";
 
 interface TabsContextProps {
   selectedTab: TabType;
@@ -13,7 +13,7 @@ const TabsContext = createContext<TabsContextProps | undefined>(undefined);
 
 export function TabsProvider({ children }: { children: ReactNode }) {
   const [selectedTab] = useState<TabType>("turmas"); // Fixo
-  const [selectedSubTab, setSelectedSubTab] = useState<SubTabType>("alunos");
+  const [selectedSubTab, setSelectedSubTab] = useState<SubTabType>("students");
 
   return (
     <TabsContext.Provider value={{ selectedTab, selectedSubTab, setSelectedSubTab }}>

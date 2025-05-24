@@ -1,9 +1,9 @@
 type Student = {
-    name: string;
-    registration: string | number;
+  id: number;
+  name: string;
+  registration: string | number;
 };
 
-  
 type RawStudent = {
-    [key: string]: string | number;
+  [key: string]: string | number;
 };
