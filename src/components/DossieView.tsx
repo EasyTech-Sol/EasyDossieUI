@@ -48,7 +48,7 @@ const DescriptionView: React.FC<{ description: Description, concepts: string[] }
           <Typography variant="body2" sx={{ width: 20 }}>
             {String(index + 1).padStart(2, '0')}
           </Typography>
-          <Typography variant="body2">{criterion.titulo}</Typography>
+          <Typography variant="body2">{criterion.title}</Typography>
         </Box>
       ))}
     </Box>
@@ -68,13 +68,14 @@ const CategoryView: React.FC<{ category: Category, concepts: string[] }> = ({ ca
 );
 
 const DossierView = ({ dossier, open, onClose }: DossierViewProps) => {
-  const concepts = dossier.concept.split(',');
+  const concepts = dossier.concepts.split(',');
+
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogContent>
         <Typography variant="h4" gutterBottom textAlign="center">{dossier.title}</Typography>
-        <Typography variant="h5" textAlign="center">Área: {dossier.evaluation_area}</Typography>
+        <Typography variant="h5" textAlign="center">Área: {dossier.evaluationArea}</Typography>
 
         {dossier.categories.map(category => (
           <CategoryView key={category.id} category={category} concepts={concepts} />

@@ -32,9 +32,9 @@ export const DossierList: React.FC<DossierListProps> = ({
     id: 0,
     title: '',
     description: '',
-    evaluation_area: '',
+    evaluationArea: '',
     categories: [],
-    concept: "A,B,C",
+    concepts: "A,B,C",
     teacherId: ""
   };
   const { dossiers, setDossiers, loading } = useDossiers();
@@ -48,9 +48,8 @@ export const DossierList: React.FC<DossierListProps> = ({
     setEditModal(true)
   }
 
-  const handleEdit = (data: any) => {
-    const { id, title } = data.credentials
-    setDossiers(prev => prev.map(d => d.id === id ? { ...d, title } : d))
+  const handleEdit = (updated: any) => {
+    setDossiers(prev => prev.map(d => d.id === updated.id ? updated : d))
   }
 
   return (

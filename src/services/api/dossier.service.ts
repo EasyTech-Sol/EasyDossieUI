@@ -18,14 +18,14 @@ export const dossierApi = {
   },
   editDossier: async (
     dossier: Dossier,
-    criteriaIDs: any,
-    categoryIDs: any,
-    descriptionIDs: any
+    // criteriaIDs: any,
+    // categoryIDs: any,
+    // descriptionIDs: any
   ) =>
-    client.patch("/dossiers", {
-      ...dossier,
-      questionsIDs: criteriaIDs,
-      categoryIDs: categoryIDs,
-      descriptionIDs: descriptionIDs,
-    }),
+    client.patch("/dossiers", dossier),
+      // ...dossier,
+      // questionsIDs: criteriaIDs,
+      // categoryIDs: categoryIDs,
+      // descriptionIDs: descriptionIDs,
+    // }),
 };

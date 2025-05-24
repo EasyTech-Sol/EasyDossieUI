@@ -29,9 +29,9 @@ const DossiersDashboard = () => {
     id: 0,
     title: '',
     description: '',
-    evaluation_area: '',
+    evaluationArea: '',
     categories: [],
-    concept: "A,B,C",
+    concepts: "A,B,C",
     teacherId: ""
   };
   const [snackbar, setSnackbar] = useState<{

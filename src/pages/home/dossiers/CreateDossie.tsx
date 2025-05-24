@@ -31,7 +31,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
   useEffect(() => {
     setDossier({
       ...dossieData,
-      concept: dossieData.concept ?? [],
+      concepts: dossieData.concepts ?? [],
     });
   }, [dossieData]);
 
@@ -114,8 +114,8 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
         <TextField
           fullWidth
           label="Área de Avaliação"
-          value={dossier.evaluation_area}
-          onChange={(e) => handleChange('evaluation_area', e.target.value)}
+          value={dossier.evaluationArea}
+          onChange={(e) => handleChange('evaluationArea', e.target.value)}
           margin="normal"
         />
 
@@ -124,7 +124,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
             Conceitos:
           </Typography>
           <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({...prev, concepts: concepts}))}/>
+            (concepts: Concept) => setDossier(prev => ({...prev, concepts: concepts}))}/>
         </Box>
 
         <Typography variant="h6" mt={2}>

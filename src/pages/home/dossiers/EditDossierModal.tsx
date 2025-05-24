@@ -88,45 +88,9 @@ export default function EditDossieModal({
 
   const handleSave = async () => {
     setLoading(true);
-    // 2) categoryIDs
-    const categoryIDs = dossier.categories?.reduce<Record<number, [string, number]>>(
-      (acc, cat) => {
-        if (cat.id) acc[cat.id] = [cat.title, cat.weight];
-        return acc;
-      },
-      {}
-    );
-
-    // 3) descriptionIDs
-    const descriptionIDs = dossier.categories?.flatMap((cat) =>
-        cat.descriptions.map((desc: any) => ({ id: desc.id, tuple: [desc.title, cat.id] as [string, number] }))
-      )
-      .reduce<Record<number, [string, number]>>((acc, { id, tuple }) => {
-        if (id) acc[id] = tuple;
-        return acc;
-      }, {});
-
-    // 4) criteriaIDs
-    const criteriaIDs = dossier.categories?.flatMap((cat) =>
-        cat.descriptions.flatMap((desc: any) =>
-          desc.criteria.map((q: any) => ({
-            id: q.id,
-            tuple: [q.title, desc.id, cat.id] as [string, number, number],
-          }))
-        )
-      )
-      .reduce<Record<number, [string, number, number]>>((acc, { id, tuple }) => {
-        if (id) acc[id] = tuple;
-        return acc;
-      }, {});
-
     try {
-      const resp = await apiService.editDossier(dossier,
-        criteriaIDs,
-        categoryIDs,
-        descriptionIDs,
-      );
-      onSave(resp.data.data);
+      await apiService.editDossier(dossier);
+      onSave(dossier);
       onClose();
     } catch (err: any) {
       alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));
@@ -166,7 +130,8 @@ export default function EditDossieModal({
             Conceitos:
           </Typography>
           <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({ ...prev, concept: concepts }))} />
+            (concepts: Concept) => setDossier(prev => ({ ...prev, concepts: concepts }))}
+            initialValue={dossier.concepts} />
         </Box>
         {conceitosError && (
           <FormHelperText error sx={{ mt: 1 }}>

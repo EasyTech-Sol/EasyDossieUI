@@ -19,12 +19,14 @@ type Category = {
   dossierTemplateId: string;
 };
 
+type Concept = "A,B,C" | "A,B,C,D" | "A,B,C,D,E"
+
 type Dossier = {
   id: number;
   title: string;
   description: string;
   evaluationArea: string;
-  concept: string;
+  concepts: Concept;
   categories: Category[];
   teacherId: string;
 };
