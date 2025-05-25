@@ -22,9 +22,10 @@ import { apiService } from "../../../services/easydossie.service.ts";
 import { getRandomMutedColor } from "../../../helpers/softColors.ts";
 import EditClassModal from "./EditClassModal.tsx";
 import { isAxiosError } from "axios";
+import { useSnackbar } from "../../../contexts/SnackbarContext"; 
 
 
-import Search from "../../../components/Search.tsx"; // ajuste o caminho conforme necessário
+import Search from "../../../components/Search.tsx"; 
 
 const drawerWidth = 240;
 
@@ -56,34 +57,40 @@ const ClassesDashboard = () => {
     setDialogOpen(false);
   };
 
+  const { showMessage } = useSnackbar();
+
+
   const handleCreateClass = async (data: Class) => {
     try {
       const result = await apiService.createClass(data);
-      const newClass = result.data;
-      setClasses(prev => [...prev, newClass])
-      setSnackbar({
-        open: true,
-        message: "Turma criada com sucesso!",
-        severity: "success",
-      });
+      const newClass = result.data as Class;
+      setClasses(prev => [...prev, newClass]);
+      showMessage("Turma criada com sucesso!", "success"); 
+      setDialogOpen(false); 
     } catch (error) {
-      if (isAxiosError(error))
-        if (error.status === 403)
-          window.location.href = "auth/sign-in"
-        else
-          setSnackbar({
-            open: true,
-            message: error.response?.data.error,
-            severity: "error",
-          });
-      else
-        setSnackbar({
-          open: true,
-          message: "Erro ao criar turma.",
-          severity: "error",
-        });
+      console.error("Erro ao criar turma:", error); 
+      let message = "Erro desconhecido ao criar turma.";
+      if (isAxiosError(error)) {
+        if (error.response?.status === 403) {
+          showMessage("Sessão expirada ou acesso negado. Redirecionando para login...", "warning");
+          setTimeout(() => {
+            window.location.href = "/auth/sign-in"; 
+          }, 2500);
+          return;
+        }
+        // Tentativa de pegar mensagens de erro mais específicas
+        if (error.response?.data?.error) {
+          message = String(error.response.data.error);
+        } else if (error.response?.data?.message) {
+          message = String(error.response.data.message);
+        } else if (error.message) {
+          message = error.message;
+        }
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+      showMessage(message, "error");
     }
-    setDialogOpen(false);
   };
 
   const handleEditClass = (id: number) => {
@@ -103,25 +110,34 @@ const ClassesDashboard = () => {
   }
 
   const handleDeleteClass = async (id: number) => {
-  try {
-    await apiService.deleteClass(id);
-    setClasses(prev => prev.filter(cls => cls.id !== id));
-  } catch (error) {
-    if (isAxiosError(error)) {
-      setSnackbar({
-        open: true,
-        message: error.response?.data?.error || "Erro ao apagar turma.",
-        severity: "error",
-      });
-    } else {
-      setSnackbar({
-        open: true,
-        message: "Erro ao apagar turma.",
-        severity: "error",
-      });
+    try {
+      await apiService.deleteClass(id);
+      setClasses(prev => prev.filter(cls => cls.id !== id));
+      showMessage("Turma excluída com sucesso!", "success");
+    } catch (error) {
+      console.error("Erro ao apagar turma:", error);
+      let message = "Erro desconhecido ao apagar turma.";
+      if (isAxiosError(error)) {
+        if (error.response?.status === 403) {
+          showMessage("Sessão expirada ou acesso negado. Redirecionando para login...", "warning");
+          setTimeout(() => {
+            window.location.href = "/auth/sign-in";
+          }, 2500);
+          return;
+        }
+        if (error.response?.data?.error) {
+          message = String(error.response.data.error);
+        } else if (error.response?.data?.message) {
+          message = String(error.response.data.message);
+        } else if (error.message) {
+          message = error.message;
+        }
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+      showMessage(message, "error");
     }
-  }
-}
+  };
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
