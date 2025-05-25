@@ -2,60 +2,66 @@ import { Box, TextField, Modal, Button, Typography, IconButton } from "@mui/mate
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { apiService } from "../../services/easydossie.service"; // import do serviço de API
+import { apiService } from "../../services/easydossie.service";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 interface AddStudentModalProps {
   open: boolean;
   handleClose: () => void;
   classId: number;
-  /** Callback a ser disparado quando o aluno for salvo com sucesso */
   onSuccess?: () => void;
 }
 
 const AddStudentModal = ({ open, classId, handleClose, onSuccess }: AddStudentModalProps) => {
+  const { showMessage } = useSnackbar();
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm();
+  } = useForm({
+    mode: "onSubmit",
+    reValidateMode: "onChange"
+  });
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: any) => {
     if (!data.name?.trim() || !data.registration?.trim()) {
-      alert("Todos os campos são obrigatórios.");
+      showMessage("Nome e Matrícula não podem ser vazios ou conter apenas espaços.", "warning"); 
       return;
     }
 
-
-    // 2. Mapeia os campos do form para o que a API espera:
     const payload = {
-      name: data.name,           // converte `name` → `nome`
-      registration: data.registration,
-       // converte `registration` → `matricula`
-      // aqui você acrescenta outros campos caso haja
+      name: data.name.trim(),
+      registration: data.registration.trim(),
     };
-
 
     setLoading(true);
     try {
-      // Uso do serviço de API em vez de fetch direto
       await apiService.addStudent(classId, payload);
 
-      alert("Aluno adicionado com sucesso!");
+      showMessage("Aluno adicionado com sucesso!", "success");
       reset();
-      handleClose();
-      onSuccess?.();
+      handleClose(); 
+      onSuccess?.(); 
     } catch (error: any) {
       console.error('Erro ao criar aluno:', error);
-      alert(`Erro: ${error.message || 'Não foi possível adicionar o aluno.'}`);
+      const errorMessage = error.response?.data?.message || error.message || 'Não foi possível adicionar o aluno.';
+      showMessage(errorMessage, "error"); 
     } finally {
       setLoading(false);
     }
   };
 
+  // Função para fechar o modal e resetar o formulário
+  const closeModalAndReset = () => {
+    reset();
+    handleClose();
+  };
+
+
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={closeModalAndReset}>
       <Box
         sx={{
           position: "absolute",

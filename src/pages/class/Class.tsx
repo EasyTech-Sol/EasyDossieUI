@@ -21,11 +21,14 @@ import ImportStudents from "../../components/importStudents/ImportStudents";
 import { handleExcelParse } from "../../utils/csvManaging";
 import { apiService } from "../../services/easydossie.service";
 import { useTabsContext } from "../../contexts/TabContext";
+import { useSnackbar } from "../../contexts/SnackbarContext";
 
 const Class = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { selectedSubTab } = useTabsContext();
   const { classId } = useLocation().state as { classId: number; title: string };
+
+  const { showMessage } = useSnackbar();
 
   const [students, setStudents] = useState<Student[]>([]);
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
@@ -38,9 +41,11 @@ const Class = () => {
   const handleOpenImportModal = () => setOpenImport(true);
 
   const onDrop = useCallback((files: File[]) => {
-    const file = files[0];
-    if (file) handleExcelParse(file, handleOpenImportModal, setExcelData);
-  }, []);
+        const file = files[0];
+        if (file) {
+            handleExcelParse(file, handleOpenImportModal, setExcelData, showMessage);
+        }
+    }, [handleOpenImportModal, setExcelData, showMessage]);
 
   const { getRootProps, getInputProps, open: openFileDialog } = useDropzone({
     onDrop,
@@ -108,24 +113,26 @@ const Class = () => {
 
   const handleDeleteDossier = async (dossierClassId: number) => {
     try {
-      await apiService.deleteDossierFromClass(dossierClassId);
-      setDossiers(prev => prev.filter(d => d.id !== dossierClassId));
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao deletar dossiê");
+        await apiService.deleteDossierFromClass(dossierClassId);
+        setDossiers(prev => prev.filter(d => d.id !== dossierClassId));
+    } catch (err: any) { 
+        console.error(err);
+        const errorMessage = err.response?.data?.message || err.response?.data || err.message || "Erro ao deletar dossiê.";
+        showMessage(String(errorMessage), "error");
     }
-  };
+};
 
   const handleSaveEditStudent = useCallback(async (payload: any) => {
     try {
-      await apiService.editStudent(payload);
-      await getStudents(payload.classId);
-      alert("Estudante editado com sucesso!");
-    } catch (err: any) {
-      console.error(err);
-      alert(`Error: ${err.response?.data || err.message}`);
+        await apiService.editStudent(payload);
+        await getStudents(payload.classId);
+        showMessage("Estudante editado com sucesso!", "success");
+    } catch (err: any) { 
+        console.error(err);
+        const errorMessage = err.response?.data?.message || err.response?.data || err.message || "Ocorreu um erro ao editar o estudante.";
+        showMessage(String(errorMessage), "error");
     }
-  }, [getStudents]);
+}, [getStudents, showMessage]);
 
   return (
     <>

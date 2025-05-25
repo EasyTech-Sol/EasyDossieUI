@@ -1,10 +1,22 @@
 import * as XLSX from "xlsx";
-import Papa from "papaparse";
+import Papa, { PapaParseError } from "papaparse"; 
+
+interface Student {
+  name: string;
+  registration: string;
+}
+
+interface RawStudent {
+  [key: string]: any;
+}
+
+type ShowMessageFn = (message: string, severity: 'success' | 'error' | 'warning' | 'info') => void;
 
 export const processStudentData = (
   rawData: RawStudent[],
   handleOpenImportModal: () => void,
-  setExcelData: React.Dispatch<React.SetStateAction<Student[]>>
+  setExcelData: React.Dispatch<React.SetStateAction<Student[]>>,
+  showMessage: ShowMessageFn
 ) => {
   const jsonData: Student[] = rawData.map((item) => {
     const keys = Object.keys(item);
@@ -27,7 +39,6 @@ export const processStudentData = (
     return { name, registration: String(registration) };
   });
 
-  // Verifica se todos os registros são válidos
   const isValid = jsonData.every(
     (item) =>
       typeof item.name === "string" &&
@@ -38,15 +49,16 @@ export const processStudentData = (
   );
 
   if (!isValid) {
-    alert(
-      'Formato inválido. Certifique-se de que cada linha contenha "nome" e "matricula".'
+    showMessage( 
+      'Formato inválido. Certifique-se de que cada linha contenha "nome" e "matricula".',
+      'error'
     );
     setExcelData([]);
     return;
   }
 
   setExcelData(jsonData);
-  alert("Arquivo carregado com sucesso!");
+  showMessage("Arquivo validado e pronto para importação!", 'success'); 
   handleOpenImportModal();
 };
 
@@ -57,19 +69,22 @@ export const detectDelimiter = (csvText: string): string => {
   return commaCount >= semicolonCount ? "," : ";";
 };
 
-// Lógica para processar os arquivos CSV ou Excel
 export const handleExcelParse = (
   file: File,
   handleOpenImportModal: () => void,
-  setExcelData: React.Dispatch<React.SetStateAction<Student[]>>
+  setExcelData: React.Dispatch<React.SetStateAction<Student[]>>,
+  showMessage: ShowMessageFn 
 ) => {
   const fileName = file.name.toLowerCase();
 
-  // Se for CSV
   if (fileName.endsWith(".csv")) {
     const reader = new FileReader();
     reader.onload = (e) => {
       const csvText = e.target?.result as string;
+      if (!csvText) {
+        showMessage("Não foi possível ler o conteúdo do arquivo CSV.", "error");
+        return;
+      }
       const delimiter = detectDelimiter(csvText);
 
       Papa.parse(csvText, {
@@ -77,36 +92,50 @@ export const handleExcelParse = (
         skipEmptyLines: true,
         delimiter,
         complete: (results) => {
+          if (results.errors.length > 0) {
+            console.error("Erros de parse do CSV:", results.errors);
+            const firstErrorMessage = results.errors[0]?.message || "Erro desconhecido ao fazer o parse do CSV.";
+            showMessage(`Erro ao fazer o parse do CSV: ${firstErrorMessage}`, "error");
+            return;
+          }
           const rawData = results.data as RawStudent[];
-          processStudentData(rawData, handleOpenImportModal, setExcelData);
+          processStudentData(rawData, handleOpenImportModal, setExcelData, showMessage);
         },
-        error: () => {
-          alert("Erro ao processar o arquivo CSV.");
+        error: (papaparseError: PapaParseError) => {
+          console.error("Erro no Papa.parse:", papaparseError);
+          showMessage(papaparseError.message || "Erro ao processar o arquivo CSV.", "error");
         },
       });
     };
+    reader.onerror = () => { 
+        showMessage("Erro ao tentar ler o arquivo CSV.", "error");
+    };
     reader.readAsText(file, "utf-8");
-    // Se for Excel
   } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
     const reader = new FileReader();
-
-    // Quando o arquivo for carregado, processa os dados
     reader.onload = (e) => {
       const data = e.target?.result;
+      if (!data) { 
+        showMessage("Não foi possível ler o conteúdo do arquivo Excel.", "error");
+        return;
+      }
       try {
         const workbook = XLSX.read(data, { type: "array" });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const rawData = XLSX.utils.sheet_to_json<RawStudent>(worksheet, {
           defval: "",
         });
-        processStudentData(rawData, handleOpenImportModal, setExcelData);
-      } catch (err) {
-        console.error(err);
-        alert("Erro ao processar o arquivo Excel.");
+        processStudentData(rawData, handleOpenImportModal, setExcelData, showMessage);
+      } catch (err: any) {
+        console.error("Erro no processamento do Excel:", err);
+        showMessage(err.message || "Erro ao processar o arquivo Excel.", "error"); 
       }
+    };
+    reader.onerror = () => { 
+        showMessage("Erro ao tentar ler o arquivo Excel.", "error");
     };
     reader.readAsArrayBuffer(file);
   } else {
-    alert("Formato de arquivo não suportado.");
+    showMessage("Formato de arquivo não suportado. Use .csv, .xlsx ou .xls.", "warning");
   }
 };
