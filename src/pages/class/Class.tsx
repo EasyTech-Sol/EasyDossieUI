@@ -103,13 +103,16 @@ const Class = () => {
   }, [selectedSubTab, classId, getStudents, getDossiers]);
 
   const handleDeleteStudent = async (id: number) => {
-    try {
-      await apiService.deleteStudent(id);
-      setStudents(prev => prev.filter(s => s.id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    await apiService.deleteStudent(id);
+    setStudents(prev => prev.filter(s => s.id !== id));
+    showMessage("Aluno excluído com sucesso!", "success"); 
+  } catch (err: any) { 
+    console.error('Erro ao excluir aluno:', err);
+    const errorMessage = err.response?.data?.message || err.response?.data || err.message || "Erro ao excluir aluno.";
+    showMessage(String(errorMessage), "error");
+  }
+};
 
   const handleDeleteDossier = async (dossierClassId: number) => {
     try {
