@@ -151,7 +151,7 @@ const Class = () => {
         <SpeedDial
           ariaLabel="Opções Alunos"
           sx={{
-            position: "absolute",
+            position: "fixed",
             bottom: 32,
             right: 32,
             "& .MuiFab-primary": {
