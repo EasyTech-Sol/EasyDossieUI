@@ -2,19 +2,25 @@ import { Box, Grid, Typography } from "@mui/material"
 import EvaluationAppBar from "./EvaluationAppBar"
 import StudentsBar from "./StudentsBar"
 import StudentsScores from "./StudentsScores"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { apiService } from "../../services/easydossie.service"
 import { useParams } from "react-router-dom"
+import { useEvaluationContext } from "../../contexts/EvaluationContext"
 
 const Evaluation = () => {
 
-    const {classId, dossierId} = useParams()
+    const { classId, dossierId } = useParams()
+    const [dossierTemplate, setDossierTemplate] = useState<Dossier>()
+    const { setEvaluations } = useEvaluationContext()
+
 
     useEffect(() => {
         const fetchEvaluations = async () => {
             try {
                 const result = await apiService.getClassDossierEvaluation(classId!, dossierId!)
-                console.log(result.data)
+                const { dossierTemplate, evaluations } = result.data
+                setDossierTemplate(dossierTemplate)
+                setEvaluations(evaluations)
             } catch (error) {
                 console.error(error)
             }

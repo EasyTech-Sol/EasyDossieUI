@@ -6,6 +6,7 @@ import { TabsProvider } from "../../contexts/TabContext";
 import MainLayout from "../../components/layout/MainLayout";
 import { DossierProvider } from "../../contexts/DossierContext";
 import Evaluation from "../evaluation/Evaluation";
+import { EvaluationProvider } from "../../contexts/EvaluationContext";
 
 export function routes(startPath: string) {
     return {
@@ -27,7 +28,9 @@ export function routes(startPath: string) {
             },
             {
                 path: "/class/:classId/dossier/:dossierId/evaluation", element:
-                    <TabsProvider><Evaluation /> </TabsProvider>
+                    <EvaluationProvider>
+                        <TabsProvider><Evaluation /> </TabsProvider>
+                    </EvaluationProvider>
             }
         ],
     };
