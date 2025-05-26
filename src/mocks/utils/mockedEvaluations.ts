@@ -4,7 +4,7 @@ export const mocked_evaluations = {
     id: 1,
     title: "Introdução à Programação",
     description: "Conceitos básicos de lógica e algoritmos.",
-    evaluation_area: "Computação",
+    evaluationArea: "Computação",
     concepts: "A, B, C",
     categories: [
       {

@@ -74,7 +74,7 @@ const DossierView = ({ dossier, open, onClose }: DossierViewProps) => {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogContent>
         <Typography variant="h4" gutterBottom textAlign="center">{dossier.title}</Typography>
-        <Typography variant="h5" textAlign="center">Área: {dossier.evaluation_area}</Typography>
+        <Typography variant="h5" textAlign="center">Área: {dossier.evaluationArea}</Typography>
 
         {dossier.categories.map(category => (
           <CategoryView key={category.id} category={category} concepts={concepts} />

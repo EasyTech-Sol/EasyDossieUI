@@ -33,14 +33,6 @@ type DossierInput = {
   templateData: TemplateDossie;
 };
 
-type TemplateDossier = {
-  id: number;
-  title: string;
-  description: string;
-  evaluation_area: string;
-  concept: string;
-};
-
 type DossierListItem = {
   id: number;
   title: string;
