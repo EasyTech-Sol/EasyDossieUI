@@ -40,29 +40,31 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
   const { showMessage } = useSnackbar(); // Hook do contexto
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      setLoadingClasses(true);
+  const fetchClasses = async () => {
+    setLoadingClasses(true);
+    try {
+      const response = await apiService.getClasses();
+      setClassList(response.data.classes);
 
-      try {
-        const response = await apiService.getClasses();
-        setClassList(response.data.classes);
-
-        showMessage(
+      showMessage(
         response.data.message || 'Turmas carregadas com sucesso.',
         response.data.type || 'success'
       );
-      } catch (error: any) {
-        showMessage(
-          error.response?.data?.message || 'Erro ao carregar as turmas.',
-          error.response?.data?.type || 'error'
-        );
-      }
-    };
-
-    if (open) {
-      fetchClasses();
+    } catch (error: any) {
+      showMessage(
+        error.response?.data?.message || 'Erro ao carregar as turmas.',
+        error.response?.data?.type || 'error'
+      );
+    } finally {
+      setLoadingClasses(false);
     }
-  }, [open]);
+  };
+
+  if (open) {
+    fetchClasses();
+  }
+}, [open]);
+
 
   const handleSelectClass = (classId: number) => {
     setSelectedClasses((prev) =>
