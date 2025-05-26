@@ -4,7 +4,7 @@ export const mocked_dossiers = [
     title: "Introdução à Programação",
     description: "Conceitos básicos de lógica e algoritmos.",
     evaluation_area: "Computação",
-    concept: "A, B, C",
+    concepts: "A, B, C",
     categories: [
       {
         id: 101,
@@ -17,8 +17,8 @@ export const mocked_dossiers = [
             title: "Estruturas Condicionais",
             categoryId: "101",
             criteria: [
-              { id: 10001, titulo: "Utiliza corretamente if/else", descriptionId: "1001" },
-              { id: 10002, titulo: "Implementa lógica com operadores relacionais", descriptionId: "1001" }
+              { id: 10001, title: "Utiliza corretamente if/else", descriptionId: "1001" },
+              { id: 10002, title: "Implementa lógica com operadores relacionais", descriptionId: "1001" }
             ]
           },
           {
@@ -26,7 +26,7 @@ export const mocked_dossiers = [
             title: "Laços de Repetição",
             categoryId: "101",
             criteria: [
-              { id: 10003, titulo: "Utiliza corretamente while e for", descriptionId: "1002" }
+              { id: 10003, title: "Utiliza corretamente while e for", descriptionId: "1002" }
             ]
           }
         ]
@@ -42,7 +42,7 @@ export const mocked_dossiers = [
             title: "Resolução de Problemas",
             categoryId: "102",
             criteria: [
-              { id: 10004, titulo: "Resolve problemas simples com algoritmos", descriptionId: "1003" }
+              { id: 10004, title: "Resolve problemas simples com algoritmos", descriptionId: "1003" }
             ]
           }
         ]
@@ -54,7 +54,7 @@ export const mocked_dossiers = [
     title: "Cálculo I",
     description: "Estudo de limites, derivadas e aplicações.",
     evaluation_area: "Matemática",
-    concept: "A, B, C, D",
+    concepts: "A, B, C, D",
     categories: [
       {
         id: 201,
@@ -67,7 +67,7 @@ export const mocked_dossiers = [
             title: "Cálculo de Limites",
             categoryId: "201",
             criteria: [
-              { id: 20001, titulo: "Calcula limites com precisão", descriptionId: "2001" }
+              { id: 20001, title: "Calcula limites com precisão", descriptionId: "2001" }
             ]
           }
         ]
@@ -83,7 +83,7 @@ export const mocked_dossiers = [
             title: "Regras de Derivação",
             categoryId: "202",
             criteria: [
-              { id: 20002, titulo: "Aplica regras de derivação", descriptionId: "2002" }
+              { id: 20002, title: "Aplica regras de derivação", descriptionId: "2002" }
             ]
           }
         ]
@@ -99,7 +99,7 @@ export const mocked_dossiers = [
             title: "Estudo de máximos e mínimos",
             categoryId: "203",
             criteria: [
-              { id: 20003, titulo: "Identifica pontos críticos corretamente", descriptionId: "2003" }
+              { id: 20003, title: "Identifica pontos críticos corretamente", descriptionId: "2003" }
             ]
           }
         ]
@@ -111,7 +111,7 @@ export const mocked_dossiers = [
     title: "Física Mecânica",
     description: "Leis do movimento e energia.",
     evaluation_area: "Física",
-    concept: "A, B",
+    concepts: "A, B",
     categories: [
       {
         id: 301,
@@ -124,7 +124,7 @@ export const mocked_dossiers = [
             title: "Movimento Retilíneo",
             categoryId: "301",
             criteria: [
-              { id: 30001, titulo: "Calcula velocidade e aceleração", descriptionId: "3001" }
+              { id: 30001, title: "Calcula velocidade e aceleração", descriptionId: "3001" }
             ]
           }
         ]
@@ -140,7 +140,7 @@ export const mocked_dossiers = [
             title: "Leis de Newton",
             categoryId: "302",
             criteria: [
-              { id: 30002, titulo: "Aplica corretamente as leis de Newton", descriptionId: "3002" }
+              { id: 30002, title: "Aplica corretamente as leis de Newton", descriptionId: "3002" }
             ]
           }
         ]
@@ -152,7 +152,7 @@ export const mocked_dossiers = [
     title: "Química Inorgânica",
     description: "Estrutura atômica, tabela periódica e ligações.",
     evaluation_area: "Química",
-    concept: "A, C, D",
+    concepts: "A, C, D",
     categories: [
       {
         id: 401,
@@ -165,7 +165,7 @@ export const mocked_dossiers = [
             title: "Modelos Atômicos",
             categoryId: "401",
             criteria: [
-              { id: 40001, titulo: "Compreende os modelos atômicos", descriptionId: "4001" }
+              { id: 40001, title: "Compreende os modelos atômicos", descriptionId: "4001" }
             ]
           }
         ]
@@ -181,7 +181,7 @@ export const mocked_dossiers = [
             title: "Classificação dos Elementos",
             categoryId: "402",
             criteria: [
-              { id: 40002, titulo: "Identifica grupos e períodos", descriptionId: "4002" }
+              { id: 40002, title: "Identifica grupos e períodos", descriptionId: "4002" }
             ]
           }
         ]
@@ -197,7 +197,7 @@ export const mocked_dossiers = [
             title: "Ligações Iônicas e Covalentes",
             categoryId: "403",
             criteria: [
-              { id: 40003, titulo: "Distingue tipos de ligação", descriptionId: "4003" }
+              { id: 40003, title: "Distingue tipos de ligação", descriptionId: "4003" }
             ]
           }
         ]
@@ -209,7 +209,7 @@ export const mocked_dossiers = [
     title: "História Moderna",
     description: "Análise dos eventos do século XIX em diante.",
     evaluation_area: "História",
-    concept: "B, C, D",
+    concepts: "B, C, D",
     categories: [
       {
         id: 501,
@@ -222,7 +222,7 @@ export const mocked_dossiers = [
             title: "Revolução Francesa",
             categoryId: "501",
             criteria: [
-              { id: 50001, titulo: "Analisa causas e consequências", descriptionId: "5001" }
+              { id: 50001, title: "Analisa causas e consequências", descriptionId: "5001" }
             ]
           }
         ]
@@ -238,7 +238,7 @@ export const mocked_dossiers = [
             title: "Primeira Revolução Industrial",
             categoryId: "502",
             criteria: [
-              { id: 50002, titulo: "Compreende o impacto da industrialização", descriptionId: "5002" }
+              { id: 50002, title: "Compreende o impacto da industrialização", descriptionId: "5002" }
             ]
           }
         ]
@@ -254,7 +254,7 @@ export const mocked_dossiers = [
             title: "Primeira Guerra Mundial",
             categoryId: "503",
             criteria: [
-              { id: 50003, titulo: "Identifica causas e efeitos do conflito", descriptionId: "5003" }
+              { id: 50003, title: "Identifica causas e efeitos do conflito", descriptionId: "5003" }
             ]
           }
         ]
@@ -266,7 +266,7 @@ export const mocked_dossiers = [
     title: "Geometria Analítica",
     description: "Estudo de retas, planos e curvas no espaço.",
     evaluation_area: "Matemática",
-    concept: "A, B, C",
+    concepts: "A, B, C",
     categories: [
       {
         id: 601,
@@ -279,7 +279,7 @@ export const mocked_dossiers = [
             title: "Equações de Retas",
             categoryId: "601",
             criteria: [
-              { id: 60001, titulo: "Determina a equação de uma reta", descriptionId: "6001" }
+              { id: 60001, title: "Determina a equação de uma reta", descriptionId: "6001" }
             ]
           }
         ]
@@ -295,7 +295,7 @@ export const mocked_dossiers = [
             title: "Cônicas",
             categoryId: "602",
             criteria: [
-              { id: 60002, titulo: "Classifica e interpreta cônicas", descriptionId: "6002" }
+              { id: 60002, title: "Classifica e interpreta cônicas", descriptionId: "6002" }
             ]
           }
         ]
@@ -307,7 +307,7 @@ export const mocked_dossiers = [
     title: "Redação Técnica",
     description: "Desenvolvimento de textos objetivos e claros.",
     evaluation_area: "Linguagens",
-    concept: "B, C, D, E",
+    concepts: "B, C, D, E",
     categories: [
       {
         id: 701,
@@ -320,7 +320,7 @@ export const mocked_dossiers = [
             title: "Organização Textual",
             categoryId: "701",
             criteria: [
-              { id: 70001, titulo: "Constrói textos coerentes e coesos", descriptionId: "7001" }
+              { id: 70001, title: "Constrói textos coerentes e coesos", descriptionId: "7001" }
             ]
           }
         ]
@@ -336,7 +336,7 @@ export const mocked_dossiers = [
             title: "Correção Gramatical",
             categoryId: "702",
             criteria: [
-              { id: 70002, titulo: "Utiliza regras gramaticais corretamente", descriptionId: "7002" }
+              { id: 70002, title: "Utiliza regras gramaticais corretamente", descriptionId: "7002" }
             ]
           }
         ]
@@ -348,7 +348,7 @@ export const mocked_dossiers = [
     title: "Banco de Dados Relacional",
     description: "Modelagem de dados e consultas em SQL.",
     evaluation_area: "Computação",
-    concept: "A, B",
+    concepts: "A, B",
     categories: [
       {
         id: 801,
@@ -361,7 +361,7 @@ export const mocked_dossiers = [
             title: "Modelo Entidade-Relacionamento",
             categoryId: "801",
             criteria: [
-              { id: 80001, titulo: "Cria diagramas corretos", descriptionId: "8001" }
+              { id: 80001, title: "Cria diagramas corretos", descriptionId: "8001" }
             ]
           }
         ]
@@ -377,7 +377,7 @@ export const mocked_dossiers = [
             title: "Consultas",
             categoryId: "802",
             criteria: [
-              { id: 80002, titulo: "Escreve consultas SQL básicas", descriptionId: "8002" }
+              { id: 80002, title: "Escreve consultas SQL básicas", descriptionId: "8002" }
             ]
           }
         ]
@@ -389,7 +389,7 @@ export const mocked_dossiers = [
     title: "Eletricidade e Magnetismo",
     description: "Campos elétricos e magnéticos em circuitos.",
     evaluation_area: "Física",
-    concept: "C, D, E",
+    concepts: "C, D, E",
     categories: [
       {
         id: 901,
@@ -402,7 +402,7 @@ export const mocked_dossiers = [
             title: "Força Elétrica",
             categoryId: "901",
             criteria: [
-              { id: 90001, titulo: "Aplica corretamente a Lei de Coulomb", descriptionId: "9001" }
+              { id: 90001, title: "Aplica corretamente a Lei de Coulomb", descriptionId: "9001" }
             ]
           }
         ]
@@ -418,7 +418,7 @@ export const mocked_dossiers = [
             title: "Campo Magnético",
             categoryId: "902",
             criteria: [
-              { id: 90002, titulo: "Analisa interações magnéticas", descriptionId: "9002" }
+              { id: 90002, title: "Analisa interações magnéticas", descriptionId: "9002" }
             ]
           }
         ]
@@ -434,7 +434,7 @@ export const mocked_dossiers = [
             title: "Leis de Kirchhoff",
             categoryId: "903",
             criteria: [
-              { id: 90003, titulo: "Resolve circuitos aplicando as leis de Kirchhoff", descriptionId: "9003" }
+              { id: 90003, title: "Resolve circuitos aplicando as leis de Kirchhoff", descriptionId: "9003" }
             ]
           }
         ]
@@ -446,7 +446,7 @@ export const mocked_dossiers = [
     title: "Ética Profissional",
     description: "Reflexões sobre práticas profissionais e responsabilidade.",
     evaluation_area: "Filosofia",
-    concept: "A, D",
+    concepts: "A, D",
     categories: [
       {
         id: 1001,
@@ -459,7 +459,7 @@ export const mocked_dossiers = [
             title: "Código de Ética",
             categoryId: "1001",
             criteria: [
-              { id: 100001, titulo: "Conhece os princípios do código de ética", descriptionId: "10001" }
+              { id: 100001, title: "Conhece os princípios do código de ética", descriptionId: "10001" }
             ]
           }
         ]
@@ -475,7 +475,7 @@ export const mocked_dossiers = [
             title: "Resolução de Conflitos",
             categoryId: "1002",
             criteria: [
-              { id: 100002, titulo: "Propõe soluções éticas para dilemas", descriptionId: "10002" }
+              { id: 100002, title: "Propõe soluções éticas para dilemas", descriptionId: "10002" }
             ]
           }
         ]
