@@ -17,9 +17,18 @@ export function routes(startPath: string) {
                 element: <Navigate to="home" replace />
             },
             { path: "home", element: <ClassesDashboard /> },
-            { path: "dossiers", element: <DossierProvider> <DossiersDashboard /> </DossierProvider> }, // Adicionada a rota para DossiersDashboard
-            { path: "/class/:classId", element: <TabsProvider><Class /></TabsProvider> },
-            { path: "/class/:classId/dossier/:dossierId/evaluation", element: <Evaluation />}
+            {
+                path: "dossiers", element:
+                    <DossierProvider> <DossiersDashboard /> </DossierProvider>
+            },
+            {
+                path: "/class/:classId", element:
+                    <TabsProvider><Class /></TabsProvider>
+            },
+            {
+                path: "/class/:classId/dossier/:dossierId/evaluation", element:
+                    <TabsProvider><Evaluation /> </TabsProvider>
+            }
         ],
     };
 }

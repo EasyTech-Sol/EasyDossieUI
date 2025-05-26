@@ -77,7 +77,9 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
                 <Button
                   variant="contained"
                   color="success"
-                  onClick={() => navigate(`/class/${classId}/dossier/${dossier.id}/evaluation`)}
+                  onClick={() => navigate(`/class/${classId}/dossier/${dossier.id}/evaluation`, 
+                    {state: {}}
+                  )}
                 >Avaliar</Button>
                 <IconButton sx={{ color: "black" }} onClick={() => handleOpenDialog(dossier.id)}>
                   <Delete fontSize="small" />
