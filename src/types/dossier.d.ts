@@ -24,7 +24,7 @@ type Dossier = {
   title: string;
   description: string;
   evaluationArea: string;
-  concept: string;
+  concepts: string;
   categories: Category[];
   teacherId: string;
 };

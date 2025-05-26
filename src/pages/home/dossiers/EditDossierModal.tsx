@@ -166,7 +166,7 @@ export default function EditDossieModal({
             Conceitos:
           </Typography>
           <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({ ...prev, concept: concepts }))} />
+            (concepts: string) => setDossier(prev => ({ ...prev, concepts: concepts }))} />
         </Box>
         {conceitosError && (
           <FormHelperText error sx={{ mt: 1 }}>
