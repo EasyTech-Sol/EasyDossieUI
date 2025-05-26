@@ -5,6 +5,7 @@ import Class from "../class/Class";
 import { TabsProvider } from "../../contexts/TabContext";
 import MainLayout from "../../components/layout/MainLayout";
 import { DossierProvider } from "../../contexts/DossierContext";
+import Evaluation from "../evaluation/Evaluation";
 
 export function routes(startPath: string) {
     return {
@@ -18,6 +19,7 @@ export function routes(startPath: string) {
             { path: "home", element: <ClassesDashboard /> },
             { path: "dossiers", element: <DossierProvider> <DossiersDashboard /> </DossierProvider> }, // Adicionada a rota para DossiersDashboard
             { path: "/class/:classId", element: <TabsProvider><Class /></TabsProvider> },
+            { path: "/class/:classId/dossier/:dossierId/evaluation", element: <Evaluation />}
         ],
     };
 }

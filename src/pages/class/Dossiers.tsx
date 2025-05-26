@@ -12,6 +12,7 @@ import {
   Button,
 } from "@mui/material";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface DossiersProps {
   dossiers: Dossier[];
@@ -23,6 +24,8 @@ const drawerWidth = 240;
 const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
   const [open, setOpen] = useState(false);
   const [selectedDossierId, setSelectedDossierId] = useState<number | null>(null);
+  const navigate = useNavigate()
+  const { classId } = useLocation().state as { classId: string }
 
   const handleOpenDialog = (id: number) => {
     setSelectedDossierId(id);
@@ -36,7 +39,7 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
 
   const handleConfirmDelete = () => {
     if (selectedDossierId !== null) {
-      handleDeleteDossier(selectedDossierId); 
+      handleDeleteDossier(selectedDossierId);
     }
     handleCloseDialog();
   };
@@ -70,9 +73,16 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
                 <Typography variant="h6">{dossier.title}</Typography>
                 <Typography variant="body2">{dossier.description}</Typography>
               </Box>
-              <IconButton sx={{ color: "black" }} onClick={() => handleOpenDialog(dossier.id)}>
-                <Delete fontSize="small" />
-              </IconButton>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => navigate(`/class/${classId}/dossier/${dossier.id}/evaluation`)}
+                >Avaliar</Button>
+                <IconButton sx={{ color: "black" }} onClick={() => handleOpenDialog(dossier.id)}>
+                  <Delete fontSize="small" />
+                </IconButton>
+              </Box>
             </Paper>
           );
         })}
