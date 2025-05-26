@@ -1,5 +1,4 @@
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material'
-import { Divider, Grid, Typography } from '@mui/material'
+import { Divider, Grid } from '@mui/material'
 import StudentsCarousel from './StudentsCarousel'
 
 const StudentsBar = () => {
@@ -7,7 +6,7 @@ const StudentsBar = () => {
         <>
             <Grid container width={"100%"}>
                 <Grid size={8} display={"flex"} alignItems={"center"} justifyContent={"center"}>
-                    {/* <StudentsCarousel/> */}
+                    <StudentsCarousel/>
                 </Grid>
                 <Grid size={4}>
                 </Grid>

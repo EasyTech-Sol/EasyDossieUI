@@ -10,9 +10,7 @@ import { useEvaluationContext } from "../../contexts/EvaluationContext"
 const Evaluation = () => {
 
     const { classId, dossierId } = useParams()
-    const [dossierTemplate, setDossierTemplate] = useState<Dossier>()
-    const { setEvaluations } = useEvaluationContext()
-
+    const { setEvaluations, setDossierTemplate } = useEvaluationContext()
 
     useEffect(() => {
         const fetchEvaluations = async () => {

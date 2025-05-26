@@ -1,7 +1,7 @@
 type EvaluatedConcept = {
-    criterionId: number;
-    concept: string;
-}
+  criterionId: number;
+  concept: string;
+};
 
 type Evaluation = {
   studentId: number;

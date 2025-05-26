@@ -1,17 +1,23 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Tooltip } from '@mui/material';
+import { useStudentContext } from '../../contexts/StudentContext';
+import { useEvaluationContext } from '../../contexts/EvaluationContext';
+import { countCriterionsInDossier } from '../../utils/dossierUtils';
 
-const students = [
-  { name: 'JOÃO SILVA', progress: 100 },
-  { name: 'PEDRO', progress: 100 },
-  { name: 'JONAS', progress: 100 },
-  { name: 'AMANDA', progress: 100 },
-  { name: 'VERA', progress: 0 },
-  { name: 'LUCAS', progress: 0 },
-  { name: 'RAFAEL', progress: 0 },
-  { name: 'SOLANGE', progress: 0 },
-];
+export default function StudentsScores() {
 
-export default function CompletionTable() {
+  const { students } = useStudentContext()
+  const { evaluations, dossierTemplate } = useEvaluationContext()
+  
+  const calculateProgress = (studentId: number) => {
+    if (dossierTemplate) {
+      const numberOfStudentCriterions = evaluations.filter(ev => ev.studentId === studentId).length
+      const numberOfCriterions = countCriterionsInDossier(dossierTemplate)
+
+      return numberOfStudentCriterions ? numberOfStudentCriterions * 100 / numberOfCriterions : 0
+    }
+    return 0
+  }
+
   return (
     <TableContainer component={Paper} elevation={0}>
       <Table>
@@ -30,7 +36,7 @@ export default function CompletionTable() {
             <TableRow key={student.name}>
               <TableCell>
                 <Typography fontWeight={500} fontSize="1rem" color="#263238">
-                  {student.progress}%
+                  {calculateProgress(student.id)}%
                 </Typography>
               </TableCell>
               <TableCell>

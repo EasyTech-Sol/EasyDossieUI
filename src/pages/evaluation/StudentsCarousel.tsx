@@ -1,20 +1,19 @@
 import { useState } from 'react';
 import { Box, Typography, IconButton, Fade } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { useStudentContext } from '../../contexts/StudentContext';
 
-interface StudentsCarouselProps {
-    evaluations: Evaluation[]
-}
+export default function StudentsCarousel() {
+    const { students } = useStudentContext()
 
-export default function StudentsCarousel({evaluations}: StudentsCarouselProps) {
     const [index, setIndex] = useState(0);
 
     const handleNext = () => {
-        setIndex((prev) => (prev + 1) % evaluations.length);
+        setIndex((prev) => (prev + 1) % students.length);
     };
 
     const handlePrev = () => {
-        setIndex((prev) => (prev - 1 + evaluations.length) % evaluations.length);
+        setIndex((prev) => (prev - 1 + students.length) % students.length);
     };
 
     return (
@@ -37,7 +36,7 @@ export default function StudentsCarousel({evaluations}: StudentsCarouselProps) {
 
             <Fade key={index} in timeout={500}>
                 <Typography variant="h6" sx={{ minWidth: '300px', textAlign: 'center' }}>
-                    {evaluations[index].studentName}
+                    {students[index]?.name}
                 </Typography>
             </Fade>
 
