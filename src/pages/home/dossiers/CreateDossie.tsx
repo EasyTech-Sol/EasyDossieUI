@@ -123,8 +123,8 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
         <TextField
           fullWidth
           label="Área de Avaliação"
-          value={dossier.evaluation_area}
-          onChange={(e) => handleChange('evaluation_area', e.target.value)}
+          value={dossier.evaluationArea}
+          onChange={(e) => handleChange('evaluationArea', e.target.value)}
           margin="normal"
         />
 
