@@ -2,6 +2,7 @@ import { Box, TextField, Modal, Button, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useState, useRef, useEffect } from "react";
 import { apiService } from "../../../services/easydossie.service"
+import { useSnackbar } from "../../../contexts/SnackbarContext";
 
 interface classInfo {
   id: number;
@@ -33,6 +34,9 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
   const validatePeriodoLetivo = (value: string) =>
     /^[0-9]{4}[-.]?[1-2]$/.test(value) || "Formato inválido (ex: 2025-1)";
 
+  const { showMessage } = useSnackbar();
+
+
   useEffect(() => {
     if (classToEdit) {
       setValue("title", classToEdit.title);
@@ -54,7 +58,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
   const onSubmit = async (data: any) => {
     for (const key of ["title", "shift", "institution", "period"]) {
       if (!data[key]?.trim()) {
-        alert("Todos os campos são obrigatórios.");
+        showMessage("Todos os campos são obrigatórios.", "warning");
         return;
       }
     }
@@ -65,7 +69,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
       data.institution === classToEdit.institution &&
       data.lectivePeriod === classToEdit.lectivePeriod
     ) {
-      alert("Nenhuma alteração detectada.");
+      showMessage("Nenhuma alteração detectada.", "info");
       return;
     }
 
@@ -73,13 +77,20 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
     try {
       const result = await apiService.editClass({...data, classId: classToEdit.id});
       const updated = result.data.data;
-      alert("Dados atualizados com sucesso!");
+      showMessage(
+        result.data?.message || "Dados atualizados com sucesso!",
+        result.data?.type || "success"
+      );
+
       setClasses(prev => {
         return prev.map(cls => cls.id === classToEdit.id ? ({...cls, ...updated}) : cls)
       });
       handleClose();
     } catch (error: any) {
-      alert(`Erro: ${error.message}`);
+      showMessage(
+        error.response?.data?.message || error.message || "Erro ao atualizar turma.",
+        error.response?.data?.type || "error"
+      );
     } finally {
       setLoading(false);
     }

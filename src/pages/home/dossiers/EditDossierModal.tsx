@@ -18,6 +18,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import { apiService } from '../../../services/easydossie.service';
 import CustomLabelSlider from './CustomLabelSlider';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
 
 interface EditDossieModalProps {
   open: boolean;
@@ -35,6 +36,8 @@ export default function EditDossieModal({
   const [dossier, setDossier] = useState<Dossier>(dossierData);
   const [conceitosError, setConceitosError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { showMessage } = useSnackbar();
+
 
   useEffect(() => {
     setDossier(dossierData);
@@ -126,10 +129,18 @@ export default function EditDossieModal({
         categoryIDs,
         descriptionIDs,
       );
-      onSave(resp.data.data);
-      onClose();
+      showMessage(
+        resp.data?.message || 'Dossiê salvo com sucesso!',
+        resp.data?.type || 'success'
+      );
+
+  onSave(resp.data.data);
+  onClose();
     } catch (err: any) {
-      alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));
+      showMessage(
+        err.response?.data?.message || 'Erro ao salvar o dossiê.',
+        err.response?.data?.type || 'error'
+      );
     }
 
     setLoading(false);
