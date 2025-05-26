@@ -5,9 +5,9 @@ import { countCriterionsInDossier } from '../../utils/dossierUtils';
 
 export default function StudentsScores() {
 
-  const { students } = useStudentContext()
+  const { students, selectedStudentIndex, setSelectedStudentIndex } = useStudentContext()
   const { evaluations, dossierTemplate } = useEvaluationContext()
-  
+
   const calculateProgress = (studentId: number) => {
     if (dossierTemplate) {
       const numberOfStudentCriterions = evaluations.filter(ev => ev.studentId === studentId).length
@@ -32,14 +32,20 @@ export default function StudentsScores() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {students.map((student) => (
-            <TableRow key={student.name}>
-              <TableCell>
+          {students.map((student, i) => (
+            <TableRow key={student.name} sx={{
+              backgroundColor: selectedStudentIndex === i ? "#c4c4c4" : "white",
+              transition: "ease-in-out .1s",
+              "&:hover": {
+                backgroundColor: "#c4c4c4", // tom levemente mais escuro
+              },
+            }}>
+              <TableCell onClick={() => setSelectedStudentIndex(i)}>
                 <Typography fontWeight={500} fontSize="1rem" color="#263238">
                   {calculateProgress(student.id)}%
                 </Typography>
               </TableCell>
-              <TableCell>
+              <TableCell onClick={() => setSelectedStudentIndex(i)}>
                 <Tooltip title={student.name} arrow>
                   <Typography fontWeight={500} fontSize="1rem" color="#263238">
                     {student.name.split(" ")[0]}

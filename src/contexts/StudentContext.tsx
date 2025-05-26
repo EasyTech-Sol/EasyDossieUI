@@ -1,23 +1,27 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type Student = {
-  id: number;
-  name: string;
-  registration: string | number;
-};
-
 type StudentContextType = {
   students: Student[];
   setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
+  selectedStudentIndex: number;
+  setSelectedStudentIndex: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const StudentContext = createContext<StudentContextType | undefined>(undefined);
 
 export const StudentProvider = ({ children }: { children: ReactNode }) => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [selectedStudentIndex, setSelectedStudentIndex] = useState<number>(0);
 
   return (
-    <StudentContext.Provider value={{ students, setStudents }}>
+    <StudentContext.Provider
+      value={{
+        students,
+        setStudents,
+        selectedStudentIndex,
+        setSelectedStudentIndex,
+      }}
+    >
       {children}
     </StudentContext.Provider>
   );
