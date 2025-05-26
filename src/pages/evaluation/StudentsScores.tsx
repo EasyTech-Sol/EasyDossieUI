@@ -9,14 +9,26 @@ export default function StudentsScores() {
   const { evaluations, dossierTemplate } = useEvaluationContext()
 
   const calculateProgress = (studentId: number) => {
-    if (dossierTemplate) {
-      const numberOfStudentCriterions = evaluations.filter(ev => ev.studentId === studentId).length
-      const numberOfCriterions = countCriterionsInDossier(dossierTemplate)
+    if (dossierTemplate && evaluations) { // Garante que evaluations também existe
+        // 1. Encontra a entrada de avaliação para o aluno específico
+        const studentEvaluationEntry = evaluations.find(ev => ev.studentId === studentId);
 
-      return numberOfStudentCriterions ? numberOfStudentCriterions * 100 / numberOfCriterions : 0
+        if (studentEvaluationEntry && studentEvaluationEntry.evaluation) {
+            // 2. Conta quantos critérios foram efetivamente avaliados para este aluno
+            const numberOfAnsweredCriterions = studentEvaluationEntry.evaluation.length; 
+
+            // 3. Conta o total de critérios no dossiê
+            const totalNumberOfCriterions = countCriterionsInDossier(dossierTemplate);
+
+            // 4. Calcula a porcentagem
+            if (totalNumberOfCriterions > 0) {
+                // Arredonda para não ter muitas casas decimais
+                return Math.round((numberOfAnsweredCriterions * 100) / totalNumberOfCriterions); 
+            }
+        }
     }
-    return 0
-  }
+    return 0; // Retorna 0 se não houver template, avaliações ou se o aluno não tiver avaliações
+};
 
   return (
     <TableContainer component={Paper} elevation={0}>
