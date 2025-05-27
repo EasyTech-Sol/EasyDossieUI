@@ -80,7 +80,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
     try {
       const result = await apiService.associateDossierToClasses(dossierId, selectedClasses);
 
-      showMessage(result.data.message || 'Associação realizada com sucesso!', result.data.type || 'success');
+      showMessage('Associação realizada com sucesso!', 'success');
       onClose();
 
     } catch (error: any) {

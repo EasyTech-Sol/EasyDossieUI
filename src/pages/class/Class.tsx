@@ -118,11 +118,21 @@ const Class = () => {
     try {
         await apiService.deleteDossierFromClass(dossierClassId);
         setDossiers(prev => prev.filter(d => d.id !== dossierClassId));
+
+        showMessage("Dossiê excluído com sucesso!", "success");
     } catch (err: any) { 
-        console.error(err);
-        const errorMessage = err.response?.data?.message || err.response?.data || err.message || "Erro ao deletar dossiê.";
-        showMessage(String(errorMessage), "error");
-    }
+        let errorMessage = "Erro ao deletar dossiê.";
+
+        if (err.response?.data?.message) {
+          errorMessage = err.response.data.message;
+        } else if (typeof err.response?.data === "string") {
+          errorMessage = err.response.data;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+
+        showMessage(errorMessage, "error");
+        }
 };
 
   const handleSaveEditStudent = useCallback(async (payload: any) => {
