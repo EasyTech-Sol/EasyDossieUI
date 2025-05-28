@@ -14,9 +14,10 @@ import {
 import { useState } from "react";
 
 interface DossiersProps {
-  dossiers: Dossier[];
+  dossiers: { dossierClassId: number; dossierTemplate: Dossier }[];
   handleDeleteDossier: (dossierClassId: number) => void;
 }
+
 
 const drawerWidth = 240;
 
@@ -36,7 +37,7 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
 
   const handleConfirmDelete = () => {
     if (selectedDossierId !== null) {
-      handleDeleteDossier(selectedDossierId); 
+      handleDeleteDossier(selectedDossierId);
     }
     handleCloseDialog();
   };
@@ -52,31 +53,23 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        {dossiers.map((dossier) => {
-          return (
+        {dossiers.map(({ dossierClassId, dossierTemplate }) => (
             <Paper
-              key={dossier.id}
+              key={dossierClassId}
               elevation={3}
-              sx={{
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                borderRadius: 2,
-                borderBottom: "1px solid #ddd",
-              }}
+              sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center", borderRadius: 2, borderBottom: "1px solid #ddd" }}
             >
               <Box>
-                <Typography variant="h6">{dossier.title}</Typography>
-                <Typography variant="body2">{dossier.description}</Typography>
+                <Typography variant="h6">{dossierTemplate.title}</Typography>
+                <Typography variant="body2">{dossierTemplate.description}</Typography>
               </Box>
-              <IconButton sx={{ color: "black" }} onClick={() => handleOpenDialog(dossier.id)}>
+              <IconButton onClick={() => handleOpenDialog(dossierClassId)}>
                 <Delete fontSize="small" />
               </IconButton>
             </Paper>
-          );
-        })}
-      </Box>
+          ))}
+
+         </Box>
 
       <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Confirmar Exclusão</DialogTitle>
