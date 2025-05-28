@@ -1,52 +1,35 @@
 import * as React from "react";
-import { Alert, Box, Snackbar } from "@mui/material";
+import { Box } from "@mui/material";
 import { DossierList } from "../../../components/DossierList";
 import { ConfirmDialog } from "../../../components/ConfirmDialog";
 import { apiService } from "../../../services/easydossie.service";
 import { isAxiosError } from "axios";
 import { useDossiers } from "../../../contexts/DossierContext";
 import AssociateDossierClass from "../components/AssociateDossierClass";
+import { useSnackbar } from "../../../contexts/SnackbarContext"; 
 
 export default function ListDossierPage() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [associateModalOpen, setAssociateModalOpen] = React.useState(false);
   const [selectedDossierId, setSelectedDossierId] = React.useState<number | null>(null);
-
-
   const [selectedId, setSelectedId] = React.useState<number | null>(null);
-
-  const [snackbar, setSnackbar] = React.useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
   const { dossiers, setDossiers, loading } = useDossiers();
+  const { showMessage } = useSnackbar();
 
   // Mutação para deletar um dossiê
   const deleteDossie = async (id: number) => {
 
     try {
-      await apiService.deleteDossier(id)
-      setDossiers(prev => prev.filter(d => d.id !== id))
-      setSnackbar({
-        open: true,
-        message: `Dossiê excluído com sucesso!`,
-        severity: "success",
-      })
+      await apiService.deleteDossier(id);
+      setDossiers(prev => prev.filter(d => d.id !== id));
+      showMessage("Dossiê excluído com sucesso!", "success"); 
 
     } catch (error) {
-      if (isAxiosError(error))
-        setSnackbar({
-          open: true,
-          message: `Erro ao excluir dossiê: ${error.message}`,
-          severity: "error",
-        });
-      else
-        setSnackbar({
-          open: true,
-          message: `Erro desconhecido ao excluir dossiê`,
-          severity: "error",
-        });
+      if (isAxiosError(error)) {
+        showMessage(`Erro ao excluir dossiê: ${error.message}`, "error");
+      } else {
+        showMessage("Erro desconhecido ao excluir dossiê", "error");
+      }
     }
   }
 
@@ -68,10 +51,6 @@ export default function ListDossierPage() {
     setAssociateModalOpen(true);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
-  };
-
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", mt: 4, px: 2 }}>
       <DossierList
@@ -88,20 +67,6 @@ export default function ListDossierPage() {
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
       />
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
 
       {selectedDossierId !== null && (
       <AssociateDossierClass
