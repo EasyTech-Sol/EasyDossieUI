@@ -22,8 +22,7 @@ import { apiService } from "../../../services/easydossie.service.ts";
 import { getRandomMutedColor } from "../../../helpers/softColors.ts";
 import EditClassModal from "./EditClassModal.tsx";
 import { isAxiosError } from "axios";
-import { useSnackbar } from "../../../contexts/SnackbarContext"; 
-
+import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
 
 import Search from "../../../components/Search.tsx"; 
 

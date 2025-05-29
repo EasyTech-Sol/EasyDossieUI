@@ -15,7 +15,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import CustomLabelSlider from './CustomLabelSlider';
-import { useSnackbar } from '../../../contexts/SnackbarContext';
+import { useSnackbar } from '../../../contexts/SnackBarContext';
 
 interface CreateDossieProps {
   open: boolean;

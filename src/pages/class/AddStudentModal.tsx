@@ -3,7 +3,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { apiService } from "../../services/easydossie.service";
-import { useSnackbar } from "../../contexts/SnackbarContext";
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 interface AddStudentModalProps {
   open: boolean;
@@ -32,6 +32,7 @@ const AddStudentModal = ({ open, classId, handleClose, onSuccess }: AddStudentMo
     }
 
     const payload = {
+      id: data.id,
       name: data.name.trim(),
       registration: data.registration.trim(),
     };

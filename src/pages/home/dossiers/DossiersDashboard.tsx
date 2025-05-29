@@ -17,7 +17,7 @@ import CreateDossie from "./CreateDossie.tsx";
 import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
-import { useSnackbar } from "../../../contexts/SnackbarContext.tsx";
+import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
 
 const drawerWidth = 240;
 

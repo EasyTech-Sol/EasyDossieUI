@@ -6,7 +6,7 @@ import { apiService } from "../../../services/easydossie.service";
 import { isAxiosError } from "axios";
 import { useDossiers } from "../../../contexts/DossierContext";
 import AssociateDossierClass from "../components/AssociateDossierClass";
-import { useSnackbar } from "../../../contexts/SnackbarContext"; 
+import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
 
 export default function ListDossierPage() {
   const [confirmOpen, setConfirmOpen] = React.useState(false);

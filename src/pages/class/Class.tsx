@@ -21,7 +21,7 @@ import ImportStudents from "../../components/importStudents/ImportStudents";
 import { handleExcelParse } from "../../utils/csvManaging";
 import { apiService } from "../../services/easydossie.service";
 import { useTabsContext } from "../../contexts/TabContext";
-import { useSnackbar } from "../../contexts/SnackbarContext";
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 const Class = () => {
   const [searchTerm, setSearchTerm] = useState("");

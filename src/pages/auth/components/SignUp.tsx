@@ -5,7 +5,7 @@ import AdviceText from "./AdviceText"
 import { isAxiosError } from "axios"
 import PasswordField from "../../../components/PasswordField"
 import { apiService } from "../../../services/easydossie.service"
-import { useSnackbar } from "../../../contexts/SnackbarContext"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 type RegisterForm = RegisterData & {
   passwordCheck: string

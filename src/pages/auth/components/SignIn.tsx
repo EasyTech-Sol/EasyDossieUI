@@ -5,7 +5,7 @@ import { apiService } from "../../../services/easydossie.service"
 import AdviceText from "./AdviceText"
 import { isAxiosError } from "axios"
 import PasswordField from "../../../components/PasswordField"
-import { useSnackbar } from "../../../contexts/SnackbarContext"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()

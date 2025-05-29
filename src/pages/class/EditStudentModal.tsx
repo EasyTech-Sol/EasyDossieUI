@@ -9,7 +9,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useSnackbar } from "../../contexts/SnackbarContext";
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 interface EditStudentModalProps {
   open: boolean;

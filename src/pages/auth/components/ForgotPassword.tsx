@@ -5,7 +5,7 @@ import { apiService } from "../../../services/easydossie.service"
 import { isAxiosError } from "axios"
 import AdviceText from "./AdviceText"
 import Buttons from "../../../components/Buttons"
-import { useSnackbar } from "../../../contexts/SnackbarContext"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const ForgotPassword = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<{ email: string }>()
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
         }}>
           Voltar
         </Button>
-        <Buttons.success title="Continuar" type="submit" />
+        <Buttons.success title="Continuar" />
       </Box>
     </form>
   )

@@ -2,7 +2,7 @@ import { Box, TextField, Modal, Button, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useState, useRef, useEffect } from "react";
 import { apiService } from "../../../services/easydossie.service"
-import { useSnackbar } from "../../../contexts/SnackbarContext";
+import { useSnackbar } from "../../../contexts/SnackBarContext";
 
 interface classInfo {
   id: number;

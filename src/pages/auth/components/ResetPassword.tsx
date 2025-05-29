@@ -4,7 +4,7 @@ import { apiService } from "../../../services/easydossie.service"
 // import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
 import AdviceText from "./AdviceText"
-import { useSnackbar } from "../../../contexts/SnackbarContext"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const ResetPassword = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<{ password: string, confirmPassword: string }>()
