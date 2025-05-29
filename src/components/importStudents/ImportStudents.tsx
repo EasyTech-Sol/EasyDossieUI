@@ -36,6 +36,7 @@ export default function ImportStudents({ classId: classId,
       setSuccess('Dados enviados com sucesso!');
       setStudents(prev => [...prev, ...data.success])
       setError(null);
+      setOpen(false)
       setExcelData([]);
     },
     onError: (error) => {

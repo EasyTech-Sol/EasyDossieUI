@@ -259,7 +259,7 @@ export default function EditDossieModal({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={onClose} color='success'>Cancelar</Button>
         <Button
           onClick={handleSave}
           variant="contained"

@@ -52,7 +52,6 @@ export const DossierList: React.FC<DossierListProps> = ({
     const { id, title } = data.credentials
     setDossiers(prev => prev.map(d => d.id === id ? { ...d, title } : d))
   }
-  console.log(dossiers)
   return (
     <>
       <EditDossieModal

@@ -1,7 +1,7 @@
-import { Box, Typography, Paper, Accordion, AccordionSummary, AccordionDetails, FormControl, FormControlLabel, Checkbox, Divider } from "@mui/material"
+import { Box, Typography, Paper, Divider } from "@mui/material"
 import EvaluationAppBar from "./EvaluationAppBar"
-import Fab from '@mui/material/Fab'; 
-import SaveIcon from '@mui/icons-material/Save'; 
+import Fab from '@mui/material/Fab';
+import SaveIcon from '@mui/icons-material/Save';
 import StudentsBar from "./StudentsBar"
 import StudentsScores from "./StudentsScores"
 import { useEffect } from "react"
@@ -9,6 +9,7 @@ import { apiService } from "../../services/easydossie.service"
 import { useParams } from "react-router-dom"
 import { useEvaluationContext } from "../../contexts/EvaluationContext"
 import { useStudentContext } from "../../contexts/StudentContext"
+import { isAxiosError } from "axios";
 
 
 interface Criterion {
@@ -16,8 +17,8 @@ interface Criterion {
     title: string;
     descriptionId: string;
 }
-const DescriptionView: React.FC<{ 
-    description: { id: string; title: string; criteria: Criterion[] }, 
+const DescriptionView: React.FC<{
+    description: { id: string; title: string; criteria: Criterion[] },
     concepts: string[],
     getStudentEvaluation: (criterionId: number) => string,
     onConceptChange: (criterionId: number, concept: string) => void
@@ -75,7 +76,7 @@ const DescriptionView: React.FC<{
                     {/* Box das opções A, B, C, D (Mantém alinhamento com o cabeçalho) */}
                     <Box display="flex" width={160} justifyContent="space-around">
                         {concepts.map((concept) => (
-                             <Box
+                            <Box
                                 key={concept}
                                 sx={{
                                     display: 'flex',
@@ -107,31 +108,31 @@ const DescriptionView: React.FC<{
 );
 
 
-const CategoryView: React.FC<{ 
+const CategoryView: React.FC<{
     category: { id: number; title: string; weight: number; descriptions: any[] },
     concepts: string[],
     getStudentEvaluation: (criterionId: number) => string,
     onConceptChange: (criterionId: number, concept: string) => void
 }> = ({ category, concepts, getStudentEvaluation, onConceptChange }) => (
     <Paper elevation={3} sx={{ p: 3, mt: 4, border: '1px solid #ddd', borderRadius: '4px' }}> {/* <<< ELEVAÇÃO APLICADA AQUI (elevation={3}) */}
-        <Typography 
-            variant="h6" 
-            textAlign="center" 
-            sx={{ 
-                fontWeight: 'bold', 
-                textTransform: 'uppercase', 
-                mb: 2, 
-                fontSize: '1.1rem', 
-                color: '#444' 
+        <Typography
+            variant="h6"
+            textAlign="center"
+            sx={{
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                mb: 2,
+                fontSize: '1.1rem',
+                color: '#444'
             }}
         >
             {category.title} {category.weight * 10}%
         </Typography>
         {/* O Divider agora está dentro de DescriptionView */}
         {category.descriptions.map(description => (
-            <DescriptionView 
-                key={description.id} 
-                description={description} 
+            <DescriptionView
+                key={description.id}
+                description={description}
                 concepts={concepts}
                 getStudentEvaluation={getStudentEvaluation}
                 onConceptChange={onConceptChange}
@@ -145,33 +146,31 @@ const Evaluation = () => {
     const { setEvaluations, setDossierTemplate, dossierTemplate, evaluations } = useEvaluationContext()
     const { selectedStudentIndex, students } = useStudentContext()
 
-    console.log("IDs da URL (useParams):", { classId, dossierId });
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
             if (!classId || !dossierId) {
-                console.log("useEffect - classId ou dossierId ausente. Saindo.");
-                setDossierTemplate(null);
+                setDossierTemplate(undefined);
                 setEvaluations([]);
                 return;
             }
-    
+
             try {
                 //copia pra cada estudante
                 await apiService.createStudentDossiers(classId, dossierId);
-    
+
                 //buscando tudo:template dos estudantes (preenchidos ou não)
                 const result = await apiService.getClassDossierEvaluation(classId, dossierId);
-    
+
                 //result.data é um objeto que tem dossiersStudent
-                const backendResponseData = result.data; 
+                const backendResponseData = result.data;
                 const studentDossiers = backendResponseData.dossiersStudent; // Pega o array da propriedade correta
-    
+
                 //VALIDAR
                 if (!Array.isArray(studentDossiers)) {
                     console.error("A propriedade 'dossiersStudent' na resposta do backend não é um array ou está ausente. Resposta completa:", backendResponseData);
                     throw new Error("A propriedade 'dossiersStudent' na resposta do backend não é um array ou está ausente.");
                 }
-    
+
                 let receivedDossierTemplate = null;
                 if (studentDossiers.length > 0) {
                     const firstStudentDossier = studentDossiers[0];
@@ -180,40 +179,40 @@ const Evaluation = () => {
                     } else {
                         console.error("Estrutura inesperada em firstStudentDossier, não foi possível encontrar dossierTemplate:", firstStudentDossier);
                     }
-                } else if (backendResponseData.dossierTemplate) { 
+                } else if (backendResponseData.dossierTemplate) {
                     // Esta parte ainda assume que o backend PODE enviar o template na raiz
                     // se a lista studentDossiers for vazia.
                     receivedDossierTemplate = backendResponseData.dossierTemplate;
-                    console.log("Debug - Template pego da raiz da resposta (lista studentDossiers vazia)");
                 }
-    
+
                 if (receivedDossierTemplate) {
                     setDossierTemplate(receivedDossierTemplate);
                 } else {
                     console.error("Não foi possível determinar o dossierTemplate.");
-                    setDossierTemplate(null); 
+                    setDossierTemplate(undefined);
                     alert("Atenção: Não foi possível carregar a estrutura do dossiê (template). Verifique se a turma possui alunos e se o dossiê está corretamente configurado.");
                     setEvaluations([]);
-                    return; 
+                    return;
                 }
-    
+
                 // Formata as avaliações para o estado do frontend
-                const formattedEvaluations = studentDossiers.map(sd => {
+                const formattedEvaluations: Evaluation[] = studentDossiers.map((sd: any) => {
                     // logica de formatação e safety checks
                     if (!sd || typeof sd.studentId === 'undefined') {
                         console.error("Objeto 'sd' inválido ou sem studentId:", sd);
-                        return { studentId: 'ID_ALUNO_INVALIDO', evaluation: [] }; 
+                        return { studentId: 'ID_ALUNO_INVALIDO', studentName: sd.studentName, evaluation: [] };
                     }
                     if (!Array.isArray(sd.criterionEvaluation)) {
                         console.warn("'sd.criterionEvaluation' não é um array para o studentId:", sd.studentId, sd);
-                        return { studentId: sd.studentId, evaluation: [] }; 
+                        return { studentId: sd.studentId, studentName: sd.studentName, evaluation: [] };
                     }
                     return {
                         studentId: sd.studentId,
-                        evaluation: sd.criterionEvaluation.map(ce => {
+                        studentName: sd.studentName,
+                        evaluation: sd.criterionEvaluation.map((ce: any) => {
                             if (!ce || typeof ce.criterionId === 'undefined' || typeof ce.concept === 'undefined') {
                                 console.error("Objeto 'ce' inválido ou faltando criterionId/concept:", ce);
-                                return { criterionId: -1, concept: 'ERRO' }; 
+                                return { criterionId: -1, concept: 'ERRO' };
                             }
                             return {
                                 criterionId: ce.criterionId,
@@ -223,24 +222,24 @@ const Evaluation = () => {
                     };
                 });
                 setEvaluations(formattedEvaluations);
-                console.log("useEffect - Evaluations formatadas:", formattedEvaluations);
-    
+
             } catch (error) {
                 console.error("Erro CRÍTICO no useEffect ao inicializar/buscar dados:", error);
                 let errorMessage = "Não foi possível carregar os dados da avaliação. Verifique o console para detalhes.";
-                if (error.response && error.response.data && error.response.data.message) {
-                    errorMessage = `Erro do servidor: ${error.response.data.message}`;
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
+                if (isAxiosError(error))
+                    if (error.response && error.response.data && error.response.data.message) {
+                        errorMessage = `Erro do servidor: ${error.response.data.message}`;
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
                 alert(errorMessage);
-                setDossierTemplate(null); 
+                setDossierTemplate(undefined);
                 setEvaluations([]);
             }
         };
-    
+
         initializeAndFetchEvaluations();
-    
+
     }, [classId, dossierId, setDossierTemplate, setEvaluations]);
 
 
@@ -251,36 +250,36 @@ const Evaluation = () => {
             alert("Por favor, selecione um aluno antes de salvar."); // Exemplo de feedback
             return;
         }
-    
+
         const studentId = students[selectedStudentIndex].id;
-    
+
         //pega todas as avaliacoes do aluno do estado local
         const studentEvaluationData = evaluations.find(ev => ev.studentId === studentId);
-    
+
         //veerifica se existe algo para salvar
         if (!studentEvaluationData || studentEvaluationData.evaluation.length === 0) {
             console.warn("Nenhuma avaliação para salvar para este aluno.");
-            alert("Nenhuma avaliação foi feita para este aluno."); 
+            alert("Nenhuma avaliação foi feita para este aluno.");
             return;
         }
-    
+
         //envia todas as avaliacoes para o backend
         try {
-            
+
             await apiService.saveEvaluation(classId!, dossierId!, studentId, studentEvaluationData.evaluation);
-            
-            alert("Avaliações salvas com sucesso!"); 
-    
+
+            alert("Avaliações salvas com sucesso!");
+
         } catch (error) {
-            alert("Ocorreu um erro ao salvar as avaliações. Tente novamente."); 
+            alert("Ocorreu um erro ao salvar as avaliações. Tente novamente.");
         }
     };
 
     const handleConceptChange = (criterionId: number, concept: string) => { // Removido o 'async'
         if (selectedStudentIndex === null || selectedStudentIndex === undefined || !students[selectedStudentIndex]) return;
-    
+
         const studentId = students[selectedStudentIndex].id;
-    
+
         //atualiza o estado local primeiro 
         const updatedEvaluations = evaluations.map(ev => {
             if (ev.studentId === studentId) {
@@ -301,7 +300,7 @@ const Evaluation = () => {
             }
             return ev;
         });
-    
+
         setEvaluations(updatedEvaluations);
     };
 
@@ -327,9 +326,9 @@ const Evaluation = () => {
                                 <Typography variant="body1" paragraph>{dossierTemplate.description}</Typography>
 
                                 {dossierTemplate.categories.map(category => (
-                                    <CategoryView 
-                                        key={category.id} 
-                                        category={category} 
+                                    <CategoryView
+                                        key={category.id}
+                                        category={category}
                                         concepts={dossierTemplate.concepts.split(',')}
                                         getStudentEvaluation={getStudentEvaluation}
                                         onConceptChange={handleConceptChange}
@@ -343,9 +342,9 @@ const Evaluation = () => {
                     </Box>
                 </Box>
 
-                 {/* BOTÃO SALVAR FLUTUANTE */}
+                {/* BOTÃO SALVAR FLUTUANTE */}
                 <Fab
-                    color="primary"
+                    color="success"
                     aria-label="save"
                     sx={{
                         position: 'fixed', // Posição fixa

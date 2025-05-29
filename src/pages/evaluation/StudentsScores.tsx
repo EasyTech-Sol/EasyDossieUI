@@ -41,6 +41,9 @@ export default function StudentsScores() {
             <TableCell>
               <Typography fontWeight={500} color="#455A64">Aluno</Typography>
             </TableCell>
+            <TableCell>
+              <Typography fontWeight={500} color="#455A64">Matrícula</Typography>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -61,6 +64,13 @@ export default function StudentsScores() {
                 <Tooltip title={student.name} arrow>
                   <Typography fontWeight={500} fontSize="1rem" color="#263238">
                     {student.name.split(" ")[0]}
+                  </Typography>
+                </Tooltip>
+              </TableCell>
+              <TableCell onClick={() => setSelectedStudentIndex(i)}>
+                <Tooltip title={student.name} arrow>
+                  <Typography fontWeight={500} fontSize="1rem" color="#263238">
+                    {student.registration}
                   </Typography>
                 </Tooltip>
               </TableCell>
