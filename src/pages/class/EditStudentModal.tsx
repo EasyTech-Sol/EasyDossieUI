@@ -9,6 +9,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 interface EditStudentModalProps {
   open: boolean;
@@ -39,6 +40,8 @@ const EditStudentModal = ({
   } = useForm();
   const [loading, setLoading] = useState(false);
 
+  const { showMessage } = useSnackbar();
+
   // Preenche o form quando abrir e houver aluno
   useEffect(() => {
     if (open && student) {
@@ -49,11 +52,12 @@ const EditStudentModal = ({
 
   const onSubmit = async (data: any) => {
     if (!data.name.trim() || !data.registration.trim()) {
-      alert("Todos os campos são obrigatórios.");
+      showMessage("Todos os campos são obrigatórios.", "warning");
       return;
     }
 
     setLoading(true);
+    
     try {
       await onEdit({
         id: student!.id,
@@ -61,10 +65,11 @@ const EditStudentModal = ({
         registration: data.registration,
         classId
       });
+      showMessage("Aluno atualizado com sucesso!", "success");
       handleClose();
 
     } catch (err: any) {
-      alert(`Erro ao atualizar aluno: ${err.message}`);
+      showMessage(`Erro ao atualizar aluno: ${err.message}`, "error");
     } finally {
       setLoading(false);
     }

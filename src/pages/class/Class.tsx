@@ -22,26 +22,37 @@ import { handleExcelParse } from "../../utils/csvManaging";
 import { apiService } from "../../services/easydossie.service";
 import { useTabsContext } from "../../contexts/TabContext";
 import { useStudentContext } from "../../contexts/StudentContext";
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 const Class = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { selectedSubTab } = useTabsContext();
   const { classId } = useLocation().state as { classId: number; title: string };
+  const { showMessage } = useSnackbar();
 
   const { students, setStudents } = useStudentContext();
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
 
-  const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
-  const [editingStudent, setEditingStudent] = useState<any | null>(null);
+  const [dossiers, setDossiers] = useState<{
+    dossierClassId: number;
+    dossierTemplate: Dossier;
+  }[]>([]);
 
+  const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [excelData, setExcelData] = useState<any[]>([]);
   const [openImport, setOpenImport] = useState(false);
   const handleOpenImportModal = () => setOpenImport(true);
 
-  const onDrop = useCallback((files: File[]) => {
-    const file = files[0];
-    if (file) handleExcelParse(file, handleOpenImportModal, setExcelData);
-  }, []);
+  const onDrop = useCallback(
+    (files: File[]) => {
+      const file = files[0];
+      if (file) {
+        handleExcelParse(file, handleOpenImportModal, setExcelData, showMessage);
+      }
+    },
+    [showMessage]
+  );
 
   const { getRootProps, getInputProps, open: openFileDialog } = useDropzone({
     onDrop,
@@ -56,7 +67,7 @@ const Class = () => {
   });
 
   const [openStudentDial, setOpenStudentDial] = useState(false);
-  const toggleStudentDial = () => setOpenStudentDial(o => !o);
+  const toggleStudentDial = () => setOpenStudentDial((o) => !o);
 
   const actionStyle = {
     minWidth: "auto",
@@ -67,31 +78,40 @@ const Class = () => {
     boxShadow: 1,
   };
 
-  const filteredStudents = students.filter(s =>
+  const filteredStudents = students.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const filteredDossiers = dossiers.filter(d =>
-    d.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDossiers = dossiers.filter((d) =>
+    d.dossierTemplate.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStudents = useCallback(async (id: number) => {
-    try {
-      const res = await apiService.getClassStudents(id);
-      setStudents(res.data.students);
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
+  const getStudents = useCallback(
+    async (id: number) => {
+      try {
+        const res = await apiService.getClassStudents(id);
+        setStudents(res.data.students);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    []
+  );
 
-  const getDossiers = useCallback(async (id: number) => {
-    try {
-      const res = await apiService.getDossiersByClass(id);
-      setDossiers(res.data.associatedDossiers.map((ad: any) => ad.dossierTemplate) || []);
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
+  const getDossiers = useCallback(
+    async (id: number) => {
+      try {
+        const res = await apiService.getDossiersByClass(id);
+        const associated = (res.data.associatedDossiers || []).map((ad: any) => ({
+          dossierClassId: ad.id,
+          dossierTemplate: ad.dossierTemplate,
+        }));
+        setDossiers(associated);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     if (selectedSubTab === "students") getStudents(classId);
@@ -101,32 +121,53 @@ const Class = () => {
   const handleDeleteStudent = async (id: number) => {
     try {
       await apiService.deleteStudent(id);
-      setStudents(prev => prev.filter(s => s.id !== id));
-    } catch (err) {
-      console.error(err);
+      setStudents((prev) => prev.filter((s) => s.id !== id));
+      showMessage("Aluno excluído com sucesso!", "success");
+    } catch (err: any) {
+      console.error("Erro ao excluir aluno:", err);
+      const errorMessage =
+        err.response?.data?.message || err.response?.data || err.message ||
+        "Erro ao excluir aluno.";
+      showMessage(String(errorMessage), "error");
     }
   };
 
   const handleDeleteDossier = async (dossierClassId: number) => {
     try {
       await apiService.deleteDossierFromClass(dossierClassId);
-      setDossiers(prev => prev.filter(d => d.id !== dossierClassId));
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao deletar dossiê");
+      setDossiers((prev) =>
+        prev.filter((d) => d.dossierClassId !== dossierClassId)
+      );
+      showMessage("Dossiê excluído com sucesso!", "success");
+    } catch (err: any) {
+      let errorMessage = "Erro ao deletar dossiê.";
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (typeof err.response?.data === "string") {
+        errorMessage = err.response.data;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      showMessage(errorMessage, "error");
     }
   };
 
-  const handleSaveEditStudent = useCallback(async (payload: any) => {
-    try {
-      await apiService.editStudent(payload);
-      await getStudents(payload.classId);
-      alert("Estudante editado com sucesso!");
-    } catch (err: any) {
-      console.error(err);
-      alert(`Error: ${err.response?.data || err.message}`);
-    }
-  }, [getStudents]);
+  const handleSaveEditStudent = useCallback(
+    async (payload: any) => {
+      try {
+        await apiService.editStudent(payload);
+        await getStudents(payload.classId);
+        showMessage("Estudante editado com sucesso!", "success");
+      } catch (err: any) {
+        console.error(err);
+        const errorMessage =
+          err.response?.data?.message || err.response?.data || err.message ||
+          "Ocorreu um erro ao editar o estudante.";
+        showMessage(String(errorMessage), "error");
+      }
+    },
+    [getStudents, showMessage]
+  );
 
   return (
     <>
@@ -156,7 +197,7 @@ const Class = () => {
             bottom: 32,
             right: 32,
             "& .MuiFab-primary": {
-              backgroundColor: t => t.palette.success.main,
+              backgroundColor: (t) => t.palette.success.main,
               color: "white",
               "&:hover": { backgroundColor: "darkgreen" },
             },
@@ -198,7 +239,7 @@ const Class = () => {
             bottom: 32,
             right: 32,
             "& .MuiFab-primary": {
-              backgroundColor: t => t.palette.success.main,
+              backgroundColor: (t) => t.palette.success.main,
               color: "white",
               "&:hover": { backgroundColor: "darkgreen" },
             },

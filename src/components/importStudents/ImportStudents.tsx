@@ -1,66 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import "./importstudents.css"
-import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
 import { apiService } from '../../services/easydossie.service';
 import { AxiosResponse } from 'axios';
 
-import { Button, Stack, Alert, AlertTitle, Modal, Typography, Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton } from '@mui/material';
+import { Button, /* Stack, Alert, AlertTitle, */ Modal, Typography, Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton } from '@mui/material'; // Stack, Alert, AlertTitle não serão mais usados para este feedback
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { useSnackbar } from '../../contexts/SnackBarContext';
 
 interface ImportStudentsProps {
   classId: number;
   registerDropzoneRoot: ReturnType<typeof useDropzone>['getRootProps'];
-  registerDropzoneInput: ReturnType<typeof useDropzone>['getInputProps'];  open: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  excelData: Student[]
-  setExcelData: React.Dispatch<React.SetStateAction<Student[]>>
-  setStudents: React.Dispatch<React.SetStateAction<any[]>>
+  registerDropzoneInput: ReturnType<typeof useDropzone>['getInputProps'];
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  excelData: Student[];
+  setExcelData: React.Dispatch<React.SetStateAction<Student[]>>;
+  setStudents: React.Dispatch<React.SetStateAction<Student[]>>; 
 }
 
-export default function ImportStudents({ classId: classId,
+export default function ImportStudents({ classId,
   registerDropzoneInput, registerDropzoneRoot,
   open, setOpen, excelData, setExcelData, setStudents }: ImportStudentsProps) {
-  // Armazena mensagens de erro
-  const [error, setError] = useState<string | null>(null);
-  // Armazena mensagens de sucesso
-  const [success, setSuccess] = useState<string | null>(null);
 
-  // Mutação para enviar os dados para o backend
-  const mutation = useMutation<AxiosResponse<any>, Error, void>({
+  const { showMessage } = useSnackbar(); 
+
+  const mutation = useMutation<AxiosResponse<{ success: Student[], errors?: any[] }>, Error, void>({
     mutationFn: () => apiService.importStudents(classId, excelData),
     onSuccess: ({ data }) => {
-      setSuccess('Dados enviados com sucesso!');
-      setStudents(prev => [...prev, ...data.success])
-      setError(null);
-      setOpen(false)
+
+      if (data && data.success && Array.isArray(data.success)) {
+        showMessage(`${data.success.length} aluno(s) importado(s) com sucesso!`, 'success');
+        setStudents(prev => [...prev, ...data.success]);
+      } else {
+        showMessage('Importação concluída, mas dados de sucesso não foram retornados como esperado.', 'warning');
+      }
       setExcelData([]);
     },
-    onError: (error) => {
+    onError: (error) => { 
       console.error(error.message);
-      setError('Erro ao enviar os dados. Tente novamente.');
+      showMessage(error.message || 'Erro ao enviar os dados. Tente novamente.', 'error');
     },
   });
 
-  // Efeito para fazer os alerts sumirem após 3 segundos
-  useEffect(() => {
-    if (error || success) {
-      const timer = setTimeout(() => {
-        setError(null);
-        setSuccess(null);
-      }, 3000);
 
-      return () => clearTimeout(timer); /// Evita vazamentos de memória
-    }
-  }, [error, success]);
-
-
-  // Função para remover um aluno da lista com base no índice
   const handleDelete = (indexToDelete: number) => {
-    // Atualiza o estado excelData, filtrando todos os alunos EXCETO o que está na posição indexToDelete
     setExcelData((prev) => prev.filter((_, index) => index !== indexToDelete));
   };
 
@@ -70,24 +56,14 @@ export default function ImportStudents({ classId: classId,
         <input {...registerDropzoneInput()} />
       </div>
 
-      <Stack sx={{ width: '100%' }} spacing={2} className="alert-stack">
-        {error && (
-          <Alert severity="error">
-            <AlertTitle>{error}</AlertTitle>
-          </Alert>
-        )}
-
-        {success && (
-          <Alert severity="success">
-            <AlertTitle>Upload feito com sucesso</AlertTitle>
-
-          </Alert>
-        )}
-      </Stack>
+      {}
 
       <Modal
         open={open}
-        onClose={() => { }}
+        onClose={() => {
+          setOpen(false); 
+          setExcelData([]); 
+        }}
         disableEscapeKeyDown
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
@@ -97,7 +73,7 @@ export default function ImportStudents({ classId: classId,
             aria-label="close"
             onClick={() => {
               setOpen(false);
-              setExcelData([]);
+              setExcelData([]); 
             }}
             sx={{
               position: 'absolute',
@@ -114,7 +90,7 @@ export default function ImportStudents({ classId: classId,
           </Typography>
 
           {excelData.length > 0 ? (
-            <List dense>
+            <List dense sx={{ maxHeight: 300, overflow: 'auto' }}>
               {excelData.map((aluno, index) => (
                 <ListItem
                   key={index}
@@ -125,7 +101,7 @@ export default function ImportStudents({ classId: classId,
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar>{aluno.name?.[0]}</Avatar> {/* Inicial do nome */}
+                    <Avatar>{aluno.name?.[0]?.toUpperCase()}</Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={aluno.name}
@@ -145,8 +121,10 @@ export default function ImportStudents({ classId: classId,
             color="success"
             onClick={() => mutation.mutate()}
             className="save-button"
+            disabled={mutation.isPending || excelData.length === 0}
+            sx={{ mt: 2 }}
           >
-            Salvar
+            {mutation.isPending ? "Importando..." : "Importar Alunos"}
           </Button>
         </Box>
       </Modal>

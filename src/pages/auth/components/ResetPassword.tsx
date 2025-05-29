@@ -1,18 +1,18 @@
 import { Box, Button, TextField, Typography } from "@mui/material"
 import { useForm } from "react-hook-form"
 import { apiService } from "../../../services/easydossie.service"
-import { useError } from "../../../contexts/ErrorContext"
+// import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
 import AdviceText from "./AdviceText"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const ResetPassword = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<{ password: string, confirmPassword: string }>()
-  const { setError, setErrorMessage } = useError()
+  const { showMessage } = useSnackbar();
 
   const onSubmit = async (data: { password: string, confirmPassword: string }) => {
     if (data.password !== data.confirmPassword) {
-      setErrorMessage("As senhas não coincidem.");
-      setError(true);
+      showMessage("As senhas não coincidem.", "error");
       return;
     }
   
@@ -20,20 +20,18 @@ const ResetPassword = () => {
     const token = searchParams.get("token");
   
     if (!token) {
-      setErrorMessage("Token inválido ou ausente.");
-      setError(true);
+      showMessage("Token inválido ou ausente.", "error");
       return;
     }
   
     try {
       await apiService.resetPassword(token, data.password);
-      alert("Senha redefinida com sucesso.");
+      showMessage("Senha redefinida com sucesso.", "success");
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 400)
-        setErrorMessage(error.response?.data.error);
+        showMessage(error.response?.data.error, "error"); 
       else
-        setErrorMessage("Erro ao redefinir a senha.");
-      setError(true);
+        showMessage("Erro ao redefinir a senha.", "error");
     }
   };
   

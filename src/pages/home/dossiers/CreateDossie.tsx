@@ -15,6 +15,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import CustomLabelSlider from './CustomLabelSlider';
+import { useSnackbar } from '../../../contexts/SnackBarContext';
 
 interface CreateDossieProps {
   open: boolean;
@@ -27,6 +28,8 @@ interface CreateDossieProps {
 export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
   const [dossier, setDossier] = useState<Dossier>(dossieData);
   const [loading, setLoading] = useState(false);
+  const { showMessage } = useSnackbar(); 
+
 
   useEffect(() => {
     setDossier({
@@ -85,9 +88,15 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     setLoading(true);
     try {
       onSave({ templateData: dossier });
+      showMessage('Dossiê salvo com sucesso!', 'success'); 
       onClose();
     } catch (err: any) {
-      alert('Erro ao salvar: ' + (err.response?.data?.erro || err.message));
+      const backendMessage = err.response?.data?.message;
+      const backendType = err.response?.data?.type;
+      showMessage(
+        backendMessage || 'Erro ao salvar o dossiê.',
+        backendType || 'error'
+      );
     } finally {
       setLoading(false);
     }

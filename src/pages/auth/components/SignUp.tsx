@@ -2,10 +2,10 @@ import { Box, Link, TextField } from "@mui/material"
 import Buttons from "../../../components/Buttons"
 import { useForm } from "react-hook-form"
 import AdviceText from "./AdviceText"
-import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
 import PasswordField from "../../../components/PasswordField"
 import { apiService } from "../../../services/easydossie.service"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 type RegisterForm = RegisterData & {
   passwordCheck: string
@@ -13,19 +13,18 @@ type RegisterForm = RegisterData & {
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>()
-  const { setError, setErrorMessage } = useError()
   const password = watch("password")
+  const { showMessage } = useSnackbar()
 
   const onSubmit = async (values: any) => {
     try {
       await apiService.register(values)
       window.location.href = "/auth/sign-in"
     } catch (error) {
-      if (isAxiosError(error) && error.status === 400)
-        setErrorMessage(error.response?.data.error)
+      if (isAxiosError(error) && error.response?.status === 400)
+        showMessage(error.response.data.error, "error") 
       else
-        setErrorMessage("Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.")
-      setError(true)
+        showMessage("Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.", "error")
     }
   }
 

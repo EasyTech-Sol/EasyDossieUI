@@ -14,6 +14,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import ClassCard from '../classes/ClassCard';
 import { apiService } from "../../../services/easydossie.service";
 import { getRandomMutedColor } from '../../../helpers/softColors';
+import { useSnackbar } from '../../../contexts/SnackBarContext'; 
+
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -32,32 +34,37 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
 
   const [selectedClasses, setSelectedClasses] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [classList, setClassList] = useState<any[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(false);
-  const [errorClasses, setErrorClasses] = useState<string | null>(null);
+
+  const { showMessage } = useSnackbar(); // Hook do contexto
 
   useEffect(() => {
-    const fetchClasses = async () => {
-      setLoadingClasses(true);
-      setErrorClasses(null);
+  const fetchClasses = async () => {
+    setLoadingClasses(true);
+    try {
+      const response = await apiService.getClasses();
+      setClassList(response.data.classes);
 
-      try {
-        const response = await apiService.getClasses();
-        setClassList(response.data.classes);
-
-      } catch (error: any) {
-        console.error(error);
-        setErrorClasses('Erro ao carregar as turmas.');
-      } finally {
-        setLoadingClasses(false);
-      }
-    };
-
-    if (open) {
-      fetchClasses();
+      showMessage(
+        response.data.message || 'Turmas carregadas com sucesso.',
+        response.data.type || 'success'
+      );
+    } catch (error: any) {
+      showMessage(
+        error.response?.data?.message || 'Erro ao carregar as turmas.',
+        error.response?.data?.type || 'error'
+      );
+    } finally {
+      setLoadingClasses(false);
     }
-  }, [open]);
+  };
+
+  if (open) {
+    fetchClasses();
+  }
+}, [open]);
+
 
   const handleSelectClass = (classId: number) => {
     setSelectedClasses((prev) =>
@@ -69,15 +76,20 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
     if (selectedClasses.length === 0) return;
 
     setLoading(true);
+
     try {
       const result = await apiService.associateDossierToClasses(dossierId, selectedClasses);
-      setMessage("Associação realizada com sucesso!");
+      showMessage('Associação realizada com sucesso!', 'success');
       onClose();
 
     } catch (error: any) {
-      console.error(error);
-      setMessage("Erro ao associar dossiê.");
+      const backendMessage = error.response?.data?.message;
+      const backendType = error.response?.data?.type;
 
+      showMessage(
+        backendMessage || 'Erro ao associar dossiê.',
+        backendType || 'error'
+      );
     } finally {
       setLoading(false);
     }
@@ -105,13 +117,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
           </Typography>
         )}
 
-        {errorClasses && (
-          <Typography color="error" align="center" sx={{ mt: 2 }}>
-            {errorClasses}
-          </Typography>
-        )}
-
-        {!loadingClasses && !errorClasses && (
+        {!loadingClasses && (
           <Box
             sx={{
               display: 'flex',
@@ -133,12 +139,6 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
               </Box>
             ))}
           </Box>
-        )}
-
-        {message && (
-          <Typography sx={{ mt: 2 }} color="error">
-            {message}
-          </Typography>
         )}
       </DialogContent>
 
