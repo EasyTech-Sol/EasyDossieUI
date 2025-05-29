@@ -9,6 +9,8 @@ import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import DrawerContent from "./DrawerContent.tsx";
 import { useEffect } from "react";
+import { Snackbar, Alert } from '@mui/material';
+import { useSnackbar } from "../../contexts/SnackBarContext.tsx"; 
 
 const drawerWidth = 240;
 
@@ -18,6 +20,7 @@ const MainLayout = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [selectedTab, setSelectedTab] = useState<"turmas" | "dossies">("turmas");
     const navigate = useNavigate();
+    const { open, setOpen, message, severity } = useSnackbar();
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -36,6 +39,10 @@ const MainLayout = () => {
             navigate("/home");
         }
     }, [selectedTab, navigate]);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     return (
         <Box sx={{ display: "flex", height: "100vh" }}>
@@ -83,6 +90,17 @@ const MainLayout = () => {
             <Box display={"flex"} flexDirection={"column"} width={"100%"} alignItems={"center"}>
                 <Outlet />
             </Box>
+
+            <Snackbar
+                open={open}
+                autoHideDuration={4000}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleClose} severity={severity} variant="filled">
+                {message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

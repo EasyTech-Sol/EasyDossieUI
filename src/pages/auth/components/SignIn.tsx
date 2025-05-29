@@ -3,28 +3,27 @@ import Buttons from "../../../components/Buttons"
 import { useForm } from "react-hook-form"
 import { apiService } from "../../../services/easydossie.service"
 import AdviceText from "./AdviceText"
-import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
 import PasswordField from "../../../components/PasswordField"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginData>()
-  const { setError, setErrorMessage } = useError()
+  const { showMessage } = useSnackbar();
 
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     try {
-      const result = await apiService.login(values)
-      localStorage.setItem("token", result.data.token)
-      // localStorage.setItem("TeacherId", result.data.teacher.teacherId)
-      window.location.href = "/home"
+    const result = await apiService.login(values)
+    localStorage.setItem("token", result.data.token)
+    // localStorage.setItem("TeacherId", result.data.teacher.teacherId)
+    window.location.href = "/home"
     } catch (error) {
-      if (isAxiosError(error) && error.status === 400)
-        setErrorMessage(error.response?.data.error)
+      if (isAxiosError(error) && error.response?.status === 400)
+        showMessage(error.response.data.error, "error")
       else
-        setErrorMessage("Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.")
-      setError(true)
+        showMessage("Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.", "error")
     }
   }
 

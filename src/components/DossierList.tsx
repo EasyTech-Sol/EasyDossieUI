@@ -32,7 +32,7 @@ export const DossierList: React.FC<DossierListProps> = ({
     id: 0,
     title: '',
     description: '',
-    evaluation_area: '',
+    evaluationArea: '',
     categories: [],
     concept: "A,B,C",
     teacherId: ""

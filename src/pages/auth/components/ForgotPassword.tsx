@@ -1,25 +1,25 @@
 import { Box, Button, TextField, Typography } from "@mui/material"
 import { useForm } from "react-hook-form"
 import { apiService } from "../../../services/easydossie.service"
-import { useError } from "../../../contexts/ErrorContext"
+// import { useError } from "../../../contexts/ErrorContext"
 import { isAxiosError } from "axios"
 import AdviceText from "./AdviceText"
 import Buttons from "../../../components/Buttons"
+import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const ForgotPassword = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<{ email: string }>()
-  const { setError, setErrorMessage } = useError()
+  const { showMessage } = useSnackbar();
 
   const onSubmit = async (data: { email: string }) => {
     try {
       await apiService.forgotPassword(data.email)
-      alert("Link de recuperação enviado para seu e-mail.")
+      showMessage("Link de recuperação enviado para seu e-mail.", "success");
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 400)
-        setErrorMessage(error.response?.data.error)
+        showMessage(error.response?.data.error, "error"); 
       else
-        setErrorMessage(data.email)
-      setError(true)
+        showMessage("Erro inesperado. Tente novamente mais tarde.", "error"); 
     }
   }
 
@@ -63,7 +63,7 @@ const ForgotPassword = () => {
         }}>
           Voltar
         </Button>
-        <Buttons.success title="Continuar" type="submit" />
+        <Buttons.success title="Continuar" />
       </Box>
     </form>
   )

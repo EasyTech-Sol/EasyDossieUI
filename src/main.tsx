@@ -5,6 +5,7 @@ import { routes } from "./router/routes.tsx"
 import "./main.css"
 import { ErrorProvider } from './contexts/ErrorContext.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { SnackbarProvider } from './contexts/SnackBarContext.tsx'
 
 async function enableMocksIfNeeded() {
   if (import.meta.env.VITE_USE_MSW === 'mocked') {
@@ -19,9 +20,11 @@ enableMocksIfNeeded().then(() =>
   createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
     <StrictMode>
-      <ErrorProvider>
-        <RouterProvider router={routes} />
-      </ErrorProvider>
+      <SnackbarProvider>
+        <ErrorProvider>
+          <RouterProvider router={routes} />
+        </ErrorProvider>
+      </SnackbarProvider>
     </StrictMode>,
   </QueryClientProvider>
   )

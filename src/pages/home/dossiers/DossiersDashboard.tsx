@@ -17,7 +17,8 @@ import CreateDossie from "./CreateDossie.tsx";
 import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
-import ListDossierPage from "./ListDossierPage.tsx";
+import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
+
 const drawerWidth = 240;
 
 
@@ -29,17 +30,14 @@ const DossiersDashboard = () => {
     id: 0,
     title: '',
     description: '',
-    evaluation_area: '',
+    evaluationArea: '',
     categories: [],
     concept: "A,B,C",
     teacherId: ""
   };
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({ open: false, message: "", severity: "success" });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { showMessage  } = useSnackbar();
+
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -49,57 +47,28 @@ const DossiersDashboard = () => {
     setDialogOpen(false);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
   const handleCreateDossie = async ({ templateData }: DossierInput) => {
     try {
       const result = await apiService.createDossier({
         templateData
       });
+
       const newDossier = result.data.template;
+
       setDossiers(prev => [...prev, newDossier])
-      setSnackbar({
-        open: true,
-        message: "Dossie criado com sucesso!",
-        severity: "success",
-      });
+
+      showMessage("Dossiê criado com sucesso!", "success");
     } catch (error) {
-      if (isAxiosError(error))
-        setSnackbar({
-          open: true,
-          message: error.response?.data.error,
-          severity: "error",
-        });
-      else
-        setSnackbar({
-          open: true,
-          message: "Erro ao criar dossie.",
-          severity: "error",
-        });
-    }
+      if (isAxiosError(error)) {
+        showMessage(error.response?.data?.error || "Erro desconhecido.", "error");      } else {
+        showMessage("Erro ao criar dossiê.", "error");
+      }
+      }
     setDialogOpen(false);
   };
 
   return (
     <>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-
       {/* Top AppBar */}
       <AppBar position="relative" color="transparent" elevation={0}>
         <Toolbar
