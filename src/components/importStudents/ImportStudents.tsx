@@ -30,6 +30,7 @@ export default function ImportStudents({ classId,
   const mutation = useMutation<AxiosResponse<{ success: Student[], errors?: any[] }>, Error, void>({
     mutationFn: () => apiService.importStudents(classId, excelData),
     onSuccess: ({ data }) => {
+
       if (data && data.success && Array.isArray(data.success)) {
         showMessage(`${data.success.length} aluno(s) importado(s) com sucesso!`, 'success');
         setStudents(prev => [...prev, ...data.success]);

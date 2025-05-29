@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { routeTo } from "../utils/routeTo";
 import { mocked_classes } from "../utils/mockedClasses";
+import { mocked_dossiers } from "../utils/mockedDossiers";
 
 export const classMocks = [
   http.post(routeTo("/classes/edit"), async ({ request }) => {
@@ -10,6 +11,17 @@ export const classMocks = [
 
   http.get(routeTo("/classes"), () => {
     return HttpResponse.json({ classes: mocked_classes }, { status: 200 });
+  }),
+
+  http.get(routeTo("/classes/:id/dossiers"), () => {
+    return HttpResponse.json(
+      {
+        associatedDossiers: mocked_dossiers.map(
+          (ad: any) => ({dossierTemplate: ad})
+        ),
+      },
+      { status: 200 }
+    );
   }),
 
   http.delete(routeTo("/classes/:id"), () => {

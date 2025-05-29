@@ -3,7 +3,7 @@ export const mocked_dossiers = [
     id: 1,
     title: "Introdução à Programação",
     description: "Conceitos básicos de lógica e algoritmos.",
-    evaluation_area: "Computação",
+    evaluationArea: "Computação",
     concepts: "A, B, C",
     categories: [
       {
@@ -53,7 +53,7 @@ export const mocked_dossiers = [
     id: 2,
     title: "Cálculo I",
     description: "Estudo de limites, derivadas e aplicações.",
-    evaluation_area: "Matemática",
+    evaluationArea: "Matemática",
     concepts: "A, B, C, D",
     categories: [
       {
@@ -110,7 +110,7 @@ export const mocked_dossiers = [
     id: 3,
     title: "Física Mecânica",
     description: "Leis do movimento e energia.",
-    evaluation_area: "Física",
+    evaluationArea: "Física",
     concepts: "A, B",
     categories: [
       {
@@ -151,7 +151,7 @@ export const mocked_dossiers = [
     id: 4,
     title: "Química Inorgânica",
     description: "Estrutura atômica, tabela periódica e ligações.",
-    evaluation_area: "Química",
+    evaluationArea: "Química",
     concepts: "A, C, D",
     categories: [
       {
@@ -208,7 +208,7 @@ export const mocked_dossiers = [
     id: 5,
     title: "História Moderna",
     description: "Análise dos eventos do século XIX em diante.",
-    evaluation_area: "História",
+    evaluationArea: "História",
     concepts: "B, C, D",
     categories: [
       {
@@ -265,7 +265,7 @@ export const mocked_dossiers = [
     id: 6,
     title: "Geometria Analítica",
     description: "Estudo de retas, planos e curvas no espaço.",
-    evaluation_area: "Matemática",
+    evaluationArea: "Matemática",
     concepts: "A, B, C",
     categories: [
       {
@@ -306,7 +306,7 @@ export const mocked_dossiers = [
     id: 7,
     title: "Redação Técnica",
     description: "Desenvolvimento de textos objetivos e claros.",
-    evaluation_area: "Linguagens",
+    evaluationArea: "Linguagens",
     concepts: "B, C, D, E",
     categories: [
       {
@@ -347,7 +347,7 @@ export const mocked_dossiers = [
     id: 8,
     title: "Banco de Dados Relacional",
     description: "Modelagem de dados e consultas em SQL.",
-    evaluation_area: "Computação",
+    evaluationArea: "Computação",
     concepts: "A, B",
     categories: [
       {
@@ -388,7 +388,7 @@ export const mocked_dossiers = [
     id: 9,
     title: "Eletricidade e Magnetismo",
     description: "Campos elétricos e magnéticos em circuitos.",
-    evaluation_area: "Física",
+    evaluationArea: "Física",
     concepts: "C, D, E",
     categories: [
       {
@@ -445,7 +445,7 @@ export const mocked_dossiers = [
     id: 10,
     title: "Ética Profissional",
     description: "Reflexões sobre práticas profissionais e responsabilidade.",
-    evaluation_area: "Filosofia",
+    evaluationArea: "Filosofia",
     concepts: "A, D",
     categories: [
       {

@@ -68,8 +68,7 @@ const CategoryView: React.FC<{ category: Category, concepts: string[] }> = ({ ca
 );
 
 const DossierView = ({ dossier, open, onClose }: DossierViewProps) => {
-  const concepts = dossier.concept?.split(',') ?? [];
-
+  const concepts = dossier.concepts.split(',');
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">

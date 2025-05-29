@@ -1,10 +1,9 @@
 import { Navigate } from "react-router-dom";
 import ClassesDashboard from "./classes/ClassesDashboard";
 import DossiersDashboard from "./dossiers/DossiersDashboard"; // Importe o componente
-import Class from "../class/Class";
-import { TabsProvider } from "../../contexts/TabContext";
 import MainLayout from "../../components/layout/MainLayout";
 import { DossierProvider } from "../../contexts/DossierContext";
+import * as classApp from "../class/index";
 
 export function routes(startPath: string) {
     return {
@@ -16,8 +15,11 @@ export function routes(startPath: string) {
                 element: <Navigate to="home" replace />
             },
             { path: "home", element: <ClassesDashboard /> },
-            { path: "dossiers", element: <DossierProvider> <DossiersDashboard /> </DossierProvider> }, // Adicionada a rota para DossiersDashboard
-            { path: "/class/:classId", element: <TabsProvider><Class /></TabsProvider> },
+            {
+                path: "dossiers", element:
+                    <DossierProvider> <DossiersDashboard /> </DossierProvider>
+            },
+            classApp.routes("class"),
         ],
     };
 }

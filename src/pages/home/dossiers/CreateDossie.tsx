@@ -34,7 +34,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
   useEffect(() => {
     setDossier({
       ...dossieData,
-      concept: dossieData.concept ?? [],
+      concepts: dossieData.concepts ?? [],
     });
   }, [dossieData]);
 

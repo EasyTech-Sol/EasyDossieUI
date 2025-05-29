@@ -21,6 +21,7 @@ import ImportStudents from "../../components/importStudents/ImportStudents";
 import { handleExcelParse } from "../../utils/csvManaging";
 import { apiService } from "../../services/easydossie.service";
 import { useTabsContext } from "../../contexts/TabContext";
+import { useStudentContext } from "../../contexts/StudentContext";
 import { useSnackbar } from "../../contexts/SnackBarContext";
 
 const Class = () => {
@@ -29,7 +30,8 @@ const Class = () => {
   const { classId } = useLocation().state as { classId: number; title: string };
   const { showMessage } = useSnackbar();
 
-  const [students, setStudents] = useState<Student[]>([]);
+  const { students, setStudents } = useStudentContext();
+  const [dossiers, setDossiers] = useState<Dossier[]>([]);
 
   const [dossiers, setDossiers] = useState<{
     dossierClassId: number;

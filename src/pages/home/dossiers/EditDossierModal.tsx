@@ -177,7 +177,7 @@ export default function EditDossieModal({
             Conceitos:
           </Typography>
           <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({ ...prev, concept: concepts }))} />
+            (concepts: string) => setDossier(prev => ({ ...prev, concepts: concepts }))} />
         </Box>
         {conceitosError && (
           <FormHelperText error sx={{ mt: 1 }}>
@@ -270,7 +270,7 @@ export default function EditDossieModal({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={onClose} color='success'>Cancelar</Button>
         <Button
           onClick={handleSave}
           variant="contained"

@@ -32,7 +32,7 @@ const DossiersDashboard = () => {
     description: '',
     evaluationArea: '',
     categories: [],
-    concept: "A,B,C",
+    concepts: "A,B,C",
     teacherId: ""
   };
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
