@@ -91,54 +91,19 @@ export default function EditDossieModal({
 
   const handleSave = async () => {
     setLoading(true);
-    // 2) categoryIDs
-    const categoryIDs = dossier.categories?.reduce<Record<number, [string, number]>>(
-      (acc, cat) => {
-        if (cat.id) acc[cat.id] = [cat.title, cat.weight];
-        return acc;
-      },
-      {}
-    );
-
-    // 3) descriptionIDs
-    const descriptionIDs = dossier.categories?.flatMap((cat) =>
-        cat.descriptions.map((desc: any) => ({ id: desc.id, tuple: [desc.title, cat.id] as [string, number] }))
-      )
-      .reduce<Record<number, [string, number]>>((acc, { id, tuple }) => {
-        if (id) acc[id] = tuple;
-        return acc;
-      }, {});
-
-    // 4) criteriaIDs
-    const criteriaIDs = dossier.categories?.flatMap((cat) =>
-        cat.descriptions.flatMap((desc: any) =>
-          desc.criteria.map((q: any) => ({
-            id: q.id,
-            tuple: [q.title, desc.id, cat.id] as [string, number, number],
-          }))
-        )
-      )
-      .reduce<Record<number, [string, number, number]>>((acc, { id, tuple }) => {
-        if (id) acc[id] = tuple;
-        return acc;
-      }, {});
-
     try {
-      const resp = await apiService.editDossier(dossier,
-        criteriaIDs,
-        categoryIDs,
-        descriptionIDs,
-      );
+      const resp = await apiService.editDossier(dossier);
       showMessage(
         resp.data?.message || 'Dossiê salvo com sucesso!',
         resp.data?.type || 'success'
       );
-
-  onSave(resp.data.data);
-  onClose();
+      console.log()
+      onSave(resp.data.data);
+      onClose();
     } catch (err: any) {
+      console.error(err)
       showMessage(
-        err.response?.data?.message || 'Erro ao salvar o dossiê.',
+        err.response?.data?.error || 'Erro ao salvar o dossiê.',
         err.response?.data?.type || 'error'
       );
     }

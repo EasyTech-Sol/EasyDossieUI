@@ -5,4 +5,5 @@ export const classApi = {
   editClass: async (data: Class) => client.patch(`/classes`, data),
   createClass: async (data: Class) => client.post("/classes/create", data),
   deleteClass: async (id: number) => client.delete(`/classes/${id}`),
+  getClassById: async (id: number) => client.get(`/classes/${id}`)
 };

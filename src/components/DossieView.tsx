@@ -58,7 +58,7 @@ const DescriptionView: React.FC<{ description: Description, concepts: string[] }
 const CategoryView: React.FC<{ category: Category, concepts: string[] }> = ({ category, concepts }) => (
   <Paper elevation={3} sx={{ p: 2, mt: 4 }}>
     <Typography variant="h6" textAlign="center">
-      {category.title} — {category.weight * 10}%
+      {category.title} — {category.weight}%
     </Typography>
     <Divider sx={{ my: 2 }} />
     {category.descriptions.map(description => (
