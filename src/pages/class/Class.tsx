@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { Add, Settings } from "@mui/icons-material";
 import { useState, useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 
 import ClassAppBar from "./ClassAppBar";
@@ -27,16 +27,11 @@ import { useSnackbar } from "../../contexts/SnackBarContext";
 const Class = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { selectedSubTab } = useTabsContext();
-  const { classId } = useLocation().state as { classId: number; title: string };
+  const classId = Number(useParams().classId)
   const { showMessage } = useSnackbar();
-
+  const [actualClass, setActualClass] = useState<Class>()
   const { students, setStudents } = useStudentContext();
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
-
-  const [dossiers, setDossiers] = useState<{
-    dossierClassId: number;
-    dossierTemplate: Dossier;
-  }[]>([]);
 
   const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
@@ -82,7 +77,7 @@ const Class = () => {
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredDossiers = dossiers.filter((d) =>
-    d.dossierTemplate.title.toLowerCase().includes(searchTerm.toLowerCase())
+    d.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStudents = useCallback(
@@ -101,10 +96,7 @@ const Class = () => {
     async (id: number) => {
       try {
         const res = await apiService.getDossiersByClass(id);
-        const associated = (res.data.associatedDossiers || []).map((ad: any) => ({
-          dossierClassId: ad.id,
-          dossierTemplate: ad.dossierTemplate,
-        }));
+        const associated = (res.data.associatedDossiers || []).map((ad: any) => ad.dossierTemplate);
         setDossiers(associated);
       } catch (err) {
         console.error(err);
@@ -113,7 +105,20 @@ const Class = () => {
     []
   );
 
+  const getActualClass = useCallback(
+    async (id: number) => {
+      try {
+        const res = await apiService.getClassById(id);
+        setActualClass(res.data.class_)
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    []
+  );
+
   useEffect(() => {
+    getActualClass(classId)
     if (selectedSubTab === "students") getStudents(classId);
     else if (selectedSubTab === "dossiers") getDossiers(classId);
   }, [selectedSubTab, classId, getStudents, getDossiers]);
@@ -132,15 +137,15 @@ const Class = () => {
     }
   };
 
-  const handleDeleteDossier = async (dossierClassId: number) => {
+  const handleDeleteDossier = async ({classId, dossierId}: ClassDossier) => {
     try {
-      await apiService.deleteDossierFromClass(dossierClassId);
+      await apiService.deleteDossierFromClass({classId, dossierId});
       setDossiers((prev) =>
-        prev.filter((d) => d.dossierClassId !== dossierClassId)
+        prev.filter((d) => d.id !== dossierId)
       );
-      showMessage("Dossiê excluído com sucesso!", "success");
+      showMessage("Dossiê desassociado com sucesso!", "success");
     } catch (err: any) {
-      let errorMessage = "Erro ao deletar dossiê.";
+      let errorMessage = "Erro ao desassociar dossiê.";
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (typeof err.response?.data === "string") {
@@ -171,7 +176,7 @@ const Class = () => {
 
   return (
     <>
-      <ClassAppBar />
+      <ClassAppBar classTitle={actualClass ? actualClass.title : ""}/>
       <Search value={searchTerm} onChange={setSearchTerm} />
 
       {selectedSubTab === "students" && (
@@ -227,57 +232,6 @@ const Class = () => {
             }
             tooltipTitle=""
             onClick={() => openFileDialog()}
-          />
-        </SpeedDial>
-      )}
-
-      {selectedSubTab === "dossiers" && (
-        <SpeedDial
-          ariaLabel="Opções Dossiês"
-          sx={{
-            position: "fixed",
-            bottom: 32,
-            right: 32,
-            "& .MuiFab-primary": {
-              backgroundColor: (t) => t.palette.success.main,
-              color: "white",
-              "&:hover": { backgroundColor: "darkgreen" },
-            },
-          }}
-          icon={<SpeedDialIcon icon={<Settings />} />}
-        >
-          <SpeedDialAction
-            key="report"
-            FabProps={{ sx: actionStyle }}
-            icon={
-              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
-                Acessar relatório
-              </Box>
-            }
-            tooltipTitle=""
-            onClick={() => alert("Acessando o relatório...")}
-          />
-          <SpeedDialAction
-            key="dossier"
-            FabProps={{ sx: actionStyle }}
-            icon={
-              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
-                Acessar Dossiê
-              </Box>
-            }
-            tooltipTitle=""
-            onClick={() => alert("Acessando o dossiê...")}
-          />
-          <SpeedDialAction
-            key="apply"
-            FabProps={{ sx: actionStyle }}
-            icon={
-              <Box component="span" sx={{ typography: "button", whiteSpace: "nowrap" }}>
-                Aplicar Dossiê
-              </Box>
-            }
-            tooltipTitle=""
-            onClick={() => alert("Aplicando o dossiê...")}
           />
         </SpeedDial>
       )}

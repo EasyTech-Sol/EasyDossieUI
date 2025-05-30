@@ -1,12 +1,16 @@
 import { NavigateNext, Person } from '@mui/icons-material'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { AppBar, Box, Breadcrumbs, Button, Divider, IconButton, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Breadcrumbs, Button, Divider, IconButton, Link, Tab, Tabs, Toolbar, Typography } from '@mui/material'
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTabsContext } from '../../contexts/TabContext';
+import CustomLink from './CustomLink';
 
-const ClassAppBar = () => {
-    const { title } = useLocation().state
+interface ClassAppBarProps {
+    classTitle: string
+}
+
+const ClassAppBar = ({ classTitle }: ClassAppBarProps) => {
     const { selectedSubTab, setSelectedSubTab } = useTabsContext();
     const navigate = useNavigate()
     const handleSubTabChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -14,7 +18,9 @@ const ClassAppBar = () => {
     }
 
     const breadcrumbs = [
-        <Typography variant="h6" sx={{ ml: 1, color: '#37474f' }}>{title}</Typography>
+        <CustomLink to='/home'>Turmas</CustomLink>,
+        <CustomLink>{classTitle}</CustomLink>,
+
     ]
 
 

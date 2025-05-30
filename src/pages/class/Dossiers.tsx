@@ -12,11 +12,11 @@ import {
   Button,
 } from "@mui/material";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 interface DossiersProps {
-  dossiers: { dossierClassId: number; dossierTemplate: Dossier }[];
-  handleDeleteDossier: (dossierClassId: number) => void;
+  dossiers: Dossier[];
+  handleDeleteDossier: ({ classId, dossierId }: ClassDossier) => void;
 }
 
 
@@ -24,22 +24,22 @@ const drawerWidth = 240;
 
 const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
   const [open, setOpen] = useState(false);
-  const [selectedDossierId, setSelectedDossierId] = useState<number | null>(null);
+  const [selectedDossierId, setSelectedDossierId] = useState<ClassDossier | undefined>();
   const navigate = useNavigate()
-  const { classId } = useLocation().state as { classId: string }
+  const classId = Number(useParams().classId)
 
-  const handleOpenDialog = (id: number) => {
-    setSelectedDossierId(id);
+  const handleOpenDialog = (classId: number, dossierId: number) => {
+    setSelectedDossierId({ classId, dossierId });
     setOpen(true);
   };
 
   const handleCloseDialog = () => {
     setOpen(false);
-    setSelectedDossierId(null);
+    setSelectedDossierId(undefined);
   };
 
   const handleConfirmDelete = () => {
-    if (selectedDossierId !== null) {
+    if (selectedDossierId !== undefined) {
       handleDeleteDossier(selectedDossierId);
     }
     handleCloseDialog();
@@ -56,45 +56,44 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        {dossiers.map(({ dossierClassId, dossierTemplate }) => (
-            <Paper
-              key={dossierClassId}
-              elevation={3}
-              sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center", borderRadius: 2, borderBottom: "1px solid #ddd" }}
-            >
-              <Box>
-                <Typography variant="h6">{dossierTemplate.title}</Typography>
-                <Typography variant="body2">{dossierTemplate.description}</Typography>
-              </Box>
-              <Box>
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={() => navigate(`/class/${classId}/dossier/${dossier.id}/evaluation`, 
-                    {state: {}}
-                  )}
-                >Avaliar</Button>
-                <IconButton sx={{ color: "black" }} onClick={() => handleOpenDialog(dossier.id)}>
-                  <Delete fontSize="small" />
-                </IconButton>
-              </Box>
-              <IconButton onClick={() => handleOpenDialog(dossierClassId)}>
+        {dossiers.map((d) => (
+          <Paper
+            key={d.id}
+            elevation={3}
+            sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center", borderRadius: 2, borderBottom: "1px solid #ddd" }}
+          >
+            <Box>
+              <Typography variant="h6">{d.title}</Typography>
+              <Typography variant="body2">{d.description}</Typography>
+            </Box>
+            <Box>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => navigate(`/class/${classId}/dossier/${d.id}/evaluation`,
+                  { state: {} }
+                )}
+              >Avaliar</Button>
+              <IconButton onClick={() =>
+                handleOpenDialog(classId, d.id)
+              }>
                 <Delete fontSize="small" />
               </IconButton>
-            </Paper>
-          ))}
+            </Box>
+          </Paper>
+        ))}
 
-         </Box>
+      </Box>
 
       <Dialog open={open} onClose={handleCloseDialog}>
-        <DialogTitle>Confirmar Exclusão</DialogTitle>
+        <DialogTitle>Confirmar Desassociação</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Tem certeza que deseja excluir este dossiê? Esta operação <strong>não poderá ser desfeita</strong>.
+            Tem certeza que deseja desassociar este dossiê desta turma? Esta operação <strong>não poderá ser desfeita</strong>.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
+          <Button color="inherit" onClick={handleCloseDialog}>Cancelar</Button>
           <Button onClick={handleConfirmDelete} color="error" variant="contained">
             Excluir
           </Button>
