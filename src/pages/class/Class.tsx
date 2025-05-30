@@ -31,7 +31,6 @@ const Class = () => {
   const { showMessage } = useSnackbar();
   const [actualClass, setActualClass] = useState<Class>()
   const { students, setStudents } = useStudentContext();
-  const [dossiers, setDossiers] = useState<Dossier[]>([]);
 
   const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
