@@ -31,7 +31,6 @@ const Class = () => {
   const { showMessage } = useSnackbar();
 
   const { students, setStudents } = useStudentContext();
-  const [dossiers, setDossiers] = useState<Dossier[]>([]);
 
   const [dossiers, setDossiers] = useState<{
     dossierClassId: number;
