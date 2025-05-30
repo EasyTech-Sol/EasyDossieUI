@@ -4,12 +4,13 @@ import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import StudentsBar from "./StudentsBar"
 import StudentsScores from "./StudentsScores"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { apiService } from "../../services/easydossie.service"
 import { useParams } from "react-router-dom"
 import { useEvaluationContext } from "../../contexts/EvaluationContext"
 import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
+import ClassAppBar from "../class/ClassAppBar";
 
 
 interface Criterion {
@@ -126,7 +127,7 @@ const CategoryView: React.FC<{
                 color: '#444'
             }}
         >
-            {category.title} {category.weight * 10}%
+            {category.title} {category.weight}%
         </Typography>
         {/* O Divider agora está dentro de DescriptionView */}
         {category.descriptions.map(description => (
@@ -145,6 +146,7 @@ const Evaluation = () => {
     const { classId, dossierId } = useParams()
     const { setEvaluations, setDossierTemplate, dossierTemplate, evaluations } = useEvaluationContext()
     const { selectedStudentIndex, students } = useStudentContext()
+    const [canExport, setCanExport] = useState(false)
 
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
@@ -314,7 +316,7 @@ const Evaluation = () => {
     return (
         <>
             <EvaluationAppBar />
-            <StudentsBar />
+            <StudentsBar canExport={canExport} />
 
             <Box position={"relative"} width={"100%"}>
                 <Box sx={{ display: 'flex' }}>
@@ -338,7 +340,7 @@ const Evaluation = () => {
                         )}
                     </Box>
                     <Box sx={{ width: '33.33%' }}>
-                        <StudentsScores />
+                        <StudentsScores setCanExport={setCanExport}/>
                     </Box>
                 </Box>
 
