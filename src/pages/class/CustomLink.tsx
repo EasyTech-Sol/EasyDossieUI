@@ -20,7 +20,7 @@ const CustomLink: React.FC<CustomLinkProps> = ({ to, children }) => {
         },
       }}
     >
-      <Typography variant="h6" sx={{ ml: 1, color: '#37474f' }}>
+      <Typography variant="subtitle1" sx={{ ml: 1, color: '#37474f' }}>
         {children}
       </Typography>
     </MuiLink>

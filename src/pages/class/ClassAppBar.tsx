@@ -36,43 +36,33 @@ const ClassAppBar = ({ classTitle }: ClassAppBarProps) => {
                 >
 
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "4.5rem" }}>
-                        <Button
-                            onClick={() => navigate("/home")}
-                            sx={{ textTransform: "none" }}
-                            startIcon={<ArrowBackIosNewIcon sx={{ color: '#37474f' }} />}
-                        >
-                            <Typography variant="h6" sx={{ ml: 1, color: '#37474f' }}>
-                                Voltar
-                            </Typography>
-                        </Button>
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1, height: "60%" }}>
+                            <Button
+                                onClick={() => navigate("/home")}
+                                sx={{ textTransform: "none" }}
+                                startIcon={<ArrowBackIosNewIcon sx={{ color: '#37474f' }} />}
+                            >
+                                <Typography variant="subtitle1" sx={{ ml: 1, color: '#37474f' }}>
+                                    Voltar
+                                </Typography>
+                            </Button>
+
+                            <Divider orientation='vertical' variant='middle' />
+
+                            <Breadcrumbs
+                                separator={<NavigateNext fontSize="small" />}
+                                aria-label="breadcrumb"
+                            >
+                                {breadcrumbs}
+                            </Breadcrumbs>
+                        </Box>
 
                         <IconButton size='large'>
                             <Person />
                         </IconButton>
                     </Box>
 
-                    <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
-
-
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            px: 2,
-                            py: 1,
-                        }}
-                    >
-                        <Breadcrumbs
-                            separator={<NavigateNext fontSize="small" />}
-                            aria-label="breadcrumb"
-                        >
-                            {breadcrumbs}
-                        </Breadcrumbs>
-                    </Box>
-
-
-
-                    <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
+                    <Divider /> {/* Espaçamento vertical acima e abaixo */}
 
                     {/* Centralizar Tabs e manter ícone à direita */}
                     <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
@@ -98,7 +88,7 @@ const ClassAppBar = ({ classTitle }: ClassAppBarProps) => {
                         </Tabs>
                     </Box>
 
-                    <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
+                    <Divider sx={{ my: 0.5 }} /> 
 
                 </Toolbar>
 

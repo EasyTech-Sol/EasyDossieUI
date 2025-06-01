@@ -22,4 +22,5 @@ export const dossierApi = {
     client.patch("/dossiers", {
       ...dossier,
     }),
+  getDossierById: async (id: number) => client.get(`/dossiers/${id}`),
 };
