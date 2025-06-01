@@ -10,7 +10,6 @@ import { useParams } from "react-router-dom"
 import { useEvaluationContext } from "../../contexts/EvaluationContext"
 import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
-import ClassAppBar from "../class/ClassAppBar";
 
 
 interface Criterion {
@@ -340,7 +339,7 @@ const Evaluation = () => {
                         )}
                     </Box>
                     <Box sx={{ width: '33.33%' }}>
-                        <StudentsScores setCanExport={setCanExport}/>
+                        <StudentsScores setCanExport={setCanExport} />
                     </Box>
                 </Box>
 

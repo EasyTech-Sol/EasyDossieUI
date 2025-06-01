@@ -35,7 +35,7 @@ const ClassAppBar = ({ classTitle }: ClassAppBarProps) => {
                     }}
                 >
 
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "4.5rem" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: "4rem" }}>
                         <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1, height: "60%" }}>
                             <Button
                                 onClick={() => navigate("/home")}
