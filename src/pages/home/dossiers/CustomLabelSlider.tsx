@@ -8,12 +8,10 @@ const options = [
 ];
 
 interface CustomLabelSliderProps {
-  setOutput: (output: string) => void
+  setOutput: (output: string) => void;
 }
 
-
-
-export default function CustomLabelSlider({setOutput}: CustomLabelSliderProps) {
+export default function CustomLabelSlider({ setOutput }: CustomLabelSliderProps) {
   const [value, setValue] = React.useState(0);
 
   return (
@@ -27,8 +25,13 @@ export default function CustomLabelSlider({setOutput}: CustomLabelSliderProps) {
       valueLabelDisplay="auto"
       valueLabelFormat={(v) => options[v]}
       onChange={(e, newValue) => {
-        setValue(newValue as number)
-        setOutput(options[newValue])
+        setValue(newValue as number);
+        setOutput(options[newValue]);
+      }}
+      sx={{
+        width: '100%',
+        maxWidth: 'calc(100% - 24px)', 
+        marginBottom: 2,
       }}
     />
   );
