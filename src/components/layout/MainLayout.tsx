@@ -45,7 +45,7 @@ const MainLayout = () => {
     };
 
     return (
-        <Box sx={{ display: "flex", height: "100vh" }}>
+        <Box sx={{ display: "flex" }}>
             {/* Drawer */}
             {isMobile ? (
                 <Drawer
