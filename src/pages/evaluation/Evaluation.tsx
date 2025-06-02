@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Grid } from "@mui/material"
+import { Box, Typography, Paper, Grid, Zoom } from "@mui/material"
 import EvaluationAppBar from "./EvaluationAppBar"
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
@@ -14,9 +14,12 @@ import CategoryView from "./CategoryView";
 
 const Evaluation = () => {
     const { classId, dossierId } = useParams()
-    const { setEvaluations, setDossierTemplate, dossierTemplate, evaluations } = useEvaluationContext()
+    const { setEvaluations, setDossierTemplate,
+        dossierTemplate, evaluations,
+        hasEvaluationUpdated, setHasEvaluationUpdated } = useEvaluationContext()
     const { selectedStudentIndex, students } = useStudentContext()
     const [canExport, setCanExport] = useState(false)
+
 
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
@@ -139,7 +142,7 @@ const Evaluation = () => {
         try {
 
             await apiService.saveEvaluation(classId!, dossierId!, studentId, studentEvaluationData.evaluation);
-
+            setHasEvaluationUpdated(false)
             alert("Avaliações salvas com sucesso!");
 
         } catch (error) {
@@ -174,6 +177,7 @@ const Evaluation = () => {
         });
 
         setEvaluations(updatedEvaluations);
+        setHasEvaluationUpdated(true)
     };
 
     const getStudentEvaluation = (criterionId: number) => {
@@ -182,8 +186,6 @@ const Evaluation = () => {
         const studentEvaluation = evaluations.find(ev => ev.studentId === studentId);
         return studentEvaluation?.evaluation.find(e => e.criterionId === criterionId)?.concept || '';
     };
-
-    console.log(evaluations)
 
     return (
         <Box position={"relative"} width={"100%"}>
@@ -221,20 +223,22 @@ const Evaluation = () => {
                 </Grid>
             </Grid>
 
-            {/* BOTÃO SALVAR FLUTUANTE */}
-            <Fab
-                color="success"
-                aria-label="save"
-                sx={{
-                    position: 'fixed', // Posição fixa
-                    bottom: 32,      // Distância de baixo
-                    right: 32,       // Distância da direita
-                }}
-                onClick={handleSaveAll} // Chama a nova função de salvar
-                disabled={selectedStudentIndex === null} // Desabilita se não houver aluno
-            >
-                <SaveIcon />
-            </Fab>
+            <Zoom in={hasEvaluationUpdated}>
+                <Fab
+                    color="success"
+                    aria-label="save"
+                    sx={{
+                        position: 'fixed',
+                        bottom: 32,
+                        right: 32,
+                    }}
+                    onClick={handleSaveAll}
+                    disabled={selectedStudentIndex === null}
+                >
+                    <SaveIcon />
+                </Fab>
+            </Zoom>
+
         </Box>
     )
 }

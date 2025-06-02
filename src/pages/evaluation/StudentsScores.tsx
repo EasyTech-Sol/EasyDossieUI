@@ -1,8 +1,9 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Tooltip, Snackbar } from '@mui/material';
 import { useStudentContext } from '../../contexts/StudentContext';
 import { useEvaluationContext } from '../../contexts/EvaluationContext';
 import { countCriterionsInDossier } from '../../utils/dossierUtils';
 import { useEffect, useState } from 'react';
+import { useSnackbar } from '../../contexts/SnackBarContext';
 
 type StudentScore = {
   student: Student
@@ -16,8 +17,9 @@ interface StudentsScoresProps {
 export default function StudentsScores({ setCanExport }: StudentsScoresProps) {
 
   const { students, selectedStudentIndex, setSelectedStudentIndex } = useStudentContext()
-  const { evaluations, dossierTemplate } = useEvaluationContext()
+  const { evaluations, dossierTemplate, hasEvaluationUpdated } = useEvaluationContext()
   const [studentsScores, setStudentsScores] = useState<StudentScore[]>([])
+  const { showMessage } = useSnackbar()
 
   const calculateProgress = (studentId: number) => {
     if (dossierTemplate && evaluations) { // Garante que evaluations também existe
@@ -48,6 +50,14 @@ export default function StudentsScores({ setCanExport }: StudentsScoresProps) {
     setCanExport(canExport)
   }, [studentsScores])
 
+  const handleSelectedStudent = (i: number) => {
+    if (!hasEvaluationUpdated)
+      setSelectedStudentIndex(i)
+    else
+      showMessage("Por favor, salve as alterações antes de trocar de estudante.",
+    "error")
+  }
+
   return (
     <TableContainer component={Paper} elevation={0}>
       <Table>
@@ -73,19 +83,19 @@ export default function StudentsScores({ setCanExport }: StudentsScoresProps) {
                 backgroundColor: "#c4c4c4", // tom levemente mais escuro
               },
             }}>
-              <TableCell onClick={() => setSelectedStudentIndex(i)}>
+              <TableCell onClick={() => handleSelectedStudent(i)}>
                 <Typography fontWeight={500} fontSize="1rem" color="#263238">
                   {score}%
                 </Typography>
               </TableCell>
-              <TableCell onClick={() => setSelectedStudentIndex(i)}>
+              <TableCell onClick={() => handleSelectedStudent(i)}>
                 <Tooltip title={student.name} arrow>
                   <Typography fontWeight={500} fontSize="1rem" color="#263238">
                     {student.name.split(" ")[0]}
                   </Typography>
                 </Tooltip>
               </TableCell>
-              <TableCell onClick={() => setSelectedStudentIndex(i)}>
+              <TableCell onClick={() => handleSelectedStudent(i)}>
                 <Tooltip title={student.name} arrow>
                   <Typography fontWeight={500} fontSize="1rem" color="#263238">
                     {student.registration}
