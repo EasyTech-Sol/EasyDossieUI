@@ -9,14 +9,6 @@ export default function StudentsCarousel() {
     const { showMessage } = useSnackbar()
     const { hasEvaluationUpdated } = useEvaluationContext()
 
-    const handleSelectedStudent = (i: number) => {
-        if (!hasEvaluationUpdated)
-            setSelectedStudentIndex(i)
-        else
-            showMessage("Por favor, salve as alterações antes de trocar de estudante.",
-                "error")
-    }
-
 
     const handleNext = () => {
         if (!hasEvaluationUpdated)
