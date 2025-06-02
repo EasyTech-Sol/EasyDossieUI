@@ -49,7 +49,7 @@ export const DossierList: React.FC<DossierListProps> = ({
   }
 
   const handleEdit = (data: any) => {
-    setDossiers(prev => [...prev, data])
+    setDossiers(prev => prev.map(d => d.id === data.id? data : d))
   }
   return (
     <>

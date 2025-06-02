@@ -97,7 +97,6 @@ export default function EditDossieModal({
         resp.data?.message || 'Dossiê salvo com sucesso!',
         resp.data?.type || 'success'
       );
-      console.log()
       onSave(resp.data.data);
       onClose();
     } catch (err: any) {
