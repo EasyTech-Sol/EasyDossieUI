@@ -45,7 +45,7 @@ const MainLayout = () => {
     };
 
     return (
-        <Box sx={{ display: "flex", height: "100vh" }}>
+        <Box sx={{ display: "flex" }}>
             {/* Drawer */}
             {isMobile ? (
                 <Drawer
@@ -95,7 +95,7 @@ const MainLayout = () => {
                 open={open}
                 autoHideDuration={4000}
                 onClose={handleClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={handleClose} severity={severity} variant="filled">
                 {message}

@@ -56,8 +56,6 @@ export default function ImportStudents({ classId,
         <input {...registerDropzoneInput()} />
       </div>
 
-      {}
-
       <Modal
         open={open}
         onClose={() => {

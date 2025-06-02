@@ -24,7 +24,7 @@ export default ({
 
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
             <Box>
                 <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
                     <img src={Logo} alt="Logo" style={{ height: 40 }} onClick={navigateHome} />

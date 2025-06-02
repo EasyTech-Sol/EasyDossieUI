@@ -94,7 +94,7 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete, select
                   open={open}
                   onClick={(e) => e.stopPropagation()}
                   onClose={handleClose}
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
                   {onEdit && <MenuItem onClick={(e) => handleEdit(e)}>Editar turma</MenuItem>}

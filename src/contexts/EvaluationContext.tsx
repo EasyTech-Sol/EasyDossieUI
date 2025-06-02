@@ -5,6 +5,8 @@ type EvaluationContextType = {
   setEvaluations: React.Dispatch<React.SetStateAction<Evaluation[]>>;
   dossierTemplate: Dossier | undefined;
   setDossierTemplate: React.Dispatch<React.SetStateAction<Dossier | undefined>>;
+  hasEvaluationUpdated: boolean
+  setHasEvaluationUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const EvaluationContext = createContext<EvaluationContextType | undefined>(undefined);
@@ -12,10 +14,14 @@ const EvaluationContext = createContext<EvaluationContextType | undefined>(undef
 export const EvaluationProvider = ({ children }: { children: ReactNode }) => {
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [dossierTemplate, setDossierTemplate] = useState<Dossier | undefined>(undefined);
+  const [hasEvaluationUpdated, setHasEvaluationUpdated] = useState(false)
 
   return (
     <EvaluationContext.Provider
-      value={{ evaluations, setEvaluations, dossierTemplate, setDossierTemplate }}
+      value={{
+        evaluations, setEvaluations, dossierTemplate,
+        setDossierTemplate, hasEvaluationUpdated, setHasEvaluationUpdated
+      }}
     >
       {children}
     </EvaluationContext.Provider>

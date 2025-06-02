@@ -1,17 +1,29 @@
 import { Box, Typography, IconButton, Fade } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { useStudentContext } from '../../contexts/StudentContext';
+import { useSnackbar } from '../../contexts/SnackBarContext';
+import { useEvaluationContext } from '../../contexts/EvaluationContext';
 
 export default function StudentsCarousel() {
     const { students, selectedStudentIndex, setSelectedStudentIndex } = useStudentContext()
+    const { showMessage } = useSnackbar()
+    const { hasEvaluationUpdated } = useEvaluationContext()
 
 
     const handleNext = () => {
-        setSelectedStudentIndex((prev) => (prev + 1) % students.length);
+        if (!hasEvaluationUpdated)
+            setSelectedStudentIndex((prev) => (prev + 1) % students.length);
+        else
+            showMessage("Por favor, salve as alterações antes de trocar de estudante.",
+                "error")
     };
 
     const handlePrev = () => {
-        setSelectedStudentIndex((prev) => (prev - 1 + students.length) % students.length);
+        if (!hasEvaluationUpdated)
+            setSelectedStudentIndex((prev) => (prev - 1 + students.length) % students.length);
+        else
+            showMessage("Por favor, salve as alterações antes de trocar de estudante.",
+                "error")
     };
 
     return (

@@ -1,150 +1,25 @@
-import { Box, Typography, Paper, Divider } from "@mui/material"
+import { Box, Typography, Paper, Grid, Zoom } from "@mui/material"
 import EvaluationAppBar from "./EvaluationAppBar"
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import StudentsBar from "./StudentsBar"
 import StudentsScores from "./StudentsScores"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { apiService } from "../../services/easydossie.service"
 import { useParams } from "react-router-dom"
 import { useEvaluationContext } from "../../contexts/EvaluationContext"
 import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
-
-
-interface Criterion {
-    id: number;
-    title: string;
-    descriptionId: string;
-}
-const DescriptionView: React.FC<{
-    description: { id: string; title: string; criteria: Criterion[] },
-    concepts: string[],
-    getStudentEvaluation: (criterionId: number) => string,
-    onConceptChange: (criterionId: number, concept: string) => void
-}> = ({ description, concepts, getStudentEvaluation, onConceptChange }) => (
-    <Box mt={4}>
-        {/* Linha de Cabeçalho (Sem Indentação) */}
-        <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            pb={1}
-            mb={1}
-        >
-            <Typography variant="subtitle1" sx={{ flex: 1, fontWeight: 'bold' }}>{description.title}</Typography>
-            <Box display="flex" width={160} justifyContent="space-around">
-                {concepts.map((concept) => (
-                    <Typography
-                        key={concept}
-                        variant="body2"
-                        sx={{
-                            width: 30,
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: '#333'
-                        }}
-                    >
-                        {concept}
-                    </Typography>
-                ))}
-            </Box>
-        </Box>
-        <Divider /> {/* Linha divisória abaixo do cabeçalho */}
-
-        {/* Linhas dos Critérios (Com Indentação) */}
-        <Box> {/* Container para as linhas */}
-            {description.criteria.map((criterion, index) => (
-                <Box
-                    key={criterion.id}
-                    display="flex"
-                    alignItems="center"
-                    py={1.5}
-                    borderBottom="1px solid #eee"
-                    sx={{
-                        '&:last-child': { borderBottom: 'none' }
-                    }}
-                >
-                    {/* Box para agrupar e indentar Número e Título */}
-                    <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', pl: 3 }}> {/* <<< INDENTAÇÃO APLICADA AQUI (pl: 3 = 24px) */}
-                        <Typography variant="body2" sx={{ width: 30, pr: 1, color: '#666' }}>
-                            {String(index + 1).padStart(2, '0')}
-                        </Typography>
-                        <Typography variant="body2" sx={{ flex: 1 }}>{criterion.title}</Typography>
-                    </Box>
-
-                    {/* Box das opções A, B, C, D (Mantém alinhamento com o cabeçalho) */}
-                    <Box display="flex" width={160} justifyContent="space-around">
-                        {concepts.map((concept) => (
-                            <Box
-                                key={concept}
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    width: 30,
-                                    height: 30,
-                                    backgroundColor: getStudentEvaluation(criterion.id) === concept ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
-                                    color: getStudentEvaluation(criterion.id) === concept ? '#000' : '#888',
-                                    cursor: 'pointer',
-                                    borderRadius: '50%',
-                                    transition: 'background-color 0.2s',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.05)',
-                                    }
-                                }}
-                                onClick={() => onConceptChange(criterion.id, concept)}
-                            >
-                                <Typography variant="body2">
-                                    {concept}
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Box>
-                </Box>
-            ))}
-        </Box>
-    </Box>
-);
-
-
-const CategoryView: React.FC<{
-    category: { id: number; title: string; weight: number; descriptions: any[] },
-    concepts: string[],
-    getStudentEvaluation: (criterionId: number) => string,
-    onConceptChange: (criterionId: number, concept: string) => void
-}> = ({ category, concepts, getStudentEvaluation, onConceptChange }) => (
-    <Paper elevation={3} sx={{ p: 3, mt: 4, border: '1px solid #ddd', borderRadius: '4px' }}> {/* <<< ELEVAÇÃO APLICADA AQUI (elevation={3}) */}
-        <Typography
-            variant="h6"
-            textAlign="center"
-            sx={{
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                mb: 2,
-                fontSize: '1.1rem',
-                color: '#444'
-            }}
-        >
-            {category.title} {category.weight * 10}%
-        </Typography>
-        {/* O Divider agora está dentro de DescriptionView */}
-        {category.descriptions.map(description => (
-            <DescriptionView
-                key={description.id}
-                description={description}
-                concepts={concepts}
-                getStudentEvaluation={getStudentEvaluation}
-                onConceptChange={onConceptChange}
-            />
-        ))}
-    </Paper>
-);
+import CategoryView from "./CategoryView";
 
 const Evaluation = () => {
     const { classId, dossierId } = useParams()
-    const { setEvaluations, setDossierTemplate, dossierTemplate, evaluations } = useEvaluationContext()
+    const { setEvaluations, setDossierTemplate,
+        dossierTemplate, evaluations,
+        hasEvaluationUpdated, setHasEvaluationUpdated } = useEvaluationContext()
     const { selectedStudentIndex, students } = useStudentContext()
+    const [canExport, setCanExport] = useState(false)
+
 
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
@@ -267,7 +142,7 @@ const Evaluation = () => {
         try {
 
             await apiService.saveEvaluation(classId!, dossierId!, studentId, studentEvaluationData.evaluation);
-
+            setHasEvaluationUpdated(false)
             alert("Avaliações salvas com sucesso!");
 
         } catch (error) {
@@ -302,6 +177,7 @@ const Evaluation = () => {
         });
 
         setEvaluations(updatedEvaluations);
+        setHasEvaluationUpdated(true)
     };
 
     const getStudentEvaluation = (criterionId: number) => {
@@ -312,52 +188,58 @@ const Evaluation = () => {
     };
 
     return (
-        <>
+        <Box position={"relative"} width={"100%"}>
             <EvaluationAppBar />
-            <StudentsBar />
+            <StudentsBar canExport={canExport} />
+            <Grid container>
+                <Grid size={8} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+                    {dossierTemplate && (
+                        <Paper sx={{ p: 2 }}>
+                            <Typography variant="h4" gutterBottom textAlign="center">
+                                {dossierTemplate.title}
+                            </Typography>
+                            <Typography variant="h5" textAlign="center">
+                                Área: {dossierTemplate.evaluationArea}
+                            </Typography>
+                            <Typography variant="body1" paragraph>
+                                {dossierTemplate.description}
+                            </Typography>
 
-            <Box position={"relative"} width={"100%"}>
-                <Box sx={{ display: 'flex' }}>
-                    <Box sx={{ width: '66.66%', p: 2 }}>
-                        {dossierTemplate && (
-                            <Paper sx={{ p: 2 }}>
-                                <Typography variant="h4" gutterBottom textAlign="center">{dossierTemplate.title}</Typography>
-                                <Typography variant="h5" textAlign="center">Área: {dossierTemplate.evaluationArea}</Typography>
-                                <Typography variant="body1" paragraph>{dossierTemplate.description}</Typography>
+                            {dossierTemplate.categories.map(category => (
+                                <CategoryView
+                                    key={category.id}
+                                    category={category}
+                                    concepts={dossierTemplate.concepts.split(',')}
+                                    getStudentEvaluation={getStudentEvaluation}
+                                    onConceptChange={handleConceptChange}
+                                />
+                            ))}
+                        </Paper>
+                    )}
+                </Grid>
 
-                                {dossierTemplate.categories.map(category => (
-                                    <CategoryView
-                                        key={category.id}
-                                        category={category}
-                                        concepts={dossierTemplate.concepts.split(',')}
-                                        getStudentEvaluation={getStudentEvaluation}
-                                        onConceptChange={handleConceptChange}
-                                    />
-                                ))}
-                            </Paper>
-                        )}
-                    </Box>
-                    <Box sx={{ width: '33.33%' }}>
-                        <StudentsScores />
-                    </Box>
-                </Box>
+                <Grid size={4} sx={{ p: 1 }}>
+                    <StudentsScores setCanExport={setCanExport} />
+                </Grid>
+            </Grid>
 
-                {/* BOTÃO SALVAR FLUTUANTE */}
+            <Zoom in={hasEvaluationUpdated}>
                 <Fab
                     color="success"
                     aria-label="save"
                     sx={{
-                        position: 'fixed', // Posição fixa
-                        bottom: 32,      // Distância de baixo
-                        right: 32,       // Distância da direita
+                        position: 'fixed',
+                        bottom: 32,
+                        right: 32,
                     }}
-                    onClick={handleSaveAll} // Chama a nova função de salvar
-                    disabled={selectedStudentIndex === null} // Desabilita se não houver aluno
+                    onClick={handleSaveAll}
+                    disabled={selectedStudentIndex === null}
                 >
                     <SaveIcon />
                 </Fab>
-            </Box>
-        </>
+            </Zoom>
+
+        </Box>
     )
 }
 
