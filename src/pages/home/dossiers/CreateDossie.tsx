@@ -21,22 +21,19 @@ interface CreateDossieProps {
   open: boolean;
   onClose: () => void;
   dossieData: Dossier;
-  onSave: ({ templateData }: DossierInput) => void;
+  onSave: ({ templateData }: DossierInput) => Promise<boolean>;
 }
 
 
 export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
-  const [dossier, setDossier] = useState<Dossier>(dossieData);
   const [loading, setLoading] = useState(false);
   const { showMessage } = useSnackbar(); 
 
+  const [dossier, setDossier] = useState<Dossier>(() => ({
+    ...dossieData,
+    concepts: dossieData.concepts ?? [],
+  }));
 
-  useEffect(() => {
-    setDossier({
-      ...dossieData,
-      concepts: dossieData.concepts ?? [],
-    });
-  }, [dossieData]);
 
   if (!dossier) return null;
 
@@ -85,22 +82,21 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
   };
 
   const handleSave = async () => {
-    setLoading(true);
-    try {
-      onSave({ templateData: dossier });
-      showMessage('Dossiê salvo com sucesso!', 'success'); 
-      onClose();
-    } catch (err: any) {
-      const backendMessage = err.response?.data?.message;
-      const backendType = err.response?.data?.type;
-      showMessage(
-        backendMessage || 'Erro ao salvar o dossiê.',
-        backendType || 'error'
-      );
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    const success = await onSave({ templateData: dossier });
+    if (success) {
+      showMessage('Dossiê salvo com sucesso!', 'success');
+      onClose();  // <<< Fecha só se salvou
     }
-  };
+    // Se falhou, só exibe o snackbar, mas NÃO fecha.
+  } catch (err: any) {
+    showMessage('Erro inesperado ao salvar.', 'error');
+    // Não fecha o modal.
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

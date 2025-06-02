@@ -39,33 +39,46 @@ const DossiersDashboard = () => {
   const { showMessage  } = useSnackbar();
 
 
-  const handleOpenDialog = () => {
-    setDialogOpen(true);
-  };
+  const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-  };
+const handleOpenDialog = () => {
+  setCurrentDossier({
+    id: 0,
+    title: '',
+    description: '',
+    evaluationArea: '',
+    categories: [],
+    concepts: "A,B,C",
+    teacherId: ""
+  });
+  setDialogOpen(true);
+};
 
-  const handleCreateDossie = async ({ templateData }: DossierInput) => {
-    try {
-      const result = await apiService.createDossier({
-        templateData
-      });
+const handleCloseDialog = () => {
+  setDialogOpen(false);
+  setCurrentDossier(null);  // limpa ao fechar
+};
 
-      const newDossier = result.data.template;
 
-      setDossiers(prev => [...prev, newDossier])
+  const handleCreateDossie = async ({ templateData }: DossierInput): Promise<boolean> => {
+  try {
+    const result = await apiService.createDossier({ templateData });
+    const newDossier = result.data.template;
+    setDossiers(prev => [...prev, newDossier]);
+    showMessage("Dossiê criado com sucesso!", "success");
+    return true;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
+    } else {
+      showMessage("Erro ao criar dossiê.", "error");
+    }
+    return false;
+  }
+};
 
-      showMessage("Dossiê criado com sucesso!", "success");
-    } catch (error) {
-      if (isAxiosError(error)) {
-        showMessage(error.response?.data?.error || "Erro desconhecido.", "error");      } else {
-        showMessage("Erro ao criar dossiê.", "error");
-      }
-      }
-    setDialogOpen(false);
-  };
+
+
 
   return (
     <>
@@ -129,12 +142,14 @@ const DossiersDashboard = () => {
         >
           <Add />
         </Fab>
-        <CreateDossie
-          open={dialogOpen}
-          onClose={handleCloseDialog}
-          onSave={handleCreateDossie}
-          dossieData={emptyDossie}
-        />
+        {currentDossier && (
+          <CreateDossie
+            open={dialogOpen}
+            onClose={handleCloseDialog}
+            onSave={handleCreateDossie}
+            dossieData={currentDossier}
+          />
+        )}
       </Box>
     </>
   );
