@@ -25,10 +25,12 @@ interface CreateDossieProps {
   onSave: ({ templateData }: DossierInput) => void;
 }
 
+
 export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
   const [dossier, setDossier] = useState<Dossier>(dossieData);
   const [loading, setLoading] = useState(false);
   const { showMessage } = useSnackbar();
+
 
   useEffect(() => {
     setDossier({
@@ -128,28 +130,63 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Cadastrar Dossiê</DialogTitle>
       <DialogContent>
-        {/* Campos básicos */}
-        <TextField fullWidth label="Título" value={dossier.title} onChange={(e) => handleChange('title', e.target.value)} margin="normal" />
-        <TextField fullWidth label="Descrição" value={dossier.description} onChange={(e) => handleChange('description', e.target.value)} margin="normal" />
-        <TextField fullWidth label="Área de Avaliação" value={dossier.evaluationArea} onChange={(e) => handleChange('evaluationArea', e.target.value)} margin="normal" />
+        <TextField
+          fullWidth
+          label="Título"
+          value={dossier.title}
+          onChange={(e) => handleChange('title', e.target.value)}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Descrição"
+          value={dossier.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+          margin="normal"
+        />
+        <TextField
+          fullWidth
+          label="Área de Avaliação"
+          value={dossier.evaluationArea}
+          onChange={(e) => handleChange('evaluationArea', e.target.value)}
+          margin="normal"
+        />
 
-        {/* Slider de conceitos */}
-        <Box display="flex" flexDirection="row" alignItems="center" gap={2} mt={2} flexWrap="wrap">
-          <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>Conceitos:</Typography>
-          <CustomLabelSlider setOutput={(concepts: string) => setDossier(prev => ({ ...prev, concepts }))} />
+        <Box display="flex" flexDirection={"row"} alignItems="center" gap={2} mt={2} flexWrap="wrap">
+          <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
+            Conceitos:
+          </Typography>
+          <CustomLabelSlider setOutput={
+            (concepts: string) => setDossier(prev => ({ ...prev, concepts: concepts }))} />
         </Box>
 
-        {/* Categorias */}
-        <Typography variant="h6" mt={2}>Categorias de Avaliação</Typography>
+        <Typography variant="h6" mt={2}>
+          Categorias de Avaliação
+        </Typography>
+
         {dossier.categories.map((cat, ci) => (
           <Accordion key={ci} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>{cat.title || `Categoria ${ci + 1}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <TextField fullWidth label="Título da Categoria" value={cat.title} onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)} margin="normal" />
-              <TextField fullWidth label="Peso" type="number" value={cat.weight} onChange={(e) => handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)} margin="normal" />
-
+              <TextField
+                fullWidth
+                label="Título da Categoria"
+                value={cat.title}
+                onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Peso"
+                type="number"
+                value={cat.weight}
+                onChange={(e) =>
+                  handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)
+                }
+                margin="normal"
+              />
               <Button
                 variant="outlined"
                 color="error"
@@ -160,14 +197,20 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                 Remover Categoria
               </Button>
 
-              {/* Descrições */}
-              <Typography variant="subtitle1" mt={2}>Descrições</Typography>
-              {cat.descriptions.map((desc: any, di: number) => (
-                <Box key={di} mb={2} pl={2} borderLeft="2px solid #ccc">
-                  <TextField fullWidth label={`Título da Descrição ${di + 1}`} value={desc.title} onChange={(e) => handleDescricaoChange(ci, di, e.target.value)} margin="normal" />
 
-                  {/* Quesitos */}
-                  {desc.criteria.map((q: any, qi: number) => (
+              <Typography variant="subtitle1" mt={2}>
+                Descrições
+              </Typography>
+              {cat.descriptions.map((desc: any, di: any) => (
+                <Box key={di} mb={2} pl={2} borderLeft="2px solid #ccc">
+                  <TextField
+                    fullWidth
+                    label={`Título da Descrição ${di + 1}`}
+                    value={desc.title}
+                    onChange={(e) => handleDescricaoChange(ci, di, e.target.value)}
+                    margin="normal"
+                  />
+                  {desc.criteria.map((q: any, qi: any) => (
                     <Box key={qi} display="flex" gap={1}>
                       <TextField
                         fullWidth
@@ -186,8 +229,8 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                         Remover
                       </Button>
                     </Box>
-                  ))}
-
+                  ))
+                  }
                   <Button
                     variant="outlined"
                     startIcon={<AddIcon />}
@@ -196,7 +239,6 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                   >
                     Adicionar Quesito
                   </Button>
-
                   <Button
                     variant="outlined"
                     color="error"
@@ -208,7 +250,6 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                   </Button>
                 </Box>
               ))}
-
               <Button
                 variant="outlined"
                 startIcon={<AddIcon />}
@@ -221,7 +262,6 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
           </Accordion>
         ))}
 
-        {/* Adicionar categoria */}
         <Box mt={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             startIcon={<AddIcon />}
@@ -234,7 +274,6 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
         </Box>
       </DialogContent>
 
-      {/* Ações do diálogo */}
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button
