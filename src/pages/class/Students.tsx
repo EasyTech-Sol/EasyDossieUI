@@ -36,13 +36,17 @@ const Students = ({ students, handleOpenEditModal, handleDeleteStudent }: Studen
                         justifyContent: "space-between",
                         alignItems: "center",
                         borderRadius: 2,
+                        transition: "transform 0.1s ease-in",
+                        "&:hover": {
+                            transform: "scale(1.01)",
+                        }
                     }}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar
                             sx={{
-                                bgcolor: '#d6d6d6', 
-                                color: '#000',       
+                                bgcolor: '#d6d6d6',
+                                color: '#000',
                                 width: 40,
                                 height: 40,
                                 fontSize: 18,
