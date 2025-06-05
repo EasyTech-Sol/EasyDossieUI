@@ -16,6 +16,7 @@ import {
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { apiService } from '../../../services/easydossie.service';
 import CustomLabelSlider from './CustomLabelSlider';
 import { useSnackbar } from '../../../contexts/SnackBarContext';
@@ -37,7 +38,6 @@ export default function EditDossieModal({
   const [conceitosError, setConceitosError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { showMessage } = useSnackbar();
-
 
   useEffect(() => {
     setDossier(dossierData);
@@ -70,7 +70,7 @@ export default function EditDossieModal({
     const newCategory: Category = {
       id: 0, title: '', weight: 1, descriptions: [],
       dossierTemplateId: ''
-    }
+    };
     setDossier({
       ...dossier,
       categories: [...dossier.categories ?? [], newCategory],
@@ -79,13 +79,37 @@ export default function EditDossieModal({
 
   const addDescription = (ci: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions.push({ id: 0, title: '', criteria: [] });
+    cats[ci].descriptions.push({
+      id: 0, title: '', criteria: [],
+      categoryId: ''
+    });
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeCategory = (ci: number) => {
+    const cats = [...dossier.categories];
+    cats.splice(ci, 1);
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeDescription = (ci: number, di: number) => {
+    const cats = [...dossier.categories];
+    cats[ci].descriptions.splice(di, 1);
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeCriterion = (ci: number, di: number, qi: number) => {
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].criteria.splice(qi, 1);
     setDossier({ ...dossier, categories: cats });
   };
 
   const addCriterion = (ci: number, di: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions[di].criteria.push({ id: 0, title: '' });
+    cats[ci].descriptions[di].criteria.push({
+      id: 0, title: '',
+      descriptionId: ''
+    });
     setDossier({ ...dossier, categories: cats });
   };
 
@@ -100,13 +124,12 @@ export default function EditDossieModal({
       onSave(resp.data.data);
       onClose();
     } catch (err: any) {
-      console.error(err)
+      console.error(err);
       showMessage(
         err.response?.data?.error || 'Erro ao salvar o dossiê.',
         err.response?.data?.type || 'error'
       );
     }
-
     setLoading(false);
   };
 
@@ -140,8 +163,11 @@ export default function EditDossieModal({
           <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
             Conceitos:
           </Typography>
-          <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({ ...prev, concepts: concepts }))} />
+          <CustomLabelSlider
+            setOutput={(concepts: string) =>
+              setDossier(prev => ({ ...prev, concepts }))
+            }
+          />
         </Box>
         {conceitosError && (
           <FormHelperText error sx={{ mt: 1 }}>
@@ -180,7 +206,7 @@ export default function EditDossieModal({
               <Typography variant="subtitle1" mt={2}>
                 Descrições
               </Typography>
-              {cat.descriptions.map((desc: any, di: any) => (
+              {cat.descriptions.map((desc, di) => (
                 <Box key={di} mb={2} pl={2} borderLeft="2px solid #ccc">
                   <TextField
                     fullWidth
@@ -190,33 +216,60 @@ export default function EditDossieModal({
                     margin="normal"
                   />
                   {desc.criteria.map((q: any, qi: any) => (
-                    <TextField
-                      key={qi}
-                      fullWidth
-                      label={`Quesito ${qi + 1}`}
-                      value={q.title}
-                      onChange={(e) => handleCriterionChange(ci, di, qi, e.target.value)}
-                      margin="normal"
-                    />
+                    <Box key={qi} display="flex" alignItems="center" gap={1}>
+                      <TextField
+                        fullWidth
+                        label={`Quesito ${qi + 1}`}
+                        value={q.title}
+                        onChange={(e) => handleCriterionChange(ci, di, qi, e.target.value)}
+                        margin="normal"
+                      />
+                      <Button
+                        color='error'
+                        onClick={() => removeCriterion(ci, di, qi)}
+                      >
+                        <DeleteIcon />
+                      </Button>
+                    </Box>
                   ))}
-                  <Button
-                    variant="outlined"
-                    startIcon={<AddIcon />}
-                    onClick={() => addCriterion(ci, di)}
-                    sx={{ mt: 1 }}
-                  >
-                    Adicionar Quesito
-                  </Button>
+                  <Box display="flex" gap={1} mt={1}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<AddIcon />}
+                      onClick={() => addCriterion(ci, di)}
+                      color='success'
+                    >
+                      Adicionar Quesito
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color='error'
+                      startIcon={<DeleteIcon />}
+                      onClick={() => removeDescription(ci, di)}
+                    >
+                      Remover Descrição
+                    </Button>
+                  </Box>
                 </Box>
               ))}
-              <Button
-                variant="outlined"
-                startIcon={<AddIcon />}
-                onClick={() => addDescription(ci)}
-                sx={{ mt: 1 }}
-              >
-                Adicionar Descrição
-              </Button>
+              <Box display="flex" gap={1} mt={2}>
+                <Button
+                  variant="outlined"
+                  startIcon={<AddIcon />}
+                  onClick={() => addDescription(ci)}
+                  color='success'
+                >
+                  Adicionar Descrição
+                </Button>
+                <Button
+                  variant="outlined"
+                  color='error'
+                  startIcon={<DeleteIcon />}
+                  onClick={() => removeCategory(ci)}
+                >
+                  Remover Categoria
+                </Button>
+              </Box>
             </AccordionDetails>
           </Accordion>
         ))}
@@ -226,7 +279,10 @@ export default function EditDossieModal({
             startIcon={<AddIcon />}
             onClick={addCategory}
             variant="contained"
-            sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#388e3c' } }}
+            sx={{
+              backgroundColor: '#4caf50',
+              '&:hover': { backgroundColor: '#388e3c' },
+            }}
           >
             Adicionar Categoria
           </Button>
@@ -234,7 +290,9 @@ export default function EditDossieModal({
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose} color='success'>Cancelar</Button>
+        <Button onClick={onClose} color="success">
+          Cancelar
+        </Button>
         <Button
           onClick={handleSave}
           variant="contained"

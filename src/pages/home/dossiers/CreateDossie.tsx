@@ -16,6 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import CustomLabelSlider from './CustomLabelSlider';
 import { useSnackbar } from '../../../contexts/SnackBarContext';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface CreateDossieProps {
   open: boolean;
@@ -24,12 +25,10 @@ interface CreateDossieProps {
   onSave: ({ templateData }: DossierInput) => void;
 }
 
-
 export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
   const [dossier, setDossier] = useState<Dossier>(dossieData);
   const [loading, setLoading] = useState(false);
-  const { showMessage } = useSnackbar(); 
-
+  const { showMessage } = useSnackbar();
 
   useEffect(() => {
     setDossier({
@@ -72,15 +71,38 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     });
   };
 
+  const removeCategoria = (ci: number) => {
+    const updated = dossier.categories.filter((_, index) => index !== ci);
+    setDossier({ ...dossier, categories: updated });
+  };
+
   const addDescricao = (ci: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions.push({ id: 0, title: '', criteria: [] });
+    cats[ci].descriptions.push({
+      id: 0, title: '', criteria: [],
+      categoryId: ''
+    });
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeDescricao = (ci: number, di: number) => {
+    const cats = [...dossier.categories];
+    cats[ci].descriptions = cats[ci].descriptions.filter((_, index) => index !== di);
     setDossier({ ...dossier, categories: cats });
   };
 
   const addQuesito = (ci: number, di: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions[di].criteria.push({ id: 0, title: '' });
+    cats[ci].descriptions[di].criteria.push({
+      id: 0, title: '',
+      descriptionId: ''
+    });
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeQuesito = (ci: number, di: number, qi: number) => {
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].criteria = cats[ci].descriptions[di].criteria.filter((_, index) => index !== qi);
     setDossier({ ...dossier, categories: cats });
   };
 
@@ -88,7 +110,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     setLoading(true);
     try {
       onSave({ templateData: dossier });
-      showMessage('Dossiê salvo com sucesso!', 'success'); 
+      showMessage('Dossiê salvo com sucesso!', 'success');
       onClose();
     } catch (err: any) {
       const backendMessage = err.response?.data?.message;
@@ -106,86 +128,66 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Cadastrar Dossiê</DialogTitle>
       <DialogContent>
-        <TextField
-          fullWidth
-          label="Título"
-          value={dossier.title}
-          onChange={(e) => handleChange('title', e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Descrição"
-          value={dossier.description}
-          onChange={(e) => handleChange('description', e.target.value)}
-          margin="normal"
-        />
-        <TextField
-          fullWidth
-          label="Área de Avaliação"
-          value={dossier.evaluationArea}
-          onChange={(e) => handleChange('evaluationArea', e.target.value)}
-          margin="normal"
-        />
+        {/* Campos básicos */}
+        <TextField fullWidth label="Título" value={dossier.title} onChange={(e) => handleChange('title', e.target.value)} margin="normal" />
+        <TextField fullWidth label="Descrição" value={dossier.description} onChange={(e) => handleChange('description', e.target.value)} margin="normal" />
+        <TextField fullWidth label="Área de Avaliação" value={dossier.evaluationArea} onChange={(e) => handleChange('evaluationArea', e.target.value)} margin="normal" />
 
-        <Box display="flex" flexDirection={"row"} alignItems="center" gap={2} mt={2} flexWrap="wrap">
-          <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>
-            Conceitos:
-          </Typography>
-          <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({...prev, concepts: concepts}))}/>
+        {/* Slider de conceitos */}
+        <Box display="flex" flexDirection="row" alignItems="center" gap={2} mt={2} flexWrap="wrap">
+          <Typography variant="h6" sx={{ whiteSpace: 'nowrap' }}>Conceitos:</Typography>
+          <CustomLabelSlider setOutput={(concepts: string) => setDossier(prev => ({ ...prev, concepts }))} />
         </Box>
 
-        <Typography variant="h6" mt={2}>
-          Categorias de Avaliação
-        </Typography>
-
+        {/* Categorias */}
+        <Typography variant="h6" mt={2}>Categorias de Avaliação</Typography>
         {dossier.categories.map((cat, ci) => (
           <Accordion key={ci} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography>{cat.title || `Categoria ${ci + 1}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <TextField
-                fullWidth
-                label="Título da Categoria"
-                value={cat.title}
-                onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)}
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                label="Peso"
-                type="number"
-                value={cat.weight}
-                onChange={(e) =>
-                  handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)
-                }
-                margin="normal"
-              />
+              <TextField fullWidth label="Título da Categoria" value={cat.title} onChange={(e) => handleCategoriaChange(ci, 'title', e.target.value)} margin="normal" />
+              <TextField fullWidth label="Peso" type="number" value={cat.weight} onChange={(e) => handleCategoriaChange(ci, 'weight', parseFloat(e.target.value) || 0)} margin="normal" />
 
-              <Typography variant="subtitle1" mt={2}>
-                Descrições
-              </Typography>
-              {cat.descriptions.map((desc: any, di: any) => (
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => removeCategoria(ci)}
+                sx={{ mt: 1, mb: 1 }}
+              >
+                Remover Categoria
+              </Button>
+
+              {/* Descrições */}
+              <Typography variant="subtitle1" mt={2}>Descrições</Typography>
+              {cat.descriptions.map((desc: any, di: number) => (
                 <Box key={di} mb={2} pl={2} borderLeft="2px solid #ccc">
-                  <TextField
-                    fullWidth
-                    label={`Título da Descrição ${di + 1}`}
-                    value={desc.title}
-                    onChange={(e) => handleDescricaoChange(ci, di, e.target.value)}
-                    margin="normal"
-                  />
-                  {desc.criteria.map((q: any, qi: any) => (
-                    <TextField
-                      key={qi}
-                      fullWidth
-                      label={`Quesito ${qi + 1}`}
-                      value={q.title}
-                      onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
-                      margin="normal"
-                    />
+                  <TextField fullWidth label={`Título da Descrição ${di + 1}`} value={desc.title} onChange={(e) => handleDescricaoChange(ci, di, e.target.value)} margin="normal" />
+
+                  {/* Quesitos */}
+                  {desc.criteria.map((q: any, qi: number) => (
+                    <Box key={qi} display="flex" gap={1}>
+                      <TextField
+                        fullWidth
+                        label={`Quesito ${qi + 1}`}
+                        value={q.title}
+                        onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
+                        margin="normal"
+                      />
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => removeQuesito(ci, di, qi)}
+                        sx={{ height: '56px', mt: 2 }}
+                      >
+                        Remover
+                      </Button>
+                    </Box>
                   ))}
+
                   <Button
                     variant="outlined"
                     startIcon={<AddIcon />}
@@ -194,8 +196,19 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                   >
                     Adicionar Quesito
                   </Button>
+
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => removeDescricao(ci, di)}
+                    sx={{ mt: 1, ml: 2 }}
+                  >
+                    Remover Descrição
+                  </Button>
                 </Box>
               ))}
+
               <Button
                 variant="outlined"
                 startIcon={<AddIcon />}
@@ -208,6 +221,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
           </Accordion>
         ))}
 
+        {/* Adicionar categoria */}
         <Box mt={2} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             startIcon={<AddIcon />}
@@ -220,6 +234,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
         </Box>
       </DialogContent>
 
+      {/* Ações do diálogo */}
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button
