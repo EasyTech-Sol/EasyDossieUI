@@ -15,7 +15,7 @@ type Category = {
   id: number;
   title: string;
   weight: number;
-  descriptions: Descricao[];
+  descriptions: Description[];
   dossierTemplateId: string;
 };
 

@@ -16,6 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import CustomLabelSlider from './CustomLabelSlider';
 import { useSnackbar } from '../../../contexts/SnackBarContext';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface CreateDossieProps {
   open: boolean;
@@ -27,7 +28,7 @@ interface CreateDossieProps {
 
 export default function CreateDossie({ open, onClose, dossieData, onSave }: CreateDossieProps) {
   const [loading, setLoading] = useState(false);
-  const { showMessage } = useSnackbar(); 
+  const { showMessage } = useSnackbar();
 
   const [dossier, setDossier] = useState<Dossier>(() => ({
     ...dossieData,
@@ -69,15 +70,38 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
     });
   };
 
+  const removeCategoria = (ci: number) => {
+    const updated = dossier.categories.filter((_, index) => index !== ci);
+    setDossier({ ...dossier, categories: updated });
+  };
+
   const addDescricao = (ci: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions.push({ id: 0, title: '', criteria: [] });
+    cats[ci].descriptions.push({
+      id: 0, title: '', criteria: [],
+      categoryId: ''
+    });
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeDescricao = (ci: number, di: number) => {
+    const cats = [...dossier.categories];
+    cats[ci].descriptions = cats[ci].descriptions.filter((_, index) => index !== di);
     setDossier({ ...dossier, categories: cats });
   };
 
   const addQuesito = (ci: number, di: number) => {
     const cats = [...dossier.categories];
-    cats[ci].descriptions[di].criteria.push({ id: 0, title: '' });
+    cats[ci].descriptions[di].criteria.push({
+      id: 0, title: '',
+      descriptionId: ''
+    });
+    setDossier({ ...dossier, categories: cats });
+  };
+
+  const removeQuesito = (ci: number, di: number, qi: number) => {
+    const cats = [...dossier.categories];
+    cats[ci].descriptions[di].criteria = cats[ci].descriptions[di].criteria.filter((_, index) => index !== qi);
     setDossier({ ...dossier, categories: cats });
   };
 
@@ -129,7 +153,7 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
             Conceitos:
           </Typography>
           <CustomLabelSlider setOutput={
-            (concepts: string) => setDossier(prev => ({...prev, concepts: concepts}))}/>
+            (concepts: string) => setDossier(prev => ({ ...prev, concepts: concepts }))} />
         </Box>
 
         <Typography variant="h6" mt={2}>
@@ -159,6 +183,16 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                 }
                 margin="normal"
               />
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => removeCategoria(ci)}
+                sx={{ mt: 1, mb: 1 }}
+              >
+                Remover Categoria
+              </Button>
+
 
               <Typography variant="subtitle1" mt={2}>
                 Descrições
@@ -173,15 +207,26 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                     margin="normal"
                   />
                   {desc.criteria.map((q: any, qi: any) => (
-                    <TextField
-                      key={qi}
-                      fullWidth
-                      label={`Quesito ${qi + 1}`}
-                      value={q.title}
-                      onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
-                      margin="normal"
-                    />
-                  ))}
+                    <Box key={qi} display="flex" gap={1}>
+                      <TextField
+                        fullWidth
+                        label={`Quesito ${qi + 1}`}
+                        value={q.title}
+                        onChange={(e) => handleQuesitoChange(ci, di, qi, e.target.value)}
+                        margin="normal"
+                      />
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => removeQuesito(ci, di, qi)}
+                        sx={{ height: '56px', mt: 2 }}
+                      >
+                        Remover
+                      </Button>
+                    </Box>
+                  ))
+                  }
                   <Button
                     variant="outlined"
                     startIcon={<AddIcon />}
@@ -189,6 +234,15 @@ export default function CreateDossie({ open, onClose, dossieData, onSave }: Crea
                     sx={{ mt: 1 }}
                   >
                     Adicionar Quesito
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => removeDescricao(ci, di)}
+                    sx={{ mt: 1, ml: 2 }}
+                  >
+                    Remover Descrição
                   </Button>
                 </Box>
               ))}
