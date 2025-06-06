@@ -67,18 +67,20 @@ const DescriptionView: React.FC<{
                                     alignItems: 'center',
                                     width: 30,
                                     height: 30,
-                                    backgroundColor: getStudentEvaluation(criterion.id) === concept ? 'rgba(0, 0, 0, 0.1)' : 'transparent',
-                                    color: getStudentEvaluation(criterion.id) === concept ? '#000' : '#888',
+                                    backgroundColor: getStudentEvaluation(criterion.id) === concept ? '#4CAF50' : 'transparent',
+                                    color: getStudentEvaluation(criterion.id) === concept ? '#fff' : '#888',
                                     cursor: 'pointer',
                                     borderRadius: '50%',
-                                    transition: 'background-color 0.2s',
+                                    transition: 'all 0.2s ease',
+                                    border: '1px solid #ddd',
                                     '&:hover': {
-                                        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                                        backgroundColor: getStudentEvaluation(criterion.id) === concept ? '#45a049' : 'rgba(0, 0, 0, 0.05)',
+                                        transform: 'scale(1.1)',
                                     }
                                 }}
                                 onClick={() => onConceptChange(criterion.id, concept)}
                             >
-                                <Typography variant="body2">
+                                <Typography variant="body2" sx={{ fontWeight: getStudentEvaluation(criterion.id) === concept ? 'bold' : 'normal' }}>
                                     {concept}
                                 </Typography>
                             </Box>

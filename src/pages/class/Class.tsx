@@ -177,7 +177,11 @@ const Class = () => {
   return (
     <>
       <ClassAppBar classTitle={actualClass ? actualClass.title : ""}/>
-      <Search value={searchTerm} onChange={setSearchTerm} />
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 1, width: "100%" }}>
+        <Box sx={{ width: "100%", maxWidth: "1000px", px: 2 }}>
+          <Search value={searchTerm} onChange={setSearchTerm} />
+        </Box>
+      </Box>
 
       {selectedSubTab === "students" && (
         <Students

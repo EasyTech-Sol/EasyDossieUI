@@ -5,11 +5,9 @@ import {
   IconButton,
   Toolbar,
   Fab,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Add, Person } from "@mui/icons-material";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
@@ -21,10 +19,20 @@ import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
 
 const drawerWidth = 240;
 
-
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { setDossiers, loading } = useDossiers();
+  const { dossiers, setDossiers } = useDossiers();
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { showMessage } = useSnackbar();
+
+  const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
+
+  // Filtra os dossiês com base no termo de busca
+  const filteredDossiers = dossiers.filter(dossier => 
+    dossier.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    dossier.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    dossier.evaluationArea.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const emptyDossie: Dossier = {
     id: 0,
@@ -35,50 +43,41 @@ const DossiersDashboard = () => {
     concepts: "A,B,C",
     teacherId: ""
   };
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const { showMessage  } = useSnackbar();
 
+  const handleOpenDialog = () => {
+    setCurrentDossier({
+      id: 0,
+      title: '',
+      description: '',
+      evaluationArea: '',
+      categories: [],
+      concepts: "A,B,C",
+      teacherId: ""
+    });
+    setDialogOpen(true);
+  };
 
-  const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
-
-const handleOpenDialog = () => {
-  setCurrentDossier({
-    id: 0,
-    title: '',
-    description: '',
-    evaluationArea: '',
-    categories: [],
-    concepts: "A,B,C",
-    teacherId: ""
-  });
-  setDialogOpen(true);
-};
-
-const handleCloseDialog = () => {
-  setDialogOpen(false);
-  setCurrentDossier(null);  // limpa ao fechar
-};
-
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setCurrentDossier(null);  // limpa ao fechar
+  };
 
   const handleCreateDossie = async ({ templateData }: DossierInput): Promise<boolean> => {
-  try {
-    const result = await apiService.createDossier({ templateData });
-    const newDossier = result.data.template;
-    setDossiers(prev => [...prev, newDossier]);
-    showMessage("Dossiê criado com sucesso!", "success");
-    return true;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
-    } else {
-      showMessage("Erro ao criar dossiê.", "error");
+    try {
+      const result = await apiService.createDossier({ templateData });
+      const newDossier = result.data.template;
+      setDossiers(prev => [...prev, newDossier]);
+      showMessage("Dossiê criado com sucesso!", "success");
+      return true;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
+      } else {
+        showMessage("Erro ao criar dossiê.", "error");
+      }
+      return false;
     }
-    return false;
-  }
-};
-
-
-
+  };
 
   return (
     <>
@@ -100,8 +99,14 @@ const handleCloseDialog = () => {
 
           <Divider />
 
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-            <Search value={searchTerm} onChange={setSearchTerm} />
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1, width: "100%" }}>
+            <Box sx={{ width: "100%", maxWidth: "1000px", px: 2 }}>
+              <Search 
+                value={searchTerm} 
+                onChange={setSearchTerm}
+                placeholder="Buscar por título, descrição ou área..."
+              />
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
@@ -115,7 +120,6 @@ const handleCloseDialog = () => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-
         {/* Content */}
         <Box
           sx={{
@@ -126,7 +130,7 @@ const handleCloseDialog = () => {
             width: "100%",
           }}
         >
-          <ListDossiersPage />
+          <ListDossiersPage dossiers={filteredDossiers} />
         </Box>
 
         {/* Floating Action Button */}
@@ -138,16 +142,16 @@ const handleCloseDialog = () => {
             right: 32,
           }}
           onClick={handleOpenDialog}
-
         >
           <Add />
         </Fab>
-        {currentDossier && (
+
+        {dialogOpen && (
           <CreateDossie
             open={dialogOpen}
             onClose={handleCloseDialog}
             onSave={handleCreateDossie}
-            dossieData={currentDossier}
+            dossieData={currentDossier || emptyDossie}
           />
         )}
       </Box>

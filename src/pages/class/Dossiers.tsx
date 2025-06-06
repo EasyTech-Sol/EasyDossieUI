@@ -50,7 +50,7 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
       <Box
         sx={{
           px: 4,
-          maxWidth: "900px",
+          maxWidth: "800px",
           width: "100%",
           mx: "auto",
         }}
@@ -68,6 +68,8 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
                 display: "flex",
                 alignItems: "center",
                 transition: "transform 0.1s ease-in",
+                maxWidth: "700px",
+                mx: "auto",
                 "&:hover": {
                   transform: "scale(1.01)",
                 },

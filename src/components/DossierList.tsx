@@ -16,15 +16,13 @@ import { useDossiers } from "../contexts/DossierContext";
 import DossierView from "./DossieView";
 
 interface DossierListProps {
-  // dossiers: Dossier[];
-  // onEdit?: (id: number) => void;
+  dossiers: Dossier[];
   onDelete?: (id: number) => void;
   onAssociate?: (id: number) => void;
 }
 
 export const DossierList: React.FC<DossierListProps> = ({
-  // dossiers,
-  // onEdit,
+  dossiers,
   onDelete,
   onAssociate,
 }) => {
@@ -37,7 +35,7 @@ export const DossierList: React.FC<DossierListProps> = ({
     concepts: "A,B,C",
     teacherId: ""
   };
-  const { dossiers, setDossiers, loading } = useDossiers();
+  const { setDossiers } = useDossiers();
   const [editModal, setEditModal] = React.useState(false)
   const [viewModal, setViewModal] = React.useState(false)
   const [dossierToEdit, setDossierToEdit] = React.useState<Dossier>(emptyDossie)
@@ -49,8 +47,9 @@ export const DossierList: React.FC<DossierListProps> = ({
   }
 
   const handleEdit = (data: any) => {
-    setDossiers(prev => [...prev, data])
+    setDossiers(prev => prev.map(d => d.id === data.id ? data : d))
   }
+
   return (
     <>
       <EditDossieModal
@@ -70,7 +69,7 @@ export const DossierList: React.FC<DossierListProps> = ({
               key={dossier.id}
               sx={{
                 mb: 2,
-                backgroundColor: "#ffffff", // Agora é fundo branco
+                backgroundColor: "#ffffff",
                 borderRadius: 2,
                 padding: 2,
                 width: "100%",

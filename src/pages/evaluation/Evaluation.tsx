@@ -137,17 +137,14 @@ const Evaluation = () => {
         //pega todas as avaliacoes do aluno do estado local
         const studentEvaluationData = evaluations.find(ev => ev.studentId === studentId);
 
-        //veerifica se existe algo para salvar
-        if (!studentEvaluationData || studentEvaluationData.evaluation.length === 0) {
-            console.warn("Nenhuma avaliação para salvar para este aluno.");
-            showMessage("Nenhuma avaliação foi feita para este aluno.", "info");
-            return;
-        }
-
-        //envia todas as avaliacoes para o backend
+        //envia todas as avaliacoes para o backend (mesmo que vazio)
         try {
-
-            await apiService.saveEvaluation(classId!, dossierId!, studentId, studentEvaluationData.evaluation);
+            await apiService.saveEvaluation(
+                classId!, 
+                dossierId!, 
+                studentId, 
+                studentEvaluationData?.evaluation || []
+            );
             setHasEvaluationUpdated(false)
             showMessage("Avaliações salvas com sucesso!", "success");
 
@@ -172,6 +169,14 @@ const Evaluation = () => {
             if (ev.studentId === studentId) {
                 const existingEvaluation = ev.evaluation.find(e => e.criterionId === criterionId);
                 if (existingEvaluation) {
+                    // Se o conceito clicado é o mesmo que já está selecionado, remove a avaliação
+                    if (existingEvaluation.concept === concept) {
+                        return {
+                            ...ev,
+                            evaluation: ev.evaluation.filter(e => e.criterionId !== criterionId)
+                        };
+                    }
+                    // Caso contrário, atualiza o conceito
                     return {
                         ...ev,
                         evaluation: ev.evaluation.map(e =>
