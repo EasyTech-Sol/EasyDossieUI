@@ -1,6 +1,11 @@
 import { Button, Divider, Grid } from '@mui/material';
 import StudentsCarousel from './StudentsCarousel';
-import { apiService } from "../../services/easydossie.service"
+import { useReactToPrint } from 'react-to-print';
+import { useRef } from 'react';
+import { useEvaluationContext } from '../../contexts/EvaluationContext';
+import { useStudentContext } from '../../contexts/StudentContext';
+import DossiePDF from '../../components/DossiePDF';
+import { useSnackbar } from '../../contexts/SnackBarContext';
 
 interface StudentsBarProps {
     canExport: boolean;
@@ -9,16 +14,36 @@ interface StudentsBarProps {
 }
 
 const StudentsBar = ({ canExport, classId, dossierId }: StudentsBarProps) => {
-    // Função para chamar a API de finalizar dossiê
-    const handleFinalize = async () => {
-        try {
-            console.log("Chamada para a API de finalização do dossiê...");
-            const response = await apiService.finalizeStudentDossier(classId, dossierId);
-                        
-            alert("Dossiê finalizado com sucesso!");
-        } catch (error) {
-            alert("Ocorreu um erro ao finalizar o dossiê.");
+    const { evaluations, dossierTemplate } = useEvaluationContext();
+    const { students } = useStudentContext();
+    const { showMessage } = useSnackbar();
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    const handlePrint = useReactToPrint({
+        contentRef: contentRef,
+        pageStyle: `
+            @page {
+                size: A4;
+                margin: 20mm;
+            }
+        `,
+        onBeforeGetContent: () => {
+            showMessage("Gerando PDF...", "info");
+        },
+        onAfterPrint: () => {
+            showMessage("PDF gerado com sucesso!", "success");
+        },
+        onPrintError: () => {
+            showMessage("Erro ao gerar PDF", "error");
         }
+    });
+
+    const handleFinalize = () => {
+        if (!canExport) {
+            showMessage("Nem todos os alunos foram avaliados", "error");
+            return;
+        }
+        handlePrint();
     };
 
     return (
@@ -28,20 +53,41 @@ const StudentsBar = ({ canExport, classId, dossierId }: StudentsBarProps) => {
                     <StudentsCarousel />
                 </Grid>
                 <Grid paddingRight={5} size={4} display="flex" alignItems="center" justifyContent="flex-end">
-                    <Button 
-                        variant="contained" 
+                    <Button
+                        variant="contained"
                         color="success" 
                         size='large' 
                         disabled={!canExport}
-                        onClick={handleFinalize} // Chama a função handleFinalize ao clicar
+                        onClick={handleFinalize}
                     >
                         FINALIZAR
                     </Button>
                 </Grid>
             </Grid>
-            <Divider sx={{ my: 0.5 }} /> {/* Espaçamento vertical acima e abaixo */}
+            <Divider sx={{ my: 0.5 }} />
+
+            {/* Container oculto para o PDF */}
+            <div style={{ display: 'none' }}>
+                <div ref={contentRef}>
+                    {students.map((student) => {
+                        const studentEvaluation = evaluations.find(
+                            (ev) => ev.studentId === student.id
+                        );
+                        if (!studentEvaluation || !dossierTemplate) return null;
+
+                        return (
+                            <DossiePDF
+                                key={student.id}
+                                dossier={dossierTemplate}
+                                student={student}
+                                evaluation={studentEvaluation}
+                            />
+                        );
+                    })}
+                </div>
+            </div>
         </>
     );
-}
+};
 
 export default StudentsBar;

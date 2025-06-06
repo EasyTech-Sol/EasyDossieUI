@@ -207,7 +207,7 @@ const Evaluation = () => {
     return (
         <Box position={"relative"} width={"100%"}>
             <EvaluationAppBar />
-            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
+            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} />
             <Grid container>
                 <Grid size={8} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                     {dossierTemplate && (

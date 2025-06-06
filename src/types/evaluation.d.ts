@@ -1,10 +1,7 @@
-type EvaluatedConcept = {
-  criterionId: number;
-  concept: string;
-};
-
-type Evaluation = {
+export interface Evaluation {
   studentId: number;
-  studentName: string;
-  evaluation: EvaluatedConcept[];
-};
+  evaluation: {
+    criterionId: number;
+    concept: string;
+  }[];
+}
