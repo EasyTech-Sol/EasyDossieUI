@@ -56,21 +56,17 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete, select
   return (
     <Card
       sx={{ borderRadius: "20px", width: "15rem", height: "12rem" }}>
-      <CardActionArea
-        sx={{
-          height: '100%',
-          '&[data-active]': {
-            backgroundColor: 'action.selected',
-            '&:hover': {
-              backgroundColor: 'action.selectedHover',
-            },
-          },
-        }}
-        onClick={() =>{
-          if (!selectMode) { // Navega para a turma apenas se não estiver no modo seleção
+      <div
+        onClick={() => {
+          if (!selectMode) {
             navigate(`/class/${id}`, { state: { title, classId: id } });
-          }}
-        }
+          }
+        }}
+        style={{
+          height: '100%',
+          cursor: 'pointer',
+          position: 'relative'
+        }}
       >
         <CardHeader
           sx={{ bgcolor: bgColor, color: 'white' }}
@@ -79,57 +75,56 @@ export default function ClassCard({ title, bgColor, id, onEdit, onDelete, select
               {truncateString(title, 10)}
             </Typography>
           }
-          action={ (onEdit || onDelete) && (
-              <>
-                <Tooltip title="Opções">
-                  <IconButton onClick={(e) => {
-                    e.stopPropagation();
-                    handleClick(e);
-                  }}>
-                    <MoreVertIcon sx={{ color: "white" }} />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClick={(e) => e.stopPropagation()}
-                  onClose={handleClose}
-                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                >
-                  {onEdit && <MenuItem onClick={(e) => handleEdit(e)}>Editar turma</MenuItem>}
-                  {onDelete && <MenuItem onClick={(e) => handleDelete(e)}>Excluir turma</MenuItem>}
-                </Menu>
-              </>
-            )}
+          action={(onEdit || onDelete) && (
+            <>
+              <Tooltip title="Opções">
+                <IconButton onClick={(e) => {
+                  e.stopPropagation();
+                  handleClick(e);
+                }}>
+                  <MoreVertIcon sx={{ color: "white" }} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClick={(e) => e.stopPropagation()}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                {onEdit && <MenuItem onClick={(e) => handleEdit(e)}>Editar turma</MenuItem>}
+                {onDelete && <MenuItem onClick={(e) => handleDelete(e)}>Excluir turma</MenuItem>}
+              </Menu>
+            </>
+          )}
         />
         <Divider />
 
         <CardContent sx={{ height: '100%', backgroundColor: "#E2E2E2" }}>
         </CardContent>
-        
+
         {selectMode && (
           <Checkbox
             checked={selected}
             sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            zIndex: 2,
-            color: 'white', 
-            backgroundColor: 'transparent',
-            '&:hover': {
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              zIndex: 2,
+              color: 'white',
               backgroundColor: 'transparent',
-            },
-            '& .MuiSvgIcon-root': {
-              fontSize: 22, 
-            },
-          }}
-          disableRipple
+              '&:hover': {
+                backgroundColor: 'transparent',
+              },
+              '& .MuiSvgIcon-root': {
+                fontSize: 22,
+              },
+            }}
+            disableRipple
           />
         )}
-
-      </CardActionArea>
+      </div>
     </Card>
   );
 }

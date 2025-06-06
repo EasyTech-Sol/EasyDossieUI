@@ -201,13 +201,14 @@ const Evaluation = () => {
         if (selectedStudentIndex === null || selectedStudentIndex === undefined || !students[selectedStudentIndex]) return '';
         const studentId = students[selectedStudentIndex].id;
         const studentEvaluation = evaluations.find(ev => ev.studentId === studentId);
-        return studentEvaluation?.evaluation.find(e => e.criterionId === criterionId)?.concept || '';
+        if (!studentEvaluation || !studentEvaluation.evaluation) return '';
+        return studentEvaluation.evaluation.find(e => e.criterionId === criterionId)?.concept || '';
     };
 
     return (
         <Box position={"relative"} width={"100%"}>
             <EvaluationAppBar />
-            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
+            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} />
             <Grid container>
                 <Grid size={8} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                     {dossierTemplate && (
