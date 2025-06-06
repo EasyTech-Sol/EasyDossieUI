@@ -18,13 +18,26 @@ import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
+import { DossierList } from "../../../components/DossierList";
+import { ConfirmDialog } from "../../../components/ConfirmDialog";
+import AssociateDossierClass from "../../home/components/AssociateDossierClass";
 
 const drawerWidth = 240;
 
-
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { setDossiers, loading } = useDossiers();
+  const { dossiers, setDossiers, loading } = useDossiers();
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedDossierId, setSelectedDossierId] = useState<number | null>(null);
+  const [associateModalOpen, setAssociateModalOpen] = useState(false);
+
+  // Filtra os dossiês com base no termo de busca
+  const filteredDossiers = dossiers.filter(dossier => 
+    dossier.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    dossier.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    dossier.evaluationArea.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const emptyDossie: Dossier = {
     id: 0,
@@ -38,47 +51,74 @@ const DossiersDashboard = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const { showMessage  } = useSnackbar();
 
-
   const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
 
-const handleOpenDialog = () => {
-  setCurrentDossier({
-    id: 0,
-    title: '',
-    description: '',
-    evaluationArea: '',
-    categories: [],
-    concepts: "A,B,C",
-    teacherId: ""
-  });
-  setDialogOpen(true);
-};
+  const handleOpenDialog = () => {
+    setCurrentDossier({
+      id: 0,
+      title: '',
+      description: '',
+      evaluationArea: '',
+      categories: [],
+      concepts: "A,B,C",
+      teacherId: ""
+    });
+    setDialogOpen(true);
+  };
 
-const handleCloseDialog = () => {
-  setDialogOpen(false);
-  setCurrentDossier(null);  // limpa ao fechar
-};
-
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setCurrentDossier(null);  // limpa ao fechar
+  };
 
   const handleCreateDossie = async ({ templateData }: DossierInput): Promise<boolean> => {
-  try {
-    const result = await apiService.createDossier({ templateData });
-    const newDossier = result.data.template;
-    setDossiers(prev => [...prev, newDossier]);
-    showMessage("Dossiê criado com sucesso!", "success");
-    return true;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
-    } else {
-      showMessage("Erro ao criar dossiê.", "error");
+    try {
+      const result = await apiService.createDossier({ templateData });
+      const newDossier = result.data.template;
+      setDossiers(prev => [...prev, newDossier]);
+      showMessage("Dossiê criado com sucesso!", "success");
+      return true;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
+      } else {
+        showMessage("Erro ao criar dossiê.", "error");
+      }
+      return false;
     }
-    return false;
-  }
-};
+  };
 
+  const deleteDossie = async (id: number) => {
+    try {
+      await apiService.deleteDossier(id);
+      setDossiers(prev => prev.filter(d => d.id !== id));
+      showMessage("Dossiê excluído com sucesso!", "success");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
+      } else {
+        showMessage("Erro ao excluir dossiê.", "error");
+      }
+    }
+  };
 
+  const handleDeleteRequest = (id: number) => {
+    setSelectedId(id);
+    setConfirmOpen(true);
+  };
 
+  const handleConfirmDelete = () => {
+    if (selectedId !== null) {
+      deleteDossie(selectedId)
+    }
+    setConfirmOpen(false);
+    setSelectedId(null);
+  };
+
+  const handleAssociate = (id: number) => {
+    setSelectedDossierId(id);
+    setAssociateModalOpen(true);
+  };
 
   return (
     <>
@@ -100,8 +140,14 @@ const handleCloseDialog = () => {
 
           <Divider />
 
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-            <Search value={searchTerm} onChange={setSearchTerm} />
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1, width: "100%" }}>
+            <Box sx={{ width: "100%", maxWidth: "1000px", px: 2 }}>
+              <Search 
+                value={searchTerm} 
+                onChange={setSearchTerm}
+                placeholder="Buscar por título, descrição ou área..."
+              />
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
@@ -115,7 +161,6 @@ const handleCloseDialog = () => {
           width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-
         {/* Content */}
         <Box
           sx={{
@@ -126,7 +171,11 @@ const handleCloseDialog = () => {
             width: "100%",
           }}
         >
-          <ListDossiersPage />
+          <DossierList
+            dossiers={filteredDossiers}
+            onDelete={handleDeleteRequest}
+            onAssociate={handleAssociate}
+          />
         </Box>
 
         {/* Floating Action Button */}
@@ -138,16 +187,35 @@ const handleCloseDialog = () => {
             right: 32,
           }}
           onClick={handleOpenDialog}
-
         >
           <Add />
         </Fab>
-        {currentDossier && (
+
+        {dialogOpen && (
           <CreateDossie
             open={dialogOpen}
             onClose={handleCloseDialog}
             onSave={handleCreateDossie}
-            dossieData={currentDossier}
+            dossieData={currentDossier || emptyDossie}
+          />
+        )}
+
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Confirmar exclusão"
+          description="Tem certeza que deseja excluir este dossiê? Essa ação não pode ser desfeita."
+          onClose={() => setConfirmOpen(false)}
+          onConfirm={handleConfirmDelete}
+        />
+
+        {selectedDossierId !== null && (
+          <AssociateDossierClass
+            open={associateModalOpen}
+            onClose={() => {
+              setAssociateModalOpen(false);
+              setSelectedDossierId(null);
+            }}
+            dossierId={selectedDossierId}
           />
         )}
       </Box>

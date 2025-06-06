@@ -25,6 +25,8 @@ const Students = ({ students, handleOpenEditModal, handleDeleteStudent }: Studen
             flexDirection: "column",
             gap: 2,
             width: { md: `calc(100% - ${drawerWidth}px)` },
+            maxWidth: "800px",
+            mx: "auto",
         }}>
             {students.map((student) => (
                 <Paper
@@ -37,6 +39,9 @@ const Students = ({ students, handleOpenEditModal, handleDeleteStudent }: Studen
                         alignItems: "center",
                         borderRadius: 2,
                         transition: "transform 0.1s ease-in",
+                        maxWidth: "700px",
+                        mx: "auto",
+                        width: "100%",
                         "&:hover": {
                             transform: "scale(1.01)",
                         }
