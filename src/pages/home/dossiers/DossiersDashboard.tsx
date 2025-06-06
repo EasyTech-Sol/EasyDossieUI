@@ -5,11 +5,9 @@ import {
   IconButton,
   Toolbar,
   Fab,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Add, Person } from "@mui/icons-material";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
@@ -18,19 +16,16 @@ import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
-import { DossierList } from "../../../components/DossierList";
-import { ConfirmDialog } from "../../../components/ConfirmDialog";
-import AssociateDossierClass from "../../home/components/AssociateDossierClass";
 
 const drawerWidth = 240;
 
 const DossiersDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { dossiers, setDossiers, loading } = useDossiers();
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [selectedDossierId, setSelectedDossierId] = useState<number | null>(null);
-  const [associateModalOpen, setAssociateModalOpen] = useState(false);
+  const { dossiers, setDossiers } = useDossiers();
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const { showMessage } = useSnackbar();
+
+  const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
 
   // Filtra os dossiês com base no termo de busca
   const filteredDossiers = dossiers.filter(dossier => 
@@ -48,10 +43,6 @@ const DossiersDashboard = () => {
     concepts: "A,B,C",
     teacherId: ""
   };
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const { showMessage  } = useSnackbar();
-
-  const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
 
   const handleOpenDialog = () => {
     setCurrentDossier({
@@ -86,38 +77,6 @@ const DossiersDashboard = () => {
       }
       return false;
     }
-  };
-
-  const deleteDossie = async (id: number) => {
-    try {
-      await apiService.deleteDossier(id);
-      setDossiers(prev => prev.filter(d => d.id !== id));
-      showMessage("Dossiê excluído com sucesso!", "success");
-    } catch (error) {
-      if (isAxiosError(error)) {
-        showMessage(error.response?.data?.error || "Erro desconhecido.", "error");
-      } else {
-        showMessage("Erro ao excluir dossiê.", "error");
-      }
-    }
-  };
-
-  const handleDeleteRequest = (id: number) => {
-    setSelectedId(id);
-    setConfirmOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (selectedId !== null) {
-      deleteDossie(selectedId)
-    }
-    setConfirmOpen(false);
-    setSelectedId(null);
-  };
-
-  const handleAssociate = (id: number) => {
-    setSelectedDossierId(id);
-    setAssociateModalOpen(true);
   };
 
   return (
@@ -171,11 +130,7 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
-          <DossierList
-            dossiers={filteredDossiers}
-            onDelete={handleDeleteRequest}
-            onAssociate={handleAssociate}
-          />
+          <ListDossiersPage dossiers={filteredDossiers} />
         </Box>
 
         {/* Floating Action Button */}
@@ -197,25 +152,6 @@ const DossiersDashboard = () => {
             onClose={handleCloseDialog}
             onSave={handleCreateDossie}
             dossieData={currentDossier || emptyDossie}
-          />
-        )}
-
-        <ConfirmDialog
-          open={confirmOpen}
-          title="Confirmar exclusão"
-          description="Tem certeza que deseja excluir este dossiê? Essa ação não pode ser desfeita."
-          onClose={() => setConfirmOpen(false)}
-          onConfirm={handleConfirmDelete}
-        />
-
-        {selectedDossierId !== null && (
-          <AssociateDossierClass
-            open={associateModalOpen}
-            onClose={() => {
-              setAssociateModalOpen(false);
-              setSelectedDossierId(null);
-            }}
-            dossierId={selectedDossierId}
           />
         )}
       </Box>
