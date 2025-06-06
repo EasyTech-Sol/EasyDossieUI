@@ -11,6 +11,8 @@ import { useEvaluationContext } from "../../contexts/EvaluationContext"
 import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
 import CategoryView from "./CategoryView";
+import { useSnackbar } from "../../contexts/SnackBarContext"; 
+
 
 const Evaluation = () => {
     const { classId, dossierId } = useParams()
@@ -19,7 +21,7 @@ const Evaluation = () => {
         hasEvaluationUpdated, setHasEvaluationUpdated } = useEvaluationContext()
     const { selectedStudentIndex, students } = useStudentContext()
     const [canExport, setCanExport] = useState(false)
-
+    const { showMessage } = useSnackbar();
 
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
@@ -53,6 +55,7 @@ const Evaluation = () => {
                         receivedDossierTemplate = firstStudentDossier.classDossier.dossierTemplate;
                     } else {
                         console.error("Estrutura inesperada em firstStudentDossier, não foi possível encontrar dossierTemplate:", firstStudentDossier);
+                        showMessage("Erro ao identificar o dossiê. Verifique a estrutura de dados.", "error");
                     }
                 } else if (backendResponseData.dossierTemplate) {
                     // Esta parte ainda assume que o backend PODE enviar o template na raiz
@@ -65,7 +68,7 @@ const Evaluation = () => {
                 } else {
                     console.error("Não foi possível determinar o dossierTemplate.");
                     setDossierTemplate(undefined);
-                    alert("Atenção: Não foi possível carregar a estrutura do dossiê (template). Verifique se a turma possui alunos e se o dossiê está corretamente configurado.");
+                    showMessage("A estrutura do dossiê não foi encontrada. Verifique se ele está configurado corretamente.", "warning");
                     setEvaluations([]);
                     return;
                 }
@@ -75,10 +78,12 @@ const Evaluation = () => {
                     // logica de formatação e safety checks
                     if (!sd || typeof sd.studentId === 'undefined') {
                         console.error("Objeto 'sd' inválido ou sem studentId:", sd);
+                        showMessage("Um dos alunos possui dados incompletos e pode não aparecer corretamente.", "warning");
                         return { studentId: 'ID_ALUNO_INVALIDO', studentName: sd.studentName, evaluation: [] };
                     }
                     if (!Array.isArray(sd.criterionEvaluation)) {
                         console.warn("'sd.criterionEvaluation' não é um array para o studentId:", sd.studentId, sd);
+                        showMessage(`O aluno ${sd.studentName} ainda não possui critérios de avaliação definidos.`, "info");
                         return { studentId: sd.studentId, studentName: sd.studentName, evaluation: [] };
                     }
                     return {
@@ -87,6 +92,7 @@ const Evaluation = () => {
                         evaluation: sd.criterionEvaluation.map((ce: any) => {
                             if (!ce || typeof ce.criterionId === 'undefined' || typeof ce.concept === 'undefined') {
                                 console.error("Objeto 'ce' inválido ou faltando criterionId/concept:", ce);
+                                showMessage("Alguns critérios de avaliação estão com dados incompletos.", "warning");
                                 return { criterionId: -1, concept: 'ERRO' };
                             }
                             return {
@@ -107,7 +113,7 @@ const Evaluation = () => {
                     } else if (error.message) {
                         errorMessage = error.message;
                     }
-                alert(errorMessage);
+                showMessage(`Erro ao carregar avaliações: ${errorMessage}`, "error");
                 setDossierTemplate(undefined);
                 setEvaluations([]);
             }
@@ -122,7 +128,7 @@ const Evaluation = () => {
         //existe um aluno selecionado?
         if (selectedStudentIndex === null || selectedStudentIndex === undefined || !students[selectedStudentIndex]) {
             console.error("Nenhum aluno selecionado para salvar.");
-            alert("Por favor, selecione um aluno antes de salvar."); // Exemplo de feedback
+            showMessage("Por favor, selecione um aluno antes de salvar.", "warning"); 
             return;
         }
 
@@ -131,22 +137,25 @@ const Evaluation = () => {
         //pega todas as avaliacoes do aluno do estado local
         const studentEvaluationData = evaluations.find(ev => ev.studentId === studentId);
 
-        //veerifica se existe algo para salvar
-        if (!studentEvaluationData || studentEvaluationData.evaluation.length === 0) {
-            console.warn("Nenhuma avaliação para salvar para este aluno.");
-            alert("Nenhuma avaliação foi feita para este aluno.");
-            return;
-        }
-
-        //envia todas as avaliacoes para o backend
+        //envia todas as avaliacoes para o backend (mesmo que vazio)
         try {
-
-            await apiService.saveEvaluation(classId!, dossierId!, studentId, studentEvaluationData.evaluation);
+            await apiService.saveEvaluation(
+                classId!, 
+                dossierId!, 
+                studentId, 
+                studentEvaluationData?.evaluation || []
+            );
             setHasEvaluationUpdated(false)
-            alert("Avaliações salvas com sucesso!");
+            showMessage("Avaliações salvas com sucesso!", "success");
 
         } catch (error) {
-            alert("Ocorreu um erro ao salvar as avaliações. Tente novamente.");
+            let errorMsg = "Ocorreu um erro ao salvar as avaliações. Tente novamente.";
+            if (isAxiosError(error)) {
+                if (error.response?.data?.message) {
+                    errorMsg = error.response.data.message;
+                }
+            }
+            showMessage(errorMsg, "error");
         }
     };
 
@@ -160,6 +169,14 @@ const Evaluation = () => {
             if (ev.studentId === studentId) {
                 const existingEvaluation = ev.evaluation.find(e => e.criterionId === criterionId);
                 if (existingEvaluation) {
+                    // Se o conceito clicado é o mesmo que já está selecionado, remove a avaliação
+                    if (existingEvaluation.concept === concept) {
+                        return {
+                            ...ev,
+                            evaluation: ev.evaluation.filter(e => e.criterionId !== criterionId)
+                        };
+                    }
+                    // Caso contrário, atualiza o conceito
                     return {
                         ...ev,
                         evaluation: ev.evaluation.map(e =>
@@ -190,7 +207,7 @@ const Evaluation = () => {
     return (
         <Box position={"relative"} width={"100%"}>
             <EvaluationAppBar />
-            <StudentsBar canExport={canExport} />
+            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
             <Grid container>
                 <Grid size={8} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                     {dossierTemplate && (

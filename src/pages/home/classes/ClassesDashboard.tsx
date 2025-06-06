@@ -44,7 +44,8 @@ const ClassesDashboard = () => {
     id: 0,
     shift: "",
     lectivePeriod: "",
-    institution: ""
+    institution: "",
+    color: ""
   })
 
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -61,7 +62,7 @@ const ClassesDashboard = () => {
 
   const handleCreateClass = async (data: Class) => {
     try {
-      const result = await apiService.createClass(data);
+      const result = await apiService.createClass({...data, color:getRandomMutedColor()});
       const newClass = result.data as Class;
       setClasses(prev => [...prev, newClass]);
       showMessage("Turma criada com sucesso!", "success"); 
@@ -104,7 +105,8 @@ const ClassesDashboard = () => {
       id: 0,
       shift: "",
       lectivePeriod: "",
-      institution: ""
+      institution: "",
+      color: ""
     })
   }
 
@@ -207,7 +209,7 @@ const ClassesDashboard = () => {
                 title={cls.title}
                 onEdit={() => handleEditClass(cls.id)}
                 onDelete={() => handleDeleteClass(cls.id)}
-                bgColor={getRandomMutedColor()}
+                bgColor={cls.color}
               />
             ))}
         </Box>

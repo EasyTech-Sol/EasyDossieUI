@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material'
-import { Box, IconButton, Paper, Typography } from '@mui/material'
+import { Avatar, Box, IconButton, Paper, Typography } from '@mui/material'
 import { useParams } from 'react-router-dom'
 
 interface StudentsProps {
@@ -25,6 +25,8 @@ const Students = ({ students, handleOpenEditModal, handleDeleteStudent }: Studen
             flexDirection: "column",
             gap: 2,
             width: { md: `calc(100% - ${drawerWidth}px)` },
+            maxWidth: "800px",
+            mx: "auto",
         }}>
             {students.map((student) => (
                 <Paper
@@ -36,12 +38,28 @@ const Students = ({ students, handleOpenEditModal, handleDeleteStudent }: Studen
                         justifyContent: "space-between",
                         alignItems: "center",
                         borderRadius: 2,
+                        transition: "transform 0.1s ease-in",
+                        maxWidth: "700px",
+                        mx: "auto",
+                        width: "100%",
+                        "&:hover": {
+                            transform: "scale(1.01)",
+                        }
                     }}
                 >
-                    <Box>
-                        <Box sx={{ fontSize: 18 }}>
-                            <Typography>{student.name}</Typography>
-                        </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Avatar
+                            sx={{
+                                bgcolor: '#d6d6d6',
+                                color: '#000',
+                                width: 40,
+                                height: 40,
+                                fontSize: 18,
+                            }}
+                        >
+                            {student.name.charAt(0).toUpperCase()}
+                        </Avatar>
+                        <Typography sx={{ fontSize: 18 }}>{student.name}</Typography>
                     </Box>
 
                     <Box sx={{ display: "flex", gap: 1 }}>
