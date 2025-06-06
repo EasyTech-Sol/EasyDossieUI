@@ -4,4 +4,5 @@ type Class = {
   institution: string;
   shift: string;
   lectivePeriod: string;
+  color: string;
 };
