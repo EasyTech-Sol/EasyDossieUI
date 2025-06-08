@@ -1,7 +1,8 @@
 import { Navigate } from "react-router-dom";
-import ClassesDashboard from "./classes/ClassesDashboard";
-import DossiersDashboard from "./dossiers/DossiersDashboard"; // Importe o componente
-import MainLayout from "../../components/layout/MainLayout";
+import { lazy } from "react";
+const ClassesDashboard = lazy(() => import("./classes/ClassesDashboard"));
+const DossiersDashboard = lazy(() => import("./dossiers/DossiersDashboard"));
+const MainLayout = lazy(() => import("../../components/layout/MainLayout"));
 import { DossierProvider } from "../../contexts/DossierContext";
 import * as classApp from "../class/index";
 
