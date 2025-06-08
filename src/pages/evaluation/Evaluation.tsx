@@ -11,7 +11,7 @@ import { useEvaluationContext } from "../../contexts/EvaluationContext"
 import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
 import CategoryView from "./CategoryView";
-import { useSnackbar } from "../../contexts/SnackBarContext"; 
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 
 const Evaluation = () => {
@@ -22,7 +22,6 @@ const Evaluation = () => {
     const { selectedStudentIndex, students } = useStudentContext()
     const [canExport, setCanExport] = useState(false)
     const { showMessage } = useSnackbar();
-
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
             if (!classId || !dossierId) {
@@ -79,16 +78,17 @@ const Evaluation = () => {
                     if (!sd || typeof sd.studentId === 'undefined') {
                         console.error("Objeto 'sd' inválido ou sem studentId:", sd);
                         showMessage("Um dos alunos possui dados incompletos e pode não aparecer corretamente.", "warning");
-                        return { studentId: 'ID_ALUNO_INVALIDO', studentName: sd.studentName, evaluation: [] };
+                        return { studentId: 'ID_ALUNO_INVALIDO', studentName: sd.studentName, evaluation: [], grade: 0 };
                     }
                     if (!Array.isArray(sd.criterionEvaluation)) {
                         console.warn("'sd.criterionEvaluation' não é um array para o studentId:", sd.studentId, sd);
                         showMessage(`O aluno ${sd.studentName} ainda não possui critérios de avaliação definidos.`, "info");
-                        return { studentId: sd.studentId, studentName: sd.studentName, evaluation: [] };
+                        return { studentId: sd.studentId, studentName: sd.studentName, evaluation: [], grade: 0 };
                     }
                     return {
                         studentId: sd.studentId,
                         studentName: sd.studentName,
+                        grade: sd.grade,
                         evaluation: sd.criterionEvaluation.map((ce: any) => {
                             if (!ce || typeof ce.criterionId === 'undefined' || typeof ce.concept === 'undefined') {
                                 console.error("Objeto 'ce' inválido ou faltando criterionId/concept:", ce);
@@ -128,7 +128,7 @@ const Evaluation = () => {
         //existe um aluno selecionado?
         if (selectedStudentIndex === null || selectedStudentIndex === undefined || !students[selectedStudentIndex]) {
             console.error("Nenhum aluno selecionado para salvar.");
-            showMessage("Por favor, selecione um aluno antes de salvar.", "warning"); 
+            showMessage("Por favor, selecione um aluno antes de salvar.", "warning");
             return;
         }
 
@@ -140,9 +140,9 @@ const Evaluation = () => {
         //envia todas as avaliacoes para o backend (mesmo que vazio)
         try {
             await apiService.saveEvaluation(
-                classId!, 
-                dossierId!, 
-                studentId, 
+                classId!,
+                dossierId!,
+                studentId,
                 studentEvaluationData?.evaluation || []
             );
             setHasEvaluationUpdated(false)
@@ -157,7 +157,27 @@ const Evaluation = () => {
             }
             showMessage(errorMsg, "error");
         }
+
+        handleUpdateGrade()
     };
+
+    const handleUpdateGrade = async () => {
+        try {
+            const response = await apiService.finalizeStudentDossier(classId!, dossierId!);
+            const grades = response.data.details
+            const updatedEvaluations = evaluations.map((ev) => {
+                const currentGrade = grades.find((g: any) => g.studentId === ev.studentId)
+                return {
+                    ...ev,
+                    grade: currentGrade.grade
+                }
+            }
+            )
+            setEvaluations(updatedEvaluations)
+        } catch (error) {
+            alert("Ocorreu um erro ao finalizar o dossiê.");
+        }
+    }
 
     const handleConceptChange = (criterionId: number, concept: string) => { // Removido o 'async'
         if (selectedStudentIndex === null || selectedStudentIndex === undefined || !students[selectedStudentIndex]) return;
@@ -209,7 +229,7 @@ const Evaluation = () => {
             <EvaluationAppBar />
             <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
             <Grid container>
-                <Grid size={8} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+                <Grid size={7} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                     {dossierTemplate && (
                         <Paper sx={{ p: 2 }}>
                             <Typography variant="h4" gutterBottom textAlign="center">
@@ -235,7 +255,7 @@ const Evaluation = () => {
                     )}
                 </Grid>
 
-                <Grid size={4} sx={{ p: 1 }}>
+                <Grid size={5} sx={{ p: 1 }}>
                     <StudentsScores setCanExport={setCanExport} />
                 </Grid>
             </Grid>

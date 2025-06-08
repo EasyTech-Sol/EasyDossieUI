@@ -15,93 +15,76 @@ interface StudentsScoresProps {
 }
 
 export default function StudentsScores({ setCanExport }: StudentsScoresProps) {
-
-  const { students, selectedStudentIndex, setSelectedStudentIndex } = useStudentContext()
-  const { evaluations, dossierTemplate, hasEvaluationUpdated } = useEvaluationContext()
-  const [studentsScores, setStudentsScores] = useState<StudentScore[]>([])
-  const { showMessage } = useSnackbar()
-
-  const calculateProgress = (studentId: number) => {
-    if (dossierTemplate && evaluations) { // Garante que evaluations também existe
-      // 1. Encontra a entrada de avaliação para o aluno específico
-      const studentEvaluationEntry = evaluations.find(ev => ev.studentId === studentId);
-      if (studentEvaluationEntry && studentEvaluationEntry.evaluation) {
-        // 2. Conta quantos critérios foram efetivamente avaliados para este aluno
-        const numberOfAnsweredCriterions = studentEvaluationEntry.evaluation.length;
-        // 3. Conta o total de critérios no dossiê
-        const totalNumberOfCriterions = countCriterionsInDossier(dossierTemplate);
-        // 4. Calcula a porcentagem
-        if (totalNumberOfCriterions > 0) {
-          // Arredonda para não ter muitas casas decimais
-          return Math.round((numberOfAnsweredCriterions * 100) / totalNumberOfCriterions);
-        }
-      }
-    }
-    return 0; // Retorna 0 se não houver template, avaliações ou se o aluno não tiver avaliações
-  };
+  const { students, selectedStudentIndex, setSelectedStudentIndex } = useStudentContext();
+  const { evaluations, dossierTemplate, hasEvaluationUpdated } = useEvaluationContext();
+  const [studentsScores, setStudentsScores] = useState<StudentScore[]>([]);
+  const { showMessage } = useSnackbar();
 
   useEffect(() => {
-    setStudentsScores(students.map(student => ({ student, score: calculateProgress(student.id) })))
-  }, [evaluations])
+    setStudentsScores(students.map(student => ({
+      student,
+      score: calculateProgress(student.id),
+    })));
+  }, [evaluations]);
 
   useEffect(() => {
     const sum = studentsScores.reduce((sum, current) => sum + current.score, 0);
-    const canExport = sum / 100 === students.length
-    setCanExport(canExport)
-  }, [studentsScores])
+    setCanExport(sum / 100 === students.length);
+  }, [studentsScores]);
+
+  const calculateProgress = (studentId: number) => {
+    const ev = evaluations.find(ev => ev.studentId === studentId)?.evaluation;
+    const total = dossierTemplate ? countCriterionsInDossier(dossierTemplate) : 0;
+    return ev && total ? Math.round((ev.length * 100) / total) : 0;
+  };
 
   const handleSelectedStudent = (i: number) => {
-    if (!hasEvaluationUpdated)
-      setSelectedStudentIndex(i)
-    else
-      showMessage("Por favor, salve as alterações antes de trocar de estudante.",
-    "error")
-  }
+    if (!hasEvaluationUpdated) setSelectedStudentIndex(i);
+    else showMessage("Por favor, salve as alterações antes de trocar de estudante.", "error");
+  };
+
+  const studentGrade = (studentId: number) =>
+    evaluations.find(ev => ev.studentId === studentId)?.grade ?? "-";
+
+  const CellText = ({ children }: { children: React.ReactNode }) => (
+    <Typography fontWeight={500} fontSize="1rem" color="#263238">
+      {children}
+    </Typography>
+  );
+
+  const headers = ["Concluído", "Aluno", "Matrícula", "Nota"];
 
   return (
     <TableContainer component={Paper} elevation={0}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>
-              <Typography fontWeight={500} color="#455A64">Concluído</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography fontWeight={500} color="#455A64">Aluno</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography fontWeight={500} color="#455A64">Matrícula</Typography>
-            </TableCell>
+            {headers.map((header) => (
+              <TableCell key={header}>
+                <Typography fontWeight={500} color="#455A64">{header}</Typography>
+              </TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
           {studentsScores.map(({ student, score }, i) => (
-            <TableRow key={student.name} sx={{
-              backgroundColor: selectedStudentIndex === i ? "#c4c4c4" : "white",
-              transition: "ease-in-out .1s",
-              "&:hover": {
-                backgroundColor: "#c4c4c4", // tom levemente mais escuro
-              },
-            }}>
-              <TableCell onClick={() => handleSelectedStudent(i)}>
-                <Typography fontWeight={500} fontSize="1rem" color="#263238">
-                  {score}%
-                </Typography>
-              </TableCell>
-              <TableCell onClick={() => handleSelectedStudent(i)}>
+            <TableRow
+              key={student.id}
+              onClick={() => handleSelectedStudent(i)}
+              sx={{
+                backgroundColor: selectedStudentIndex === i ? "#c4c4c4" : "white",
+                transition: "ease-in-out .1s",
+                "&:hover": { backgroundColor: "#c4c4c4" },
+              }}
+            >
+              <TableCell><CellText>{score}%</CellText></TableCell>
+              <TableCell>
                 <Tooltip title={student.name} arrow>
-                  <Typography fontWeight={500} fontSize="1rem" color="#263238">
-                    {student.name.split(" ")[0]}
-                  </Typography>
+                  <span><CellText>{student.name.split(" ")[0]}</CellText></span>
                 </Tooltip>
               </TableCell>
-              <TableCell onClick={() => handleSelectedStudent(i)}>
-                <Tooltip title={student.name} arrow>
-                  <Typography fontWeight={500} fontSize="1rem" color="#263238">
-                    {student.registration}
-                  </Typography>
-                </Tooltip>
-              </TableCell>
+              <TableCell><CellText>{student.registration}</CellText></TableCell>
+              <TableCell><CellText>{studentGrade(student.id)}</CellText></TableCell>
             </TableRow>
           ))}
         </TableBody>
