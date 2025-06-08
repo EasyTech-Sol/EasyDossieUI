@@ -1,8 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { EvaluationProvider } from "../../contexts/EvaluationContext"
 import { TabsProvider } from "../../contexts/TabContext"
-import Evaluation from "../evaluation/Evaluation"
-import Class from "./Class"
+import { lazy } from "react";
+const Evaluation = lazy(() => import("../evaluation/Evaluation"));
+const Class = lazy(() => import("./Class"));
 import { StudentProvider } from "../../contexts/StudentContext";
 
 
