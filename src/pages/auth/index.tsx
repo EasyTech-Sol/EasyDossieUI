@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
+import SuspenseFallback from "../../components/common/SuspenseFallback";
 
 const SignIn = lazy(() => import("./components/SignIn"));
 const SignUp = lazy(() => import("./components/SignUp"));
@@ -10,7 +11,7 @@ const ResetPassword = lazy(() => import("./components/ResetPassword"));
 export function routes(startPath: string) {
     return {
         path: startPath,
-        element: <Template />,
+        element: <Suspense fallback={<SuspenseFallback />}><Template /></ Suspense>,
         children: [
             {
                 path: "",
