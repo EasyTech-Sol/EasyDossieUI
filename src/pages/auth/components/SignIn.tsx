@@ -15,10 +15,10 @@ const SignIn = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (values: any) => {
     try {
-    const result = await apiService.login(values)
-    localStorage.setItem("token", result.data.token)
-    // localStorage.setItem("TeacherId", result.data.teacher.teacherId)
-    window.location.href = "/home"
+      const result = await apiService.login(values)
+      localStorage.setItem("token", result.data.token)
+      // localStorage.setItem("TeacherId", result.data.teacher.teacherId)
+      window.location.href = "/home"
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 400)
         showMessage(error.response.data.error, "error")
