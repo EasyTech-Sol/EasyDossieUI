@@ -7,4 +7,5 @@ type Evaluation = {
   studentId: number;
   studentName: string;
   evaluation: EvaluatedConcept[];
+  grade: number;
 };
