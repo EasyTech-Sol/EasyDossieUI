@@ -2,10 +2,10 @@ import { Alert, Box, Grid, Snackbar, SnackbarCloseReason } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import teacherImg from "../../../assets/teacher-bg.jpeg";
 import logo from "../../../assets/logo.svg"
-import { useError } from "../../../contexts/ErrorContext";
+import { useSnackbar } from "../../../contexts/SnackBarContext";
 
 export default function Template() {
-    const { error, errorMessage, setError } = useError()
+    const { message, open, setOpen } = useSnackbar()
 
     const handleClose = (
         event: React.SyntheticEvent | Event,
@@ -14,18 +14,18 @@ export default function Template() {
         if (reason === 'clickaway') {
             return;
         }
-        setError(false)
+        setOpen(false)
     }
 
     return (
         <>
             <Snackbar
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                open={error}
+                open={open}
                 autoHideDuration={5000}
                 onClose={handleClose}
             >
-                <Alert severity="error" sx={{ my: 2 }}>{errorMessage}</Alert>
+                <Alert severity="error" sx={{ my: 2 }}>{message}</Alert>
             </Snackbar>
             <Grid container sx={{ height: '100vh' }}>
                 {/* Lado esquerdo com imagem */}
