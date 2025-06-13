@@ -8,7 +8,8 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Divider
+  Divider,
+  Typography
 } from "@mui/material";
 import {
   Add,
@@ -24,7 +25,8 @@ import EditClassModal from "./EditClassModal.tsx";
 import { isAxiosError } from "axios";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
 
-import Search from "../../../components/Search.tsx"; 
+import Search from "../../../components/Search.tsx";
+import CustomLink from "../../class/CustomLink.tsx";
 
 const drawerWidth = 240;
 
@@ -62,19 +64,19 @@ const ClassesDashboard = () => {
 
   const handleCreateClass = async (data: Class) => {
     try {
-      const result = await apiService.createClass({...data, color:getRandomMutedColor()});
+      const result = await apiService.createClass({ ...data, color: getRandomMutedColor() });
       const newClass = result.data as Class;
       setClasses(prev => [...prev, newClass]);
-      showMessage("Turma criada com sucesso!", "success"); 
-      setDialogOpen(false); 
+      showMessage("Turma criada com sucesso!", "success");
+      setDialogOpen(false);
     } catch (error) {
-      console.error("Erro ao criar turma:", error); 
+      console.error("Erro ao criar turma:", error);
       let message = "Erro desconhecido ao criar turma.";
       if (isAxiosError(error)) {
         if (error.response?.status === 403) {
           showMessage("Sessão expirada ou acesso negado. Redirecionando para login...", "warning");
           setTimeout(() => {
-            window.location.href = "/auth/sign-in"; 
+            window.location.href = "/auth/sign-in";
           }, 2500);
           return;
         }
@@ -150,12 +152,12 @@ const ClassesDashboard = () => {
         const result = await apiService.getClasses();
         setClasses(result.data.classes ?? []);
       } catch (error) {
-          console.error(error);  // <-- usando a variável 'error'
-          setSnackbar({
-            open: true,
-            message: "Erro ao listar turmas.",
-            severity: "error",
-          });
+        console.error(error);  // <-- usando a variável 'error'
+        setSnackbar({
+          open: true,
+          message: "Erro ao listar turmas.",
+          severity: "error",
+        });
       }
     };
 
@@ -176,7 +178,8 @@ const ClassesDashboard = () => {
             margin: 1
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <CustomLink>Turmas</CustomLink>
             <IconButton>
               <Person />
             </IconButton>
@@ -201,17 +204,17 @@ const ClassesDashboard = () => {
           flexDirection={"row"}
         >
           {classes
-          .filter(cls => 
-            cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
-              <ClassCard
-                id={cls.id}
-                key={cls.id}
-                title={cls.title}
-                onEdit={() => handleEditClass(cls.id)}
-                onDelete={() => handleDeleteClass(cls.id)}
-                bgColor={cls.color}
-              />
-            ))}
+            .filter(cls =>
+              cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
+                <ClassCard
+                  id={cls.id}
+                  key={cls.id}
+                  title={cls.title}
+                  onEdit={() => handleEditClass(cls.id)}
+                  onDelete={() => handleDeleteClass(cls.id)}
+                  bgColor={cls.color}
+                />
+              ))}
         </Box>
       </Container>
 

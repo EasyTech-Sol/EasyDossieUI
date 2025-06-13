@@ -16,6 +16,7 @@ import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
+import CustomLink from "../../class/CustomLink.tsx";
 
 const drawerWidth = 240;
 
@@ -28,7 +29,7 @@ const DossiersDashboard = () => {
   const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
 
   // Filtra os dossiês com base no termo de busca
-  const filteredDossiers = dossiers.filter(dossier => 
+  const filteredDossiers = dossiers.filter(dossier =>
     dossier.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dossier.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dossier.evaluationArea.toLowerCase().includes(searchTerm.toLowerCase())
@@ -91,7 +92,8 @@ const DossiersDashboard = () => {
             margin: 1
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <CustomLink>Dossiês</CustomLink>
             <IconButton>
               <Person />
             </IconButton>
@@ -101,8 +103,8 @@ const DossiersDashboard = () => {
 
           <Box sx={{ display: "flex", justifyContent: "center", mt: 1, width: "100%" }}>
             <Box sx={{ width: "100%", maxWidth: "1000px", px: 2 }}>
-              <Search 
-                value={searchTerm} 
+              <Search
+                value={searchTerm}
                 onChange={setSearchTerm}
                 placeholder="Buscar por título, descrição ou área..."
               />
