@@ -24,6 +24,7 @@ import { getRandomMutedColor } from "../../../helpers/softColors.ts";
 import EditClassModal from "./EditClassModal.tsx";
 import { isAxiosError } from "axios";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
+import { FolderOpen } from '@mui/icons-material';
 
 import Search from "../../../components/Search.tsx";
 import CustomLink from "../../class/CustomLink.tsx";
@@ -194,28 +195,47 @@ const ClassesDashboard = () => {
       </AppBar>
 
       <Container>
-        <Box
-          marginTop={"1rem"}
-          display={"flex"}
-          justifyContent={"flex-start"}
-          flexWrap={"wrap"}
-          alignItems={"flex-start"}
-          gap={"1rem"}
-          flexDirection={"row"}
-        >
-          {classes
-            .filter(cls =>
-              cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
-                <ClassCard
-                  id={cls.id}
-                  key={cls.id}
-                  title={cls.title}
-                  onEdit={() => handleEditClass(cls.id)}
-                  onDelete={() => handleDeleteClass(cls.id)}
-                  bgColor={cls.color}
-                />
-              ))}
-        </Box>
+        {classes.length === 0 ?
+          <>
+            <Box>
+              <Typography variant="h5" align="center" color="textSecondary" sx={{ marginTop: 4 }}>
+                Nenhuma turma encontrada.
+              </Typography>
+              <FolderOpen sx={{
+                fontSize: "10rem",
+                color: "text.secondary",
+                display: "block",
+                margin: "0 auto",
+              }} />
+              <Typography variant="body1" align="center" color="textSecondary">
+                Crie uma nova turma para começar!
+              </Typography>
+            </Box>
+          </>
+          :
+          <Box
+            marginTop={"1rem"}
+            display={"flex"}
+            justifyContent={"flex-start"}
+            flexWrap={"wrap"}
+            alignItems={"flex-start"}
+            gap={"1rem"}
+            flexDirection={"row"}
+          >
+            {classes
+              .filter(cls =>
+                cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
+                  <ClassCard
+                    id={cls.id}
+                    key={cls.id}
+                    title={cls.title}
+                    onEdit={() => handleEditClass(cls.id)}
+                    onDelete={() => handleDeleteClass(cls.id)}
+                    bgColor={cls.color}
+                  />
+                ))}
+          </Box>
+        }
       </Container>
 
 

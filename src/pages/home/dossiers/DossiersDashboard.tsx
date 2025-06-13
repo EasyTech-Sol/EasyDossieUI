@@ -5,10 +5,11 @@ import {
   IconButton,
   Toolbar,
   Fab,
+  Typography,
 } from "@mui/material";
 
 import { useState } from "react";
-import { Add, Person } from "@mui/icons-material";
+import { Add, Person, Assignment} from "@mui/icons-material";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
@@ -132,7 +133,25 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
-          <ListDossiersPage dossiers={filteredDossiers} />
+          {filteredDossiers.length === 0 ?
+            <Box>
+              <Typography variant="h5" align="center" color="textSecondary" sx={{ marginTop: 4 }}>
+                Nenhum dossiê encontrado.
+              </Typography>
+              <Assignment sx={{
+                fontSize: "10rem",
+                color: "text.secondary",
+                display: "block",
+                margin: "0 auto",
+              }} />
+              <Typography variant="body1" align="center" color="textSecondary">
+                Crie um novo dossiê para começar!
+              </Typography>
+            </Box>
+
+            :
+            <ListDossiersPage dossiers={filteredDossiers} />
+          }
         </Box>
 
         {/* Floating Action Button */}
