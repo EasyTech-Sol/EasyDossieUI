@@ -20,7 +20,7 @@ const Evaluation = () => {
         dossierTemplate, evaluations,
         hasEvaluationUpdated, setHasEvaluationUpdated } = useEvaluationContext()
     const { selectedStudentIndex, students } = useStudentContext()
-    const [canExport, setCanExport] = useState(false)
+    const [allEvaluationsConcluded, setAllEvaluationsConcluded] = useState(false)
     const { showMessage } = useSnackbar();
     useEffect(() => {
         const initializeAndFetchEvaluations = async () => {
@@ -227,7 +227,7 @@ const Evaluation = () => {
     return (
         <Box position={"relative"} width={"100%"}>
             <EvaluationAppBar />
-            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
+            <StudentsBar canExport={allEvaluationsConcluded && !hasEvaluationUpdated} /> {/* Passando classId e dossierId */}
             <Grid container>
                 <Grid size={7} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                     {dossierTemplate && (
@@ -256,7 +256,7 @@ const Evaluation = () => {
                 </Grid>
 
                 <Grid size={5} sx={{ p: 1 }}>
-                    <StudentsScores setCanExport={setCanExport} />
+                    <StudentsScores setAllEvaluationsConcluded={setAllEvaluationsConcluded} />
                 </Grid>
             </Grid>
 

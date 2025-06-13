@@ -9,11 +9,9 @@ import DossierPDF from './DossierPDF';
 
 interface StudentsBarProps {
     canExport: boolean;
-    classId: number | string;
-    dossierId: number | string;
 }
 
-const StudentsBar = ({ canExport, classId, dossierId }: StudentsBarProps) => {
+const StudentsBar = ({ canExport }: StudentsBarProps) => {
     const [openDialog, setOpenDialog] = useState(false)
     const [loading, setLoading] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)

@@ -11,10 +11,10 @@ type StudentScore = {
 }
 
 interface StudentsScoresProps {
-  setCanExport: React.Dispatch<React.SetStateAction<boolean>>
+  setAllEvaluationsConcluded: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function StudentsScores({ setCanExport }: StudentsScoresProps) {
+export default function StudentsScores({ setAllEvaluationsConcluded }: StudentsScoresProps) {
   const { students, selectedStudentIndex, setSelectedStudentIndex } = useStudentContext();
   const { evaluations, dossierTemplate, hasEvaluationUpdated } = useEvaluationContext();
   const [studentsScores, setStudentsScores] = useState<StudentScore[]>([]);
@@ -29,7 +29,7 @@ export default function StudentsScores({ setCanExport }: StudentsScoresProps) {
 
   useEffect(() => {
     const sum = studentsScores.reduce((sum, current) => sum + current.score, 0);
-    setCanExport(sum / 100 === students.length);
+    setAllEvaluationsConcluded(sum / 100 === students.length);
   }, [studentsScores]);
 
   const calculateProgress = (studentId: number) => {
