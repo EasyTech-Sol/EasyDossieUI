@@ -31,14 +31,15 @@ const EvaluationAppBar = () => {
         ),
         actualDossier ? (
             <Tooltip title={actualDossier.title} key="dossier">
-                <CustomLink to={`/class/${classId}/dossier/${dossierId}`}>
+                <Typography sx={{ color: '#37474f', fontWeight: 500 }}>
                     {truncateText(actualDossier.title, 35)}
-                </CustomLink>
+                </Typography>
             </Tooltip>
         ) : (
             ''
         ),
     ];
+
 
     const getActualClass = useCallback(
         async (id: number) => {
