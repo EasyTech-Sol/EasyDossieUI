@@ -5,9 +5,10 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   Box,
   Button,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -62,11 +63,12 @@ export const DossierList: React.FC<DossierListProps> = ({
         <List sx={{ width: "100%" }}>
           {dossiers.map((dossier) => (
             <ListItem
+              key={dossier.id}
+              disableGutters
               onClick={() => {
                 setDossierToView(dossier)
                 setViewModal(true)
               }}
-              key={dossier.id}
               sx={{
                 mb: 2,
                 backgroundColor: "#ffffff",
@@ -74,49 +76,13 @@ export const DossierList: React.FC<DossierListProps> = ({
                 padding: 2,
                 width: "100%",
                 boxShadow: 1,
-                display: "flex",
                 alignItems: "center",
                 transition: "transform 0.1s ease-in",
                 "&:hover": {
                   transform: "scale(1.01)",
-                }
+                },
+                display: "flex",
               }}
-              secondaryAction={
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onDelete?.(dossier.id)
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                  <IconButton
-                    edge="end"
-                    aria-label="edit"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onEdit?.(dossier)
-                    }}
-                  >
-                    <ModeEditIcon />
-                  </IconButton>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    sx={{ ml: 1 }}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onAssociate?.(dossier.id)
-                    }}
-                  >
-                    ASSOCIAR
-                  </Button>
-                </Box>
-              }
             >
               <ListItemAvatar>
                 <Avatar sx={{ bgcolor: "#c8e6c9", color: "#1b5e20" }}>
@@ -124,11 +90,82 @@ export const DossierList: React.FC<DossierListProps> = ({
                 </Avatar>
               </ListItemAvatar>
 
-              <ListItemText
-                primary={dossier.title}
-                secondary={dossier.description}
-                sx={{ ml: 2 }}
-              />
+              {/* CONTAINER FLEX DO TEXTO */}
+              <Box
+                sx={{
+                  ml: 2,
+                  mr: 2,                    
+                  flexGrow: 1,
+                  flexShrink: 1,
+                  minWidth: 0,             
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                }}
+              >
+                <Tooltip title={dossier.title}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {dossier.title}
+                  </Typography>
+                </Tooltip>
+
+                <Tooltip title={dossier.description}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {dossier.description}
+                  </Typography>
+                </Tooltip>
+              </Box>
+
+              {/* BOTOES */}
+              <Box sx={{ display: "flex", gap: 1, flexShrink: 0 }}>
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete?.(dossier.id)
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  aria-label="edit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit?.(dossier)
+                  }}
+                >
+                  <ModeEditIcon />
+                </IconButton>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onAssociate?.(dossier.id)
+                  }}
+                >
+                  ASSOCIAR
+                </Button>
+              </Box>
             </ListItem>
           ))}
         </List>
