@@ -42,7 +42,10 @@ const StudentsBar = ({ canExport }: StudentsBarProps) => {
         setLoading(true)
     };
 
-    const handleClose = () => setOpenDialog(false);
+    const handleClose = () => {
+        setOpenDialog(false);
+        setLoading(false); 
+    };
     const handleConfirm = () => {
         handlePrint()
         setLoading(false)
