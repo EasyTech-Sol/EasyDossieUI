@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
 import "./importstudents.css"
 import { useDropzone } from 'react-dropzone';
 import { useMutation } from '@tanstack/react-query';
 import { apiService } from '../../services/easydossie.service';
 import { AxiosResponse } from 'axios';
 
-import { Button, /* Stack, Alert, AlertTitle, */ Modal, Typography, Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton } from '@mui/material'; // Stack, Alert, AlertTitle não serão mais usados para este feedback
+import { Button, Modal, Typography, Box, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton } from '@mui/material'; // Stack, Alert, AlertTitle não serão mais usados para este feedback
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from '../../contexts/SnackBarContext';

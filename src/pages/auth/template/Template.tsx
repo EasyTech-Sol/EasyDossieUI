@@ -32,6 +32,7 @@ export default function Template() {
                 <Grid size={5} height={"100vh"}>
                     <Box
                         component="img"
+                        loading="lazy"
                         src={teacherImg}
                         alt="teacher"
                         sx={{
