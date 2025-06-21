@@ -46,13 +46,20 @@ const AddStudentModal = ({ open, classId, handleClose, onSuccess }: AddStudentMo
       handleClose(); 
       onSuccess?.(); 
     } catch (error: any) {
-      console.error('Erro ao criar aluno:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Não foi possível adicionar o aluno.';
-      showMessage(errorMessage, "error"); 
-    } finally {
-      setLoading(false);
-    }
-  };
+        console.error('Erro ao criar aluno:', error);
+
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          'Não foi possível adicionar o aluno.';
+
+        showMessage(errorMessage, "error");
+      }
+      finally {
+            setLoading(false);
+          }
+        };
 
   // Função para fechar o modal e resetar o formulário
   const closeModalAndReset = () => {
