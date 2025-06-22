@@ -1,14 +1,19 @@
 import axios from "axios";
 
+let BASE_URL = ''
+
+if (import.meta.env.DEV)
+  BASE_URL = 'http://localhost:3000';
+else
+  BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const client = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: BASE_URL,
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
 });
 
-// Interceptor para redirecionar em caso de erro 403
 client.interceptors.response.use(
   (response) => response,
   (error) => {
