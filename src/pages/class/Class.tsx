@@ -8,11 +8,13 @@ import { Add, Settings } from "@mui/icons-material";
 import { useState, useCallback, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
+import AccountOptionsModal from "../home/components/AccountOptionsModal";  
 
 import ClassAppBar from "./ClassAppBar";
 import Search from "../../components/Search";
 import Students from "./Students";
 import Dossiers from "./Dossiers";
+import { useNavigate } from "react-router-dom";
 
 import AddStudentModal from "./AddStudentModal";
 import EditStudentModal from "./EditStudentModal";
@@ -25,6 +27,7 @@ import { useStudentContext } from "../../contexts/StudentContext";
 import { useSnackbar } from "../../contexts/SnackBarContext";
 
 const Class = () => {
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { selectedSubTab } = useTabsContext();
   const classId = Number(useParams().classId)
@@ -32,12 +35,19 @@ const Class = () => {
   const [actualClass, setActualClass] = useState<Class>()
   const { students, setStudents } = useStudentContext();
   const [dossiers, setDossiers] = useState<Dossier[]>([]);
+  const navigate = useNavigate();
+
 
   const [openAddStudentModal, setOpenAddStudentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [excelData, setExcelData] = useState<any[]>([]);
   const [openImport, setOpenImport] = useState(false);
   const handleOpenImportModal = () => setOpenImport(true);
+
+  const handleLogout = () => {
+      localStorage.removeItem("token");
+      navigate("/auth/sign-in");
+  };
 
   const onDrop = useCallback(
     (files: File[]) => {
@@ -176,7 +186,10 @@ const Class = () => {
 
   return (
     <>
-      <ClassAppBar classTitle={actualClass ? actualClass.title : ""}/>
+       <ClassAppBar
+        classTitle={actualClass ? actualClass.title : ""}
+        onAccountClick={() => setAccountModalOpen(true)}
+      />
       <Box sx={{ display: "flex", justifyContent: "center", mt: 1, width: "100%" }}>
         <Box sx={{ width: "100%", maxWidth: "1000px", px: 2 }}>
           <Search value={searchTerm} onChange={setSearchTerm} />
@@ -267,6 +280,25 @@ const Class = () => {
         student={editingStudent}
         onEdit={handleSaveEditStudent}
         classId={classId}
+      />
+    <AccountOptionsModal
+        open={accountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+        onDelete={async () => {
+          try {
+            await apiService.deleteTeacher();
+            showMessage("Perfil excluído com sucesso!", "success");
+            setAccountModalOpen(false);
+            handleLogout(); 
+          } catch (err: any) {
+            const msg =
+              err.response?.data?.message ||
+              err.response?.data?.error ||
+              err.message ||
+              "Erro ao excluir o perfil.";
+            showMessage(msg, "error");
+          }
+        }}
       />
     </>
   );

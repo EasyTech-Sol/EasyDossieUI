@@ -11,7 +11,8 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -59,6 +60,7 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
           {dossiers.map((d) => (
             <ListItem
               key={d.id}
+              disableGutters
               sx={{
                 mb: 2,
                 backgroundColor: "#ffffff",
@@ -67,6 +69,7 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
                 boxShadow: 1,
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
                 transition: "transform 0.1s ease-in",
                 maxWidth: "700px",
                 mx: "auto",
@@ -74,34 +77,70 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
                   transform: "scale(1.01)",
                 },
               }}
-              secondaryAction={
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    size="small"
-                    onClick={() =>
-                      navigate(`/class/${classId}/dossier/${d.id}/evaluation`)
-                    }
-                  >
-                    Avaliar
-                  </Button>
-                  <IconButton onClick={() => handleOpenDialog(classId, d.id)}>
-                    <Delete />
-                  </IconButton>
-                </Box>
-              }
             >
+              {/* Avatar */}
               <ListItemAvatar>
                 <Avatar sx={{ bgcolor: "#c8e6c9", color: "#1b5e20" }}>
                   {d.title.charAt(0)}
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText
-                primary={d.title}
-                secondary={d.description}
-                sx={{ ml: 2 }}
-              />
+
+              {/* Texto (com largura limitada) */}
+              <Box
+                sx={{
+                  ml: 2,
+                  mr: 2,
+                  flexGrow: 1,
+                  flexShrink: 1,
+                  minWidth: 0,
+                  overflow: "hidden",
+                }}
+              >
+                <Tooltip title={d.title}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {d.title}
+                  </Typography>
+                </Tooltip>
+
+                <Tooltip title={d.description}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {d.description}
+                  </Typography>
+                </Tooltip>
+              </Box>
+
+              {/* Ações */}
+              <Box sx={{ display: "flex", gap: 1, flexShrink: 0 }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  onClick={() =>
+                    navigate(`/class/${classId}/dossier/${d.id}/evaluation`)
+                  }
+                >
+                  Avaliar
+                </Button>
+                <IconButton onClick={() => handleOpenDialog(classId, d.id)}>
+                  <Delete />
+                </IconButton>
+              </Box>
             </ListItem>
           ))}
         </List>

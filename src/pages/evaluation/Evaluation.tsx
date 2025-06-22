@@ -12,9 +12,17 @@ import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
 import CategoryView from "./CategoryView";
 import { useSnackbar } from "../../contexts/SnackBarContext";
+import AccountOptionsModal from "../home/components/AccountOptionsModal";
+import { useNavigate } from "react-router-dom";
 
 
 const Evaluation = () => {
+    const [accountModalOpen, setAccountModalOpen] = useState(false);
+    const navigate = useNavigate();
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      navigate("/auth/sign-in");
+  };
     const { classId, dossierId } = useParams()
     const { setEvaluations, setDossierTemplate,
         dossierTemplate, evaluations,
@@ -226,34 +234,67 @@ const Evaluation = () => {
 
     return (
         <Box position={"relative"} width={"100%"}>
-            <EvaluationAppBar />
+            <EvaluationAppBar onAccountClick={() => setAccountModalOpen(true)}
+/>
             <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
             <Grid container>
-                <Grid size={7} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
-                    {dossierTemplate && (
-                        <Paper sx={{ p: 2 }}>
-                            <Typography variant="h4" gutterBottom textAlign="center">
-                                {dossierTemplate.title}
-                            </Typography>
-                            <Typography variant="h5" textAlign="center">
-                                Área: {dossierTemplate.evaluationArea}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                {dossierTemplate.description}
-                            </Typography>
+                
+                <Grid size={7} sx={{ maxHeight: '60vh', overflow: 'auto', maxWidth: '100%', }}>
+                {dossierTemplate && (
+                    <Paper sx={{ p: 2 }}>
+                        <Typography
+                            variant="h6"
+                            gutterBottom
+                            textAlign="center"
+                            sx={{
+                                whiteSpace: 'pre-wrap',
+                                wordWrap: 'break-word',
+                                fontWeight: 'bold',
+                                overflowWrap: 'break-word',
+                                maxWidth: '100%',
+                            }}
+                        >
+                            {dossierTemplate.title}
+                        </Typography>
 
-                            {dossierTemplate.categories.map(category => (
-                                <CategoryView
-                                    key={category.id}
-                                    category={category}
-                                    concepts={dossierTemplate.concepts.split(',')}
-                                    getStudentEvaluation={getStudentEvaluation}
-                                    onConceptChange={handleConceptChange}
-                                />
-                            ))}
-                        </Paper>
-                    )}
-                </Grid>
+                        <Typography
+                            variant="h6"
+                            textAlign="center"
+                            sx={{
+                                whiteSpace: 'pre-wrap',
+                                wordWrap: 'break-word',
+                                overflowWrap: 'break-word',
+                                maxWidth: '100%',
+                            }}
+                        >
+                            Área: {dossierTemplate.evaluationArea}
+                        </Typography>
+
+                        <Typography
+                            variant="body1"
+                            paragraph
+                            sx={{
+                                whiteSpace: 'pre-wrap',
+                                wordWrap: 'break-word',
+                                overflowWrap: 'break-word',
+                                maxWidth: '100%',
+                            }}
+                        >
+                            {dossierTemplate.description}
+                        </Typography>
+
+                        {dossierTemplate.categories.map(category => (
+                            <CategoryView
+                                key={category.id}
+                                category={category}
+                                concepts={dossierTemplate.concepts.split(',')}
+                                getStudentEvaluation={getStudentEvaluation}
+                                onConceptChange={handleConceptChange}
+                            />
+                        ))}
+                    </Paper>
+                )}
+            </Grid>
 
                 <Grid size={5} sx={{ p: 1 }}>
                     <StudentsScores setCanExport={setCanExport} />
@@ -275,7 +316,25 @@ const Evaluation = () => {
                     <SaveIcon />
                 </Fab>
             </Zoom>
-
+            <AccountOptionsModal
+                open={accountModalOpen}
+                onClose={() => setAccountModalOpen(false)}
+                onDelete={async () => {
+                try {
+                    await apiService.deleteTeacher();
+                    showMessage("Perfil excluído com sucesso!", "success");
+                    setAccountModalOpen(false);
+                    handleLogout(); 
+                } catch (err: any) {
+                    const msg =
+                    err.response?.data?.message ||
+                    err.response?.data?.error ||
+                    err.message ||
+                    "Erro ao excluir o perfil.";
+                    showMessage(msg, "error");
+                }
+                }}
+            />
         </Box>
     )
 }
