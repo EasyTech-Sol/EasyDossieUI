@@ -6,7 +6,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { apiService } from '../../services/easydossie.service';
 import CustomLink from '../class/CustomLink';
 
-const EvaluationAppBar = () => {
+interface EvaluationAppBarProps {
+  onAccountClick: () => void;
+}
+
+const EvaluationAppBar = ({ onAccountClick }: EvaluationAppBarProps) => {
     const classId = Number(useParams().classId);
     const dossierId = Number(useParams().dossierId);
     const navigate = useNavigate();
@@ -101,7 +105,7 @@ const EvaluationAppBar = () => {
                         </Breadcrumbs>
                     </Box>
 
-                    <IconButton size="large">
+                    <IconButton size="large" onClick={onAccountClick}>
                         <Person />
                     </IconButton>
                 </Box>

@@ -14,7 +14,8 @@ import {
   Add,
   Person,
 } from "@mui/icons-material";
-
+import AccountOptionsModal from "../components/AccountOptionsModal";
+import { useNavigate } from "react-router-dom";  
 import { useEffect, useState } from "react";
 import CreateClass from "./CreateClass.tsx";
 import ClassCard from "./ClassCard.tsx"
@@ -29,6 +30,12 @@ import Search from "../../../components/Search.tsx";
 const drawerWidth = 240;
 
 const ClassesDashboard = () => {
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/auth/sign-in");
+  };
   const theme = useTheme();
   const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -177,7 +184,7 @@ const ClassesDashboard = () => {
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <IconButton>
+            <IconButton onClick={() => setAccountModalOpen(true)}>
               <Person />
             </IconButton>
           </Box>
@@ -258,6 +265,25 @@ const ClassesDashboard = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      <AccountOptionsModal
+          open={accountModalOpen}
+          onClose={() => setAccountModalOpen(false)}
+          onDelete={async () => {
+            try {
+              await apiService.deleteTeacher();
+              showMessage('Perfil excluído com sucesso!', 'success');
+              setAccountModalOpen(false);
+              handleLogout(); 
+            } catch (error: any) {
+              const errorMessage =
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                error.message ||
+                'Erro ao excluir o perfil.';
+              showMessage(errorMessage, 'error');
+            }
+          }}
+        />
     </>
   );
 };

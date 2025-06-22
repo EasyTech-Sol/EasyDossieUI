@@ -8,9 +8,10 @@ import CustomLink from './CustomLink';
 
 interface ClassAppBarProps {
     classTitle: string;
+    onAccountClick: () => void;
 }
 
-const ClassAppBar = ({ classTitle }: ClassAppBarProps) => {
+const ClassAppBar = ({ classTitle, onAccountClick }: ClassAppBarProps) => {
     const { selectedSubTab, setSelectedSubTab } = useTabsContext();
     const navigate = useNavigate();
 
@@ -61,7 +62,7 @@ const ClassAppBar = ({ classTitle }: ClassAppBarProps) => {
                             </Breadcrumbs>
                         </Box>
 
-                        <IconButton size="large">
+                        <IconButton size="large" onClick={onAccountClick}>
                             <Person />
                         </IconButton>
                     </Box>
