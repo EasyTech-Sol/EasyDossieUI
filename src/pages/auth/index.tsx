@@ -1,12 +1,11 @@
 import { Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import SuspenseFallback from "../../components/common/SuspenseFallback";
-
-const SignIn = lazy(() => import("./components/SignIn"));
-const SignUp = lazy(() => import("./components/SignUp"));
-const Template = lazy(() => import("./template/Template"));
-const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
-const ResetPassword = lazy(() => import("./components/ResetPassword"));
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+import Template from "./template/Template";
 
 export function routes(startPath: string) {
     return {
