@@ -17,6 +17,9 @@ const SignIn = () => {
     try {
       const result = await apiService.login(values)
       localStorage.setItem("token", result.data.token)
+      localStorage.setItem("userName", result.data.teacher.name);  // Salva o nome do professor
+      localStorage.setItem("userEmail", result.data.teacher.email);  // Salva o email do professor
+    
       // localStorage.setItem("TeacherId", result.data.teacher.teacherId)
       window.location.href = "/home"
     } catch (error) {
