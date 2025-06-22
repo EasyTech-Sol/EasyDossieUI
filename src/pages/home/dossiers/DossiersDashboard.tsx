@@ -17,6 +17,8 @@ import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
+import AccountOptionsModal from "../components/AccountOptionsModal";  
+import { useNavigate } from "react-router-dom";
 import CustomLink from "../../class/CustomLink.tsx";
 
 const drawerWidth = 240;
@@ -26,8 +28,16 @@ const DossiersDashboard = () => {
   const { dossiers, setDossiers } = useDossiers();
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const { showMessage } = useSnackbar();
+  const navigate = useNavigate();
+
 
   const [currentDossier, setCurrentDossier] = useState<Dossier | null>(null);
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
+
+  const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/auth/sign-in");
+    };
 
   // Filtra os dossiês com base no termo de busca
   const filteredDossiers = dossiers.filter(dossier =>
@@ -95,7 +105,7 @@ const DossiersDashboard = () => {
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <CustomLink>Dossiês</CustomLink>
-            <IconButton>
+            <IconButton onClick={() => setAccountModalOpen(true)}>
               <Person />
             </IconButton>
           </Box>
@@ -176,6 +186,25 @@ const DossiersDashboard = () => {
           />
         )}
       </Box>
+          <AccountOptionsModal
+            open={accountModalOpen}
+            onClose={() => setAccountModalOpen(false)}
+            onDelete={async () => {
+              try {
+                await apiService.deleteTeacher();
+                showMessage('Perfil excluído com sucesso!', 'success');
+                setAccountModalOpen(false);
+                handleLogout(); 
+              } catch (error: any) {
+                const errorMessage =
+                  error.response?.data?.message ||
+                  error.response?.data?.error ||
+                  error.message ||
+                  'Erro ao excluir o perfil.';
+                showMessage(errorMessage, 'error');
+              }
+            }}
+          />
     </>
   );
 };

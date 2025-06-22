@@ -12,9 +12,17 @@ import { useStudentContext } from "../../contexts/StudentContext"
 import { isAxiosError } from "axios";
 import CategoryView from "./CategoryView";
 import { useSnackbar } from "../../contexts/SnackBarContext";
+import AccountOptionsModal from "../home/components/AccountOptionsModal";
+import { useNavigate } from "react-router-dom";
 
 
 const Evaluation = () => {
+    const [accountModalOpen, setAccountModalOpen] = useState(false);
+    const navigate = useNavigate();
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      navigate("/auth/sign-in");
+  };
     const { classId, dossierId } = useParams()
     const { setEvaluations, setDossierTemplate,
         dossierTemplate, evaluations,
@@ -226,7 +234,8 @@ const Evaluation = () => {
 
     return (
         <Box position={"relative"} width={"100%"}>
-            <EvaluationAppBar />
+            <EvaluationAppBar onAccountClick={() => setAccountModalOpen(true)}
+/>
             <StudentsBar canExport={allEvaluationsConcluded && !hasEvaluationUpdated} /> {/* Passando classId e dossierId */}
             <Grid container>
                 
@@ -307,7 +316,25 @@ const Evaluation = () => {
                     <SaveIcon />
                 </Fab>
             </Zoom>
-
+            <AccountOptionsModal
+                open={accountModalOpen}
+                onClose={() => setAccountModalOpen(false)}
+                onDelete={async () => {
+                try {
+                    await apiService.deleteTeacher();
+                    showMessage("Perfil excluído com sucesso!", "success");
+                    setAccountModalOpen(false);
+                    handleLogout(); 
+                } catch (err: any) {
+                    const msg =
+                    err.response?.data?.message ||
+                    err.response?.data?.error ||
+                    err.message ||
+                    "Erro ao excluir o perfil.";
+                    showMessage(msg, "error");
+                }
+                }}
+            />
         </Box>
     )
 }
