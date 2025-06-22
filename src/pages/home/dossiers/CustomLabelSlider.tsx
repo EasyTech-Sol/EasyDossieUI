@@ -24,7 +24,7 @@ export default function CustomLabelSlider({ setOutput }: CustomLabelSliderProps)
       color='success'
       valueLabelDisplay="auto"
       valueLabelFormat={(v) => options[v]}
-      onChange={(e, newValue) => {
+      onChange={(_e, newValue) => {
         setValue(newValue as number);
         setOutput(options[newValue]);
       }}

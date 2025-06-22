@@ -8,7 +8,7 @@ export default function Template() {
     const { message, open, setOpen } = useSnackbar()
 
     const handleClose = (
-        event: React.SyntheticEvent | Event,
+        _event: React.SyntheticEvent | Event,
         reason?: SnackbarCloseReason,
     ) => {
         if (reason === 'clickaway') {

@@ -7,7 +7,7 @@ import AdviceText from "./AdviceText"
 import { useSnackbar } from "../../../contexts/SnackBarContext"
 
 const ResetPassword = () => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<{ password: string, confirmPassword: string }>()
+  const { register, handleSubmit, formState: { errors } } = useForm<{ password: string, confirmPassword: string }>()
   const { showMessage } = useSnackbar();
 
   const onSubmit = async (data: { password: string, confirmPassword: string }) => {
