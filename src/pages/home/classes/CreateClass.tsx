@@ -29,7 +29,8 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
       title: "",
       shift: "",
       institution: "",
-      period: ""
+      lectivePeriod: "",
+      color: ""
     }
   });
 
@@ -121,7 +122,7 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
           />
 
           <Controller
-            name="period"
+            name="lectivePeriod"
             control={control}
             render={({ field }) => (
               <TextField

@@ -4,7 +4,6 @@ import { MouseEventHandler } from 'react'
 
 const successGreen = "#1B5E20"
 const infoBlue = "#01579B"
-const hoverGreen = "#7bf1a8"
 
 interface SuccessButtonProps {
     title: string,
@@ -22,7 +21,7 @@ const TextButton = ({ title, onClick }: SuccessButtonProps) => {
 }
 
 const ColorButton = (backgroundColor: string) => {
-    return styled(Button)<ButtonProps>(({ theme }) => ({
+    return styled(Button)<ButtonProps>(() => ({
         color: "#ffffff",
         backgroundColor: alpha(backgroundColor, 0.85),
         '&:hover': {

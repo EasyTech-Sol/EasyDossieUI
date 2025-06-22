@@ -236,7 +236,7 @@ const Evaluation = () => {
         <Box position={"relative"} width={"100%"}>
             <EvaluationAppBar onAccountClick={() => setAccountModalOpen(true)}
 />
-            <StudentsBar canExport={canExport} classId={classId!} dossierId={dossierId!} /> {/* Passando classId e dossierId */}
+            <StudentsBar canExport={canExport} /> {/* Passando classId e dossierId */}
             <Grid container>
                 
                 <Grid size={7} sx={{ maxHeight: '60vh', overflow: 'auto', maxWidth: '100%', }}>
