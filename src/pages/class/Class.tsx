@@ -4,9 +4,9 @@ import {
   SpeedDialIcon,
   SpeedDialAction,
 } from "@mui/material";
-import { Add, Settings } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { useState, useCallback, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import AccountOptionsModal from "../home/components/AccountOptionsModal";  
 

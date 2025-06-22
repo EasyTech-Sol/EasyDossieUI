@@ -7,7 +7,7 @@
     "dev": "vite",
     "test": "vitest",
     "mocked": "cross-env VITE_USE_MSW=mocked vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import SuspenseFallback from "../../components/common/SuspenseFallback";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";

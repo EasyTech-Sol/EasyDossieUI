@@ -1,7 +1,6 @@
 import {
   Box,
   Fab,
-  useTheme,
   Snackbar,
   Alert,
   Container,
@@ -30,8 +29,6 @@ import { FolderOpen } from '@mui/icons-material';
 import Search from "../../../components/Search.tsx";
 import CustomLink from "../../class/CustomLink.tsx";
 
-const drawerWidth = 240;
-
 const ClassesDashboard = () => {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -39,7 +36,6 @@ const ClassesDashboard = () => {
     localStorage.removeItem("token");
     navigate("/auth/sign-in");
   };
-  const theme = useTheme();
   const [classes, setClasses] = useState<Class[]>([])
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [editModalOpened, setEditModalOpened] = useState(false)

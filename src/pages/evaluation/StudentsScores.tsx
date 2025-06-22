@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Tooltip, Snackbar } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Paper, Tooltip } from '@mui/material';
 import { useStudentContext } from '../../contexts/StudentContext';
 import { useEvaluationContext } from '../../contexts/EvaluationContext';
 import { countCriterionsInDossier } from '../../utils/dossierUtils';
