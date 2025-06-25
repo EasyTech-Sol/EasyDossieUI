@@ -3,6 +3,10 @@ type Class = {
   title: string;
   institution: string;
   shift: string;
-  lectivePeriod: string;
+  period: string;
   color: string;
+  _count?: {
+    students: number;
+    classDossiers: number;
+  };
 };
