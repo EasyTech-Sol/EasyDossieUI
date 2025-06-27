@@ -64,7 +64,11 @@ export default function ListDossierPage({ dossiers }: ListDossierPageProps) {
       <ConfirmDialog
         open={confirmOpen}
         title="Confirmar exclusão"
-        description="Tem certeza que deseja excluir este dossiê? Essa ação não pode ser desfeita."
+        description={
+          "Tem certeza que deseja excluir este dossiê? " +
+          "Se ele estiver associado a alguma turma, todas as avaliações e vínculos dessas turmas com este dossiê serão permanentemente apagados. " +
+          "Esta ação é irreversível!"
+        }
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
       />

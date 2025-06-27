@@ -36,6 +36,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
   const [loading, setLoading] = useState(false);
   const [classList, setClassList] = useState<any[]>([]);
   const [loadingClasses, setLoadingClasses] = useState(false);
+  const [associatedClassIds, setAssociatedClassIds] = useState<number[]>([]);
 
   const { showMessage } = useSnackbar(); // Hook do contexto
 
@@ -45,6 +46,11 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
     try {
       const response = await apiService.getClasses();
       setClassList(response.data.classes);
+
+      // Buscar turmas já associadas ao dossiê
+      const assocRes = await apiService.getClassesByDossier(dossierId);
+      const assocIds = assocRes.data.associatedClasses?.map((c: any) => c.classId || c.class?.id) || [];
+      setAssociatedClassIds(assocIds);
 
       showMessage(
         response.data.message || 'Turmas carregadas com sucesso.',
@@ -63,7 +69,7 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
   if (open) {
     fetchClasses();
   }
-}, [open]);
+}, [open, dossierId]);
 
 
   const handleSelectClass = (classId: number) => {
@@ -127,17 +133,28 @@ export default function AssociateDossierClass({ open, onClose, dossierId }: Asso
               mt: 2,
             }}
           >
-            {classList.map((classItem) => (
-              <Box key={classItem.id} onClick={() => handleSelectClass(classItem.id)}>
-                <ClassCard
-                  id={classItem.id}
-                  title={classItem.title}
-                  bgColor={getRandomMutedColor()}
-                  selectMode
-                  selected={selectedClasses.includes(classItem.id)}
-                />
-              </Box>
-            ))}
+            {classList
+              .filter((classItem) => !associatedClassIds.includes(classItem.id))
+              .map((classItem) => (
+                <Box
+                  key={classItem.id}
+                  onClick={() => handleSelectClass(classItem.id)}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  <ClassCard
+                    id={classItem.id}
+                    title={classItem.title}
+                    bgColor={getRandomMutedColor()}
+                    selectMode
+                    selected={selectedClasses.includes(classItem.id)}
+                  />
+                </Box>
+              ))}
+            {classList.filter((classItem) => !associatedClassIds.includes(classItem.id)).length === 0 && (
+              <Typography align="center" color="text.secondary" sx={{ width: '100%' }}>
+                Todas as turmas já estão associadas a este dossiê.
+              </Typography>
+            )}
           </Box>
         )}
       </DialogContent>

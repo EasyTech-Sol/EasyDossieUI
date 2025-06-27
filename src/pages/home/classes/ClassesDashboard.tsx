@@ -46,7 +46,7 @@ const ClassesDashboard = () => {
     title: "0",
     id: 0,
     shift: "",
-    lectivePeriod: "",
+    period: "",
     institution: "",
     color: ""
   })
@@ -107,7 +107,7 @@ const ClassesDashboard = () => {
       title: "0",
       id: 0,
       shift: "",
-      lectivePeriod: "",
+      period: "",
       institution: "",
       color: ""
     })
@@ -213,6 +213,9 @@ const ClassesDashboard = () => {
                 onEdit={() => handleEditClass(cls.id)}
                 onDelete={() => handleDeleteClass(cls.id)}
                 bgColor={cls.color}
+                studentsCount={cls._count?.students}
+                dossiersCount={cls._count?.classDossiers}
+                centerIcons={true}
               />
             ))}
         </Box>

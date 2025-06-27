@@ -207,6 +207,7 @@ const Class = () => {
       {selectedSubTab === "dossiers" && (
         <Dossiers
           dossiers={filteredDossiers}
+          setDossiers={setDossiers}
           handleDeleteDossier={handleDeleteDossier}
         />
       )}

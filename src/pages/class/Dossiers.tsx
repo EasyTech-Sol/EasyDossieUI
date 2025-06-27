@@ -13,19 +13,34 @@ import {
   ListItemAvatar,
   Tooltip,
   Typography,
+  Checkbox,
+  FormControlLabel,
+  CircularProgress,
+  Fab,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import AddIcon from '@mui/icons-material/Add';
+import { apiService } from "../../services/easydossie.service";
+import { useSnackbar } from "../../contexts/SnackBarContext";
 
 interface DossiersProps {
   dossiers: Dossier[];
+  setDossiers: React.Dispatch<React.SetStateAction<Dossier[]>>;
   handleDeleteDossier: ({ classId, dossierId }: ClassDossier) => void;
 }
 
-const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
+const Dossiers = ({ dossiers, setDossiers, handleDeleteDossier }: DossiersProps) => {
   const [open, setOpen] = useState(false);
   const [selectedDossierId, setSelectedDossierId] = useState<ClassDossier | undefined>();
+  const [associateOpen, setAssociateOpen] = useState(false);
+  const [availableDossiers, setAvailableDossiers] = useState<Dossier[]>([]);
+  const [selectedDossiers, setSelectedDossiers] = useState<number[]>([]);
+  const [loadingDossiers, setLoadingDossiers] = useState(false);
+  const [associating, setAssociating] = useState(false);
+  const { showMessage } = useSnackbar();
   const navigate = useNavigate();
   const classId = Number(useParams().classId);
 
@@ -46,6 +61,43 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
     handleCloseDialog();
   };
 
+  // Buscar dossiês disponíveis para associação
+  const fetchAvailableDossiers = async () => {
+    setLoadingDossiers(true);
+    try {
+      const res = await apiService.getDossiers();
+      // Filtra os que já estão associados
+      const associatedIds = dossiers.map(d => d.id);
+      setAvailableDossiers(res.data.dossiers.filter((d: Dossier) => !associatedIds.includes(d.id)));
+    } catch (e) {
+      showMessage("Erro ao buscar dossiês disponíveis.", "error");
+    } finally {
+      setLoadingDossiers(false);
+    }
+  };
+
+  useEffect(() => {
+    if (associateOpen) fetchAvailableDossiers();
+  }, [associateOpen]);
+
+  const handleAssociate = async () => {
+    if (!selectedDossiers.length) return;
+    setAssociating(true);
+    try {
+      await Promise.all(selectedDossiers.map(dossierId => apiService.associateDossierToClasses(dossierId, [classId])));
+      showMessage("Dossiê associado com sucesso!", "success");
+      // Atualizar a lista localmente
+      const novosDossies = availableDossiers.filter(d => selectedDossiers.includes(d.id));
+      setDossiers(prev => [...prev, ...novosDossies]);
+      setSelectedDossiers([]);
+      setAssociateOpen(false);
+    } catch (e) {
+      showMessage("Erro ao associar dossiê.", "error");
+    } finally {
+      setAssociating(false);
+    }
+  };
+
   return (
     <>
       <Box
@@ -54,6 +106,7 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
           maxWidth: "800px",
           width: "100%",
           mx: "auto",
+          position: 'relative',
         }}
       >
         <List sx={{ width: "100%" }}>
@@ -144,7 +197,70 @@ const Dossiers = ({ dossiers, handleDeleteDossier }: DossiersProps) => {
             </ListItem>
           ))}
         </List>
+        {/* Botão flutuante de adicionar dossiê */}
+        <Fab
+          color="success"
+          sx={{
+            position: "fixed",
+            bottom: 32,
+            right: 32,
+            zIndex: 10,
+          }}
+          onClick={() => setAssociateOpen(true)}
+        >
+          <AddIcon />
+        </Fab>
       </Box>
+
+      {/* Modal de associação de dossiê */}
+      <Dialog open={associateOpen} onClose={() => setAssociateOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Associar Dossiê à Turma</DialogTitle>
+        <DialogContent>
+          {loadingDossiers ? (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight={120}>
+              <CircularProgress />
+            </Box>
+          ) : availableDossiers.length === 0 ? (
+            <Typography align="center" color="text.secondary">
+              Nenhum dossiê disponível para associar.
+            </Typography>
+          ) : (
+            <Box>
+              {availableDossiers.map((d) => (
+                <FormControlLabel
+                  key={d.id}
+                  control={
+                    <Checkbox
+                      checked={selectedDossiers.includes(d.id)}
+                      onChange={(_, checked) => {
+                        setSelectedDossiers((prev) =>
+                          checked
+                            ? [...prev, d.id]
+                            : prev.filter((id) => id !== d.id)
+                        );
+                      }}
+                    />
+                  }
+                  label={d.title}
+                />
+              ))}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAssociateOpen(false)} color="inherit">
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleAssociate}
+            color="success"
+            variant="contained"
+            disabled={associating || !selectedDossiers.length}
+          >
+            {associating ? "Associando..." : "Associar"}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Confirmar Desassociação</DialogTitle>

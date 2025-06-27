@@ -23,4 +23,5 @@ export const dossierApi = {
       ...dossier,
     }),
   getDossierById: async (id: number) => client.get(`/dossiers/${id}`),
+  getClassesByDossier: async (dossierId: number) => client.get(`/dossiers/${dossierId}/classes`),
 };
