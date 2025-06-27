@@ -5,10 +5,11 @@ import {
   IconButton,
   Toolbar,
   Fab,
+  Typography,
 } from "@mui/material";
 
 import { useState } from "react";
-import { Add, Person } from "@mui/icons-material";
+import { Add, Assignment, Person } from "@mui/icons-material";
 import { isAxiosError } from "axios";
 import { apiService } from "../../../services/easydossie.service.ts";
 import CreateDossie from "./CreateDossie.tsx";
@@ -16,7 +17,7 @@ import ListDossiersPage from "./ListDossierPage.tsx";
 import Search from "../../../components/Search.tsx";
 import { useDossiers } from "../../../contexts/DossierContext.tsx";
 import { useSnackbar } from "../../../contexts/SnackBarContext.tsx";
-import AccountOptionsModal from "../components/AccountOptionsModal";  
+import AccountOptionsModal from "../components/AccountOptionsModal";
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -33,12 +34,12 @@ const DossiersDashboard = () => {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
 
   const handleLogout = () => {
-        localStorage.removeItem("token");
-        navigate("/auth/sign-in");
-    };
+    localStorage.removeItem("token");
+    navigate("/auth/sign-in");
+  };
 
   // Filtra os dossiês com base no termo de busca
-  const filteredDossiers = dossiers.filter(dossier => 
+  const filteredDossiers = dossiers.filter(dossier =>
     dossier.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dossier.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     dossier.evaluationArea.toLowerCase().includes(searchTerm.toLowerCase())
@@ -111,8 +112,8 @@ const DossiersDashboard = () => {
 
           <Box sx={{ display: "flex", justifyContent: "center", mt: 1, width: "100%" }}>
             <Box sx={{ width: "100%", maxWidth: "1000px", px: 2 }}>
-              <Search 
-                value={searchTerm} 
+              <Search
+                value={searchTerm}
                 onChange={setSearchTerm}
                 placeholder="Buscar por título, descrição ou área..."
               />
@@ -140,7 +141,25 @@ const DossiersDashboard = () => {
             width: "100%",
           }}
         >
-          <ListDossiersPage dossiers={filteredDossiers} />
+          {filteredDossiers.length === 0 ?
+            <Box>
+              <Typography variant="h5" align="center" color="textSecondary" sx={{ marginTop: 4 }}>
+                Nenhum dossiê encontrado.
+              </Typography>
+              <Assignment sx={{
+                fontSize: "10rem",
+                color: "text.secondary",
+                display: "block",
+                margin: "0 auto",
+              }} />
+              <Typography variant="body1" align="center" color="textSecondary">
+                Crie um novo dossiê para começar!
+              </Typography>
+            </Box>
+
+            :
+            <ListDossiersPage dossiers={filteredDossiers} />
+          }
         </Box>
 
         {/* Floating Action Button */}
@@ -165,25 +184,25 @@ const DossiersDashboard = () => {
           />
         )}
       </Box>
-          <AccountOptionsModal
-            open={accountModalOpen}
-            onClose={() => setAccountModalOpen(false)}
-            onDelete={async () => {
-              try {
-                await apiService.deleteTeacher();
-                showMessage('Perfil excluído com sucesso!', 'success');
-                setAccountModalOpen(false);
-                handleLogout(); 
-              } catch (error: any) {
-                const errorMessage =
-                  error.response?.data?.message ||
-                  error.response?.data?.error ||
-                  error.message ||
-                  'Erro ao excluir o perfil.';
-                showMessage(errorMessage, 'error');
-              }
-            }}
-          />
+      <AccountOptionsModal
+        open={accountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+        onDelete={async () => {
+          try {
+            await apiService.deleteTeacher();
+            showMessage('Perfil excluído com sucesso!', 'success');
+            setAccountModalOpen(false);
+            handleLogout();
+          } catch (error: any) {
+            const errorMessage =
+              error.response?.data?.message ||
+              error.response?.data?.error ||
+              error.message ||
+              'Erro ao excluir o perfil.';
+            showMessage(errorMessage, 'error');
+          }
+        }}
+      />
     </>
   );
 };
