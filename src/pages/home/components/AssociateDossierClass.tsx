@@ -13,7 +13,6 @@ import { useState, useEffect } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import ClassCard from '../classes/ClassCard';
 import { apiService } from "../../../services/easydossie.service";
-import { getRandomMutedColor } from '../../../helpers/softColors';
 import { useSnackbar } from '../../../contexts/SnackBarContext'; 
 
 
