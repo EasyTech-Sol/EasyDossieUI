@@ -194,7 +194,7 @@ export default function EditDossieModal({
               />
               <TextField
                 fullWidth
-                label="Peso"
+                label="Peso (Soma dos pesos do dossiê devem resultar em 100)"
                 type="number"
                 value={cat.weight}
                 onChange={(e) =>
