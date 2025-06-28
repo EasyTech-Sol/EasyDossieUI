@@ -65,7 +65,7 @@ export default ({
             </Box>
             <Box sx={{ mt: "auto" }}>
                 <List>
-                    <ListItemButton>
+                    <ListItemButton onClick={() => window.location.href = "/about"}>
                         <ListItemIcon>
                             <Info />
                         </ListItemIcon>

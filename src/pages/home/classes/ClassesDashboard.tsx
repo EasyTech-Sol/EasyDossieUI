@@ -7,10 +7,12 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Divider
+  Divider,
+  Typography
 } from "@mui/material";
 import {
   Add,
+  FolderOpen,
   Person,
 } from "@mui/icons-material";
 import AccountOptionsModal from "../components/AccountOptionsModal";
@@ -194,31 +196,47 @@ const ClassesDashboard = () => {
       </AppBar>
 
       <Container>
-        <Box
-          marginTop={"1rem"}
-          display={"flex"}
-          justifyContent={"flex-start"}
-          flexWrap={"wrap"}
-          alignItems={"flex-start"}
-          gap={"1rem"}
-          flexDirection={"row"}
-        >
-          {classes
-          .filter(cls => 
-            cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
-              <ClassCard
-                id={cls.id}
-                key={cls.id}
-                title={cls.title}
-                onEdit={() => handleEditClass(cls.id)}
-                onDelete={() => handleDeleteClass(cls.id)}
-                bgColor={cls.color}
-                studentsCount={cls._count?.students}
-                dossiersCount={cls._count?.classDossiers}
-                centerIcons={true}
-              />
-            ))}
-        </Box>
+        {classes.length === 0 ?
+          <>
+            <Box>
+              <Typography variant="h5" align="center" color="textSecondary" sx={{ marginTop: 4 }}>
+                Nenhuma turma encontrada.
+              </Typography>
+              <FolderOpen sx={{
+                fontSize: "10rem",
+                color: "text.secondary",
+                display: "block",
+                margin: "0 auto",
+              }} />
+              <Typography variant="body1" align="center" color="textSecondary">
+                Crie uma nova turma para começar!
+              </Typography>
+            </Box>
+          </>
+          :
+          <Box
+            marginTop={"1rem"}
+            display={"flex"}
+            justifyContent={"flex-start"}
+            flexWrap={"wrap"}
+            alignItems={"flex-start"}
+            gap={"1rem"}
+            flexDirection={"row"}
+          >
+            {classes
+              .filter(cls =>
+                cls.title?.toLowerCase().includes(searchTerm.toLowerCase())).map(cls => (
+                  <ClassCard
+                    id={cls.id}
+                    key={cls.id}
+                    title={cls.title}
+                    onEdit={() => handleEditClass(cls.id)}
+                    onDelete={() => handleDeleteClass(cls.id)}
+                    bgColor={cls.color}
+                  />
+                ))}
+          </Box>
+        }
       </Container>
 
 
