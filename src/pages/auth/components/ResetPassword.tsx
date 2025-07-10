@@ -27,6 +27,7 @@ const ResetPassword = () => {
     try {
       await apiService.resetPassword(token, data.password);
       showMessage("Senha redefinida com sucesso.", "success");
+      window.location.href = "/auth/sign-in"
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 400)
         showMessage(error.response?.data.error, "error"); 
