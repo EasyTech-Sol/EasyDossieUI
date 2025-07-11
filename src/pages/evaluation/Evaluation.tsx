@@ -113,14 +113,9 @@ const Evaluation = () => {
                 setEvaluations(formattedEvaluations);
 
             } catch (error) {
-                console.error("Erro CRÍTICO no useEffect ao inicializar/buscar dados:", error);
-                let errorMessage = "Não foi possível carregar os dados da avaliação. Verifique o console para detalhes.";
-                if (isAxiosError(error))
-                    if (error.response && error.response.data && error.response.data.message) {
-                        errorMessage = `Erro do servidor: ${error.response.data.message}`;
-                    } else if (error.message) {
-                        errorMessage = error.message;
-                    }
+                const errorMessage = isAxiosError(error)
+                ? error.response?.data?.error || error.message || 'Erro desconhecido'
+                : 'Erro inesperado';
                 showMessage(`Erro ao carregar avaliações: ${errorMessage}`, "error");
                 setDossierTemplate(undefined);
                 setEvaluations([]);
