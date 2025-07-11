@@ -6,7 +6,11 @@ import {
   Button,
   IconButton,
   DialogTitle,
-  Box
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm, Controller } from "react-hook-form";
@@ -91,16 +95,27 @@ const CreateClass = ({ open, onClose, onSave }: CreateClassProps) => {
             name="shift"
             control={control}
             render={({ field }) => (
-              <TextField
-                {...field}
-                margin="dense"
-                label="Turno"
-                fullWidth
-                variant="filled"
-                placeholder="Ex.: Vespertino"
-                sx={{ mb: 2 }}
-                InputLabelProps={{ shrink: true }}
-              />
+              <FormControl fullWidth variant="filled" margin="dense" sx={{ mb: 2 }}>
+                <InputLabel shrink id="shift-label">Turno</InputLabel>
+                <Select
+                  {...field}
+                  labelId="shift-label"
+                  displayEmpty
+                  renderValue={(selected) =>
+                    selected ? (
+                      <span >{selected}</span>
+                    ) : (
+                      <span style={{ color: 'rgba(0,0,0,0.5)' }}>Ex: Vespertino</span>
+                    )
+                  }
+                >
+                  <MenuItem value="Matutino">Matutino</MenuItem>
+                  <MenuItem value="Vespertino">Vespertino</MenuItem>
+                  <MenuItem value="Noturno">Noturno</MenuItem>
+                  <MenuItem value="Diurno">Diurno</MenuItem>
+                  <MenuItem value="Integral">Integral</MenuItem>
+                </Select>
+              </FormControl>
             )}
           />
 

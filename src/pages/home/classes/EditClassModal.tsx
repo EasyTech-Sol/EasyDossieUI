@@ -1,5 +1,5 @@
-import { Box, TextField, Modal, Button, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { Box, TextField, Modal, Button, Typography, FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
 import { useState, useRef, useEffect } from "react";
 import { apiService } from "../../../services/easydossie.service"
 import { useSnackbar } from "../../../contexts/SnackBarContext";
@@ -24,6 +24,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
   } = useForm();
   const [loading, setLoading] = useState(false);
@@ -56,6 +57,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
 
 
   const onSubmit = async (data: any) => {
+    console.log(data)
     for (const key of ["title", "shift", "institution", "period"]) {
       if (!data[key]?.trim()) {
         showMessage("Todos os campos são obrigatórios.", "warning");
@@ -75,7 +77,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
 
     setLoading(true);
     try {
-      const result = await apiService.editClass({...data, classId: classToEdit.id});
+      const result = await apiService.editClass({ ...data, classId: classToEdit.id });
       const updated = result.data.data;
       showMessage(
         result.data?.message || "Dados atualizados com sucesso!",
@@ -83,7 +85,7 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
       );
 
       setClasses(prev => {
-        return prev.map(cls => cls.id === classToEdit.id ? ({...cls, ...updated}) : cls)
+        return prev.map(cls => cls.id === classToEdit.id ? ({ ...cls, ...updated }) : cls)
       });
       handleClose();
     } catch (error: any) {
@@ -135,19 +137,48 @@ const EditClassModal = ({ open, handleClose, setClasses, classToEdit }: EditClas
             )}
           </Box>
           <Box marginBottom={2}>
-            <TextField
-              label="Turno"
-              variant="filled"
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              {...register("shift", {
+
+            <Controller
+              name="shift"
+              control={control}
+              rules={{
                 required: "Turno é obrigatório",
                 validate: validateAlphaNumeric,
-              })}
+              }}
+              render={({ field, fieldState }) => (
+                <FormControl
+                  fullWidth
+                  variant="filled"
+                  margin="dense"
+                  sx={{ mb: 2 }}
+                  error={!!fieldState.error}
+                >
+                  <InputLabel shrink id="shift-label">Turno</InputLabel>
+                  <Select
+                    {...field}
+                    labelId="shift-label"
+                    displayEmpty
+                    renderValue={(selected) =>
+                      selected ? (
+                        <span>{selected}</span>
+                      ) : (
+                        <span style={{ color: 'rgba(0,0,0,0.5)' }}>Ex: Vespertino</span>
+                      )
+                    }
+                  >
+                    <MenuItem value="Matutino">Matutino</MenuItem>
+                    <MenuItem value="Vespertino">Vespertino</MenuItem>
+                    <MenuItem value="Noturno">Noturno</MenuItem>
+                    <MenuItem value="Diurno">Diurno</MenuItem>
+                    <MenuItem value="Integral">Integral</MenuItem>
+                  </Select>
+                  {fieldState.error && (
+                    <FormHelperText>{fieldState.error.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
             />
-            {errors.shift && (
-              <Typography color="error">{String(errors.shift.message)}</Typography>
-            )}
+
           </Box>
           <Box marginBottom={2}>
             <TextField
